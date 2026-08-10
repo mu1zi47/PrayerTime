@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../data/reference_data.dart';
+import '../l10n/app_localizations.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 
-/// Ported from the "Город" (city picker) screen in the design.
 class CityScreen extends StatefulWidget {
   final AppState appState;
 
@@ -28,8 +28,9 @@ class _CityScreenState extends State<CityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final cities = ReferenceData.cities
-        .where((c) => c.name.toLowerCase().contains(_query.toLowerCase()))
+        .where((c) => cityNameFor(t, c.id).toLowerCase().contains(_query.toLowerCase()))
         .toList();
 
     // No SafeArea — see HomeScreen's build() for why: content should scroll
@@ -44,7 +45,7 @@ class _CityScreenState extends State<CityScreen> {
               children: [
                 ScreenBackButton(onTap: () => Navigator.of(context).pop()),
                 const SizedBox(width: 12),
-                Text('Выбор города', style: AppTextStyles.heading(fontSize: 22)),
+                Text(t.citySelectTitle, style: AppTextStyles.heading(fontSize: 22)),
               ],
             ),
             const SizedBox(height: 16),
@@ -68,7 +69,7 @@ class _CityScreenState extends State<CityScreen> {
                       decoration: InputDecoration(
                         isDense: true,
                         border: InputBorder.none,
-                        hintText: 'Поиск города',
+                        hintText: t.citySearchHint,
                         hintStyle: AppTextStyles.body(fontSize: 14, color: AppColors.text).copyWith(
                           color: AppColors.text.withValues(alpha: 0.5),
                         ),
@@ -79,31 +80,33 @@ class _CityScreenState extends State<CityScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-              decoration: BoxDecoration(
-                color: AppColors.accent2_100,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.my_location_rounded, size: 18, color: AppColors.accent2_800),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Определить автоматически',
-                    style: AppTextStyles.body(fontSize: 15, color: AppColors.accent2_800),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
+            // "Определить автоматически" — no location permission/geolocation
+            // wiring yet; hidden for now rather than removed outright.
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            //   decoration: BoxDecoration(
+            //     color: AppColors.accent2_100,
+            //     borderRadius: BorderRadius.circular(AppRadius.md),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Icon(Icons.my_location_rounded, size: 18, color: AppColors.accent2_800),
+            //       const SizedBox(width: 10),
+            //       Text(
+            //         t.cityAutoDetect,
+            //         style: AppTextStyles.body(fontSize: 15, color: AppColors.accent2_800),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(height: 8),
             for (final c in cities)
               _CityRow(
-                name: c.name,
-                country: c.countryLabel,
-                selected: c.name == widget.appState.selectedCity,
+                name: cityNameFor(t, c.id),
+                country: cityCountryFor(t, c.id),
+                selected: c.id == widget.appState.selectedCityId,
                 onTap: () {
-                  widget.appState.selectCity(c.name);
+                  widget.appState.selectCity(c.id);
                   Navigator.of(context).pop();
                 },
               ),

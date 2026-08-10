@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -12,11 +13,11 @@ class _TabSpec {
   const _TabSpec(this.icon, this.label);
 }
 
-const _tabs = [
-  _TabSpec(Icons.home_rounded, 'Намаз'),
-  _TabSpec(Icons.grid_view_rounded, 'Ещё'),
-  _TabSpec(Icons.tune_rounded, 'Настройки'),
-];
+List<_TabSpec> _tabs(AppLocalizations t) => [
+      _TabSpec(Icons.home_rounded, t.navPrayer),
+      _TabSpec(Icons.grid_view_rounded, t.navMore),
+      _TabSpec(Icons.tune_rounded, t.navSettings),
+    ];
 
 /// A floating, pill-shaped nav bar in the style of Samsung One UI 8.5/9 —
 /// detached from the screen edge, glassy/blurred, with a filled capsule
@@ -29,6 +30,7 @@ class FloatingTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = _tabs(AppLocalizations.of(context)!);
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.only(bottom: 16),
@@ -56,9 +58,9 @@ class FloatingTabBar extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    for (var i = 0; i < _tabs.length; i++)
+                    for (var i = 0; i < tabs.length; i++)
                       _FloatingTabButton(
-                        spec: _tabs[i],
+                        spec: tabs[i],
                         selected: i == index,
                         onTap: () => onSelect(i),
                       ),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// Ported from `.section-kicker`.
 class SectionKicker extends StatelessWidget {
   final String label;
 
@@ -23,7 +22,6 @@ class SectionKicker extends StatelessWidget {
   }
 }
 
-/// Ported from `.settings-group` — a labeled vertical stack of rows.
 class SettingsGroup extends StatelessWidget {
   final String kicker;
   final List<Widget> children;
@@ -42,7 +40,6 @@ class SettingsGroup extends StatelessWidget {
   }
 }
 
-/// Ported from `.opt-row` — a tappable row with a trailing chevron.
 class OptRow extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -75,7 +72,6 @@ class OptRow extends StatelessWidget {
   }
 }
 
-/// Ported from `.settings-row` — a row with a trailing control (switch).
 class SettingsRow extends StatelessWidget {
   final Widget child;
   final Widget trailing;

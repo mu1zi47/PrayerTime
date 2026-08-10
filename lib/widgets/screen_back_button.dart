@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// A round back button matching the design's circular icon-button style
-/// (e.g. the Home screen's calendar button), used to head pushed screens
-/// that aren't part of the design's static frames.
 class ScreenBackButton extends StatelessWidget {
   final VoidCallback onTap;
 

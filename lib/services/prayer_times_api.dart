@@ -6,39 +6,37 @@ import 'package:http/http.dart' as http;
 
 import '../models/prayer_day.dart';
 
-/// Thrown on any failure to fetch/parse prayer times, with a message
-/// already suitable to show the user (in Russian).
-class PrayerApiException implements Exception {
-  final String message;
+enum PrayerApiError { timeout, noConnection, serviceUnavailable, parseFailed, fetchFailed }
 
-  const PrayerApiException(this.message);
+class PrayerApiException implements Exception {
+  final PrayerApiError error;
+
+  const PrayerApiException(this.error);
 
   @override
-  String toString() => message;
+  String toString() => error.name;
 }
 
-/// Client for the free, keyless Al Adhan API (api.aladhan.com).
 class PrayerTimesApi {
   PrayerTimesApi({http.Client? client}) : _client = client ?? http.Client();
 
   final http.Client _client;
 
-  /// Fetches [count] consecutive days of prayer times starting at [from]
-  /// (a city-local, time-of-day-ignored date), rolling over into
-  /// subsequent months as needed.
   Future<List<PrayerDay>> fetchUpcomingDays({
     required City city,
     required int methodCode,
     required int school,
     required DateTime from,
+    String? tune,
     int count = 10,
   }) async {
     var year = from.year;
     var month = from.month;
 
-    var days = (await _fetchMonth(city: city, methodCode: methodCode, school: school, year: year, month: month))
-        .where((d) => !d.date.isBefore(from))
-        .toList();
+    var days =
+        (await _fetchMonth(city: city, methodCode: methodCode, school: school, tune: tune, year: year, month: month))
+            .where((d) => !d.date.isBefore(from))
+            .toList();
 
     while (days.length < count) {
       month++;
@@ -46,7 +44,9 @@ class PrayerTimesApi {
         month = 1;
         year++;
       }
-      days.addAll(await _fetchMonth(city: city, methodCode: methodCode, school: school, year: year, month: month));
+      days.addAll(
+        await _fetchMonth(city: city, methodCode: methodCode, school: school, tune: tune, year: year, month: month),
+      );
     }
 
     return days.take(count).toList();
@@ -56,6 +56,7 @@ class PrayerTimesApi {
     required City city,
     required int methodCode,
     required int school,
+    required String? tune,
     required int year,
     required int month,
   }) async {
@@ -64,30 +65,31 @@ class PrayerTimesApi {
       'country': city.englishCountry,
       'method': '$methodCode',
       'school': '$school',
+      'tune': ?tune,
     });
 
     late final http.Response response;
     try {
       response = await _client.get(uri).timeout(const Duration(seconds: 10));
     } on TimeoutException {
-      throw const PrayerApiException('Превышено время ожидания. Проверьте интернет-соединение.');
+      throw const PrayerApiException(PrayerApiError.timeout);
     } on SocketException {
-      throw const PrayerApiException('Нет соединения с интернетом.');
+      throw const PrayerApiException(PrayerApiError.noConnection);
     }
 
     if (response.statusCode != 200) {
-      throw const PrayerApiException('Сервис времён намаза временно недоступен.');
+      throw const PrayerApiException(PrayerApiError.serviceUnavailable);
     }
 
     final Map<String, dynamic> body;
     try {
       body = jsonDecode(response.body) as Map<String, dynamic>;
     } on FormatException {
-      throw const PrayerApiException('Не удалось разобрать ответ сервиса.');
+      throw const PrayerApiException(PrayerApiError.parseFailed);
     }
 
     if (body['code'] != 200) {
-      throw const PrayerApiException('Не удалось получить времена намаза.');
+      throw const PrayerApiException(PrayerApiError.fetchFailed);
     }
 
     final data = body['data'] as List;

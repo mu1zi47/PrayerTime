@@ -3,6 +3,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../l10n/app_localizations.dart';
+import '../models/app_locale.dart';
 import '../models/notif_mode.dart';
 import '../models/prayer_day.dart';
 import '../widgets/prayer_icon.dart';
@@ -20,8 +22,6 @@ const _prayerOrder = [
   ('isha', PrayerKind.isha),
 ];
 
-/// Payload carried by a fired notification so the app can open
-/// [AzanPlayingScreen] knowing which prayer it was for.
 class FiredPrayerNotification {
   final PrayerKind kind;
   final String azanSoundId;
@@ -29,11 +29,6 @@ class FiredPrayerNotification {
   const FiredPrayerNotification({required this.kind, required this.azanSoundId});
 }
 
-/// Thin wrapper around `flutter_local_notifications` for scheduling one
-/// notification per upcoming prayer, per day, honouring each prayer's
-/// [NotifMode]. See lib/services/README intent in the plan doc for the
-/// platform ceilings (Android gets a real lock-screen takeover via
-/// full-screen intent; iOS gets a best-effort short custom-sound alert).
 class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
   void Function(FiredPrayerNotification)? onNotificationTapped;
@@ -108,18 +103,17 @@ class NotificationService {
     onNotificationTapped?.call(FiredPrayerNotification(kind: kind, azanSoundId: parts[1]));
   }
 
-  /// Cancels the whole reserved id pool and re-schedules every
-  /// not-yet-passed prayer in [days] according to [notifMode]. Call again
-  /// whenever the schedule, notification modes, azan sound, or timezone
-  /// (city) change.
   Future<void> scheduleForDays({
     required List<PrayerDay> days,
     required Map<String, NotifMode> notifMode,
     required String azanSoundId,
     required int utcOffsetHours,
+    required AppLocale locale,
+    required bool quietHoursEnabled,
   }) async {
     await cancelAll();
 
+    final t = lookupAppLocalizations(locale.localeValue);
     final location = tz.UTC;
     var id = 0;
 
@@ -135,11 +129,16 @@ class NotificationService {
         if (scheduled.isBefore(tz.TZDateTime.now(location))) continue;
 
         final mode = notifMode[key] ?? NotifMode.azan;
-        await _scheduleOne(id: id, when: scheduled, kind: kind, mode: mode, azanSoundId: azanSoundId);
+        // Quiet hours (22:00–06:00 city-local time) downgrade any azan/sound
+        // to a silent notification instead of skipping it outright.
+        final effectiveMode = quietHoursEnabled && _isQuietHour(naive.hour) ? NotifMode.silent : mode;
+        await _scheduleOne(id: id, when: scheduled, kind: kind, mode: effectiveMode, azanSoundId: azanSoundId, t: t);
         id++;
       }
     }
   }
+
+  bool _isQuietHour(int hour) => hour >= 22 || hour < 6;
 
   Future<void> _scheduleOne({
     required int id,
@@ -147,9 +146,11 @@ class NotificationService {
     required PrayerKind kind,
     required NotifMode mode,
     required String azanSoundId,
+    required AppLocalizations t,
   }) async {
-    final title = mode == NotifMode.azan ? 'Азан — ${nameForPrayer(kind)}' : 'Наступил намаз ${nameForPrayer(kind)}';
-    const body = 'Время совершить намаз';
+    final prayerName = nameForPrayer(t, kind);
+    final title = mode == NotifMode.azan ? t.notifAzanTitle(prayerName) : t.notifPlainTitle(prayerName);
+    final body = t.notifBody;
 
     final android = switch (mode) {
       NotifMode.azan => AndroidNotificationDetails(
@@ -200,13 +201,6 @@ class NotificationService {
     );
   }
 
-  /// Starts (or updates in place) a real foreground service showing the
-  /// "Now Bar" notification — the same mechanism apps like music/navigation
-  /// players use to stay "live" while running in the background, which is
-  /// what actually qualifies for Samsung's Now Bar surface. A plain ongoing
-  /// notification (no backing service) doesn't get that treatment. See
-  /// `NowBarService` on the Android side. A no-op on platforms without this
-  /// channel — iOS, desktop, tests.
   Future<void> showNowBar({required String title, required String body, required String shortText}) async {
     try {
       await _nowBarChannel.invokeMethod('show', {'title': title, 'body': body, 'shortText': shortText});
@@ -223,10 +217,6 @@ class NotificationService {
     }
   }
 
-  /// Whether the user has granted the separate, OS-level "allow promoted
-  /// notifications" toggle this app needs for Now Bar promotion — declaring
-  /// the manifest permission alone isn't enough. `false` on anything but a
-  /// supporting Android build.
   Future<bool> canPostPromotedNotifications() async {
     try {
       final result = await _nowBarChannel.invokeMethod<bool>('canPostPromotedNotifications');
@@ -236,9 +226,6 @@ class NotificationService {
     }
   }
 
-  /// Opens the system settings screen for the promoted-notifications
-  /// toggle above (falling back to this app's notification settings, then
-  /// its app-details page, if the OS build doesn't have that exact screen).
   Future<void> openPromotedNotificationSettings() async {
     try {
       await _nowBarChannel.invokeMethod('openPromotedNotificationSettings');
@@ -269,9 +256,6 @@ class NotificationService {
   }
 }
 
-/// No-op stand-in used in tests and anywhere real platform channels
-/// aren't available — keeps [scheduleForDays] callers simple without
-/// littering them with platform checks.
 class NoopNotificationService extends NotificationService {
   @override
   Future<void> init() async {}
@@ -285,6 +269,8 @@ class NoopNotificationService extends NotificationService {
     required Map<String, NotifMode> notifMode,
     required String azanSoundId,
     required int utcOffsetHours,
+    required AppLocale locale,
+    required bool quietHoursEnabled,
   }) async {}
 
   @override

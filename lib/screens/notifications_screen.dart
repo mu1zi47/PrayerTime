@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/azan_sounds.dart';
+import '../l10n/app_localizations.dart';
 import '../models/notif_mode.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
@@ -12,7 +13,6 @@ import '../widgets/screen_back_button.dart';
 import '../widgets/settings_widgets.dart';
 import 'azan_screen.dart';
 
-/// Ported from the "Уведомления" (azan/notifications) screen in the design.
 class NotificationsScreen extends StatelessWidget {
   final AppState appState;
 
@@ -36,6 +36,7 @@ class NotificationsScreen extends StatelessWidget {
       body: AnimatedBuilder(
         animation: appState,
         builder: (context, _) {
+          final t = AppLocalizations.of(context)!;
           return ListView(
             padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, padding.bottom + 18),
             children: [
@@ -43,12 +44,12 @@ class NotificationsScreen extends StatelessWidget {
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
                     const SizedBox(width: 12),
-                    Text('Уведомления', style: AppTextStyles.heading(fontSize: 22)),
+                    Text(t.notificationsScreenTitle, style: AppTextStyles.heading(fontSize: 22)),
                   ],
                 ),
                 const SizedBox(height: 16),
                 SettingsGroup(
-                  kicker: 'Азан по намазам',
+                  kicker: t.azanByPrayersKicker,
                   children: [
                     for (final (key, kind) in _notifOrder)
                       SettingsRow(
@@ -66,7 +67,7 @@ class NotificationsScreen extends StatelessWidget {
                               child: Icon(iconForPrayer(kind), size: 16, color: AppColors.accent700),
                             ),
                             const SizedBox(width: 10),
-                            Text(nameForPrayer(kind), style: AppTextStyles.body(fontSize: 15)),
+                            Text(nameForPrayer(t, kind), style: AppTextStyles.body(fontSize: 15)),
                           ],
                         ),
                       ),
@@ -74,7 +75,7 @@ class NotificationsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 SettingsGroup(
-                  kicker: 'Звук',
+                  kicker: t.soundKicker,
                   children: [
                     OptRow(
                       onTap: () => Navigator.of(context).push(
@@ -85,7 +86,7 @@ class NotificationsScreen extends StatelessWidget {
                           Icon(Icons.volume_up_rounded, size: 16, color: AppColors.text),
                           const SizedBox(width: 10),
                           Text(
-                            'Азан — ${AzanSounds.byId(appState.azanSoundId).reciterName}',
+                            t.azanSoundRow(reciterNameFor(t, appState.azanSoundId)),
                             style: AppTextStyles.body(fontSize: 15),
                           ),
                         ],
@@ -95,14 +96,14 @@ class NotificationsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 SettingsGroup(
-                  kicker: 'Тишина',
+                  kicker: t.quietKicker,
                   children: [
                     SettingsRow(
                       trailing: AppSwitch(
                         value: appState.quiet,
                         onChanged: (_) => appState.toggleQuiet(),
                       ),
-                      child: Text('Не беспокоить ночью', style: AppTextStyles.body(fontSize: 15)),
+                      child: Text(t.dontDisturbNight, style: AppTextStyles.body(fontSize: 15)),
                     ),
                   ],
                 ),

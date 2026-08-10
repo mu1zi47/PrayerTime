@@ -1,0 +1,220 @@
+{
+  "@@locale": "ru",
+
+  "navPrayer": "Намаз",
+  "navMore": "Ещё",
+  "navSettings": "Настройки",
+
+  "nextPrayerLabel": "Следующий намаз",
+  "todayLabel": "Сегодня",
+  "retryButton": "Повторить",
+
+  "prayerTimeLabel": "Время намаза",
+  "stopButton": "Остановить",
+
+  "azanScreenTitle": "Азан",
+  "azanPlaceholderNote": "Пока у всех чтецов звучит один и тот же временный сигнал — настоящие записи будут добавлены позже.",
+
+  "citySelectTitle": "Выбор города",
+  "citySearchHint": "Поиск города",
+  "cityAutoDetect": "Определить автоматически",
+
+  "cityMoscow": "Москва",
+  "cityKazan": "Казань",
+  "cityUfa": "Уфа",
+  "cityGrozny": "Грозный",
+  "cityMakhachkala": "Махачкала",
+  "cityIstanbul": "Стамбул",
+  "cityCairo": "Каир",
+  "cityJakarta": "Джакарта",
+  "cityTashkent": "Ташкент",
+  "cityAlmaty": "Алматы",
+  "cityBaku": "Баку",
+  "cityMecca": "Мекка",
+
+  "countryRussia": "Россия",
+  "countryTurkey": "Турция",
+  "countryEgypt": "Египет",
+  "countryIndonesia": "Индонезия",
+  "countryUzbekistan": "Узбекистан",
+  "countryKazakhstan": "Казахстан",
+  "countryAzerbaijan": "Азербайджан",
+  "countrySaudiArabia": "Саудовская Аравия",
+
+  "methodScreenTitle": "Метод расчёта",
+
+  "methodUzbekistan": "Управление мусульман Узбекистана",
+  "methodKarachi": "Исламский университет, Карачи",
+  "methodIsna": "Исламское общество Северной Америки",
+  "methodMwl": "Всемирная мусульманская лига",
+  "methodUmmAlQura": "Умм Аль-Кура, Мекка",
+  "methodEgypt": "Главное управление Египта",
+  "methodTurkey": "Министерство по делам религии Турции",
+
+  "languageScreenTitle": "Язык",
+
+  "allahNamesTitle": "Имена Аллаха",
+  "myPrayersTitle": "Мои намазы",
+  "allahNamesSubtitle": "Аль-Асма уль-Хусна",
+  "tabAll": "Все",
+  "tabFavorites": "Избранное",
+  "nothingFound": "Ничего не найдено",
+  "favoritesEmpty": "Здесь появятся имена, добавленные в избранное",
+  "namesSearchHint": "Поиск по номеру, имени, значению",
+  "descriptionLabel": "Описание",
+
+  "notificationsScreenTitle": "Уведомления",
+  "azanByPrayersKicker": "Азан по намазам",
+  "soundKicker": "Звук",
+  "azanSoundRow": "Азан — {reciter}",
+  "@azanSoundRow": {
+    "placeholders": {
+      "reciter": {"type": "String"}
+    }
+  },
+  "reciterAbdulbasit": "Абдульбасит Абдуссамат",
+  "reciterAknazar": "Акназар Маратулы",
+  "reciterAliAhmedMulla": "Али Ахмед Мулла",
+  "reciterAhmedAlNufais": "Ахмед аль-Нуфайс",
+  "reciterBaubek": "Баубек Бердыгалиулы",
+  "reciterMustafaIsmail": "Мустафа Исмаил",
+  "reciterMishari": "Мишари Рашид аль-Афаси",
+  "reciterMustafaOzcan": "Мустафа Осджан Гунешдогды",
+  "reciterMansurZahrani": "Мансур аз-Захрани",
+  "reciterNasirQatami": "Насир аль-Катами",
+  "reciterRaadKurdi": "Раад Мухаммад аль-Курди",
+  "reciterSaidmuhammed": "Саидмухаммед Ныгмат",
+  "reciterNoteTakbirShort": "такбир, короткая версия",
+  "reciterNoteStudioRecording": "студийная запись",
+
+  "quietKicker": "Тишина",
+  "dontDisturbNight": "Не беспокоить ночью",
+
+  "nowBarScreenTitle": "Now Bar",
+  "nowBarAvailability": "Доступно только на Samsung с One UI 7 и выше",
+  "nowBarShowCurrent": "Показывать текущий намаз",
+  "nowBarShowNext": "Показывать следующий намаз",
+  "nowBarAllowPermission": "Разрешить показ в Now Bar",
+
+  "myPrayersSubtitle": "Отмечайте прочитанные намазы",
+  "prayerLogDone": "Выполнено {done} из {total}",
+  "@prayerLogDone": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "prayerLogLateSuffix": " · Не вовремя: {count}",
+  "@prayerLogLateSuffix": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notYetDue": "Ещё не наступил",
+  "statusOnTime": "Вовремя",
+  "statusLate": "Не вовремя",
+
+  "settingsScreenTitle": "Настройки",
+  "cityKicker": "Город",
+  "madhabKicker": "Мазхаб (расчёт Аср)",
+  "madhabShafi": "Шафии",
+  "madhabHanafi": "Ханафи",
+  "azanAndReminders": "Азан и напоминания",
+  "nowBarSettingsRow": "Текущий и следующий намаз",
+  "themeKicker": "Тема",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная",
+  "themeSystem": "Системная",
+
+  "prayerFajr": "Фаджр",
+  "prayerSunrise": "Восход",
+  "prayerZuhr": "Зухр",
+  "prayerAsr": "Аср",
+  "prayerMaghrib": "Магриб",
+  "prayerIsha": "Иша",
+
+  "weekdayShortMon": "Пн",
+  "weekdayShortTue": "Вт",
+  "weekdayShortWed": "Ср",
+  "weekdayShortThu": "Чт",
+  "weekdayShortFri": "Пт",
+  "weekdayShortSat": "Сб",
+  "weekdayShortSun": "Вс",
+
+  "weekdayFullMon": "понедельник",
+  "weekdayFullTue": "вторник",
+  "weekdayFullWed": "среда",
+  "weekdayFullThu": "четверг",
+  "weekdayFullFri": "пятница",
+  "weekdayFullSat": "суббота",
+  "weekdayFullSun": "воскресенье",
+
+  "month01": "января",
+  "month02": "февраля",
+  "month03": "марта",
+  "month04": "апреля",
+  "month05": "мая",
+  "month06": "июня",
+  "month07": "июля",
+  "month08": "августа",
+  "month09": "сентября",
+  "month10": "октября",
+  "month11": "ноября",
+  "month12": "декабря",
+
+  "countdownHoursMinutes": "через {hours} ч {minutes} мин",
+  "@countdownHoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "countdownHoursOnly": "через {hours} ч",
+  "@countdownHoursOnly": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "countdownMinutesOnly": "через {minutes} мин",
+  "@countdownMinutesOnly": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "notifAzanTitle": "Азан — {prayer}",
+  "@notifAzanTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifPlainTitle": "Наступил намаз {prayer}",
+  "@notifPlainTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifBody": "Время совершить намаз",
+
+  "nowBarNotificationTitle": "Намаз",
+  "nowBarCurrentLine": "Сейчас: {prayer}",
+  "@nowBarCurrentLine": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "nowBarNextLine": "Далее: {prayer} в {time}",
+  "@nowBarNextLine": {
+    "placeholders": {
+      "prayer": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+
+  "errorTimeout": "Превышено время ожидания. Проверьте интернет-соединение.",
+  "errorNoConnection": "Нет соединения с интернетом.",
+  "errorServiceUnavailable": "Сервис времён намаза временно недоступен.",
+  "errorParseFailed": "Не удалось разобрать ответ сервиса.",
+  "errorFetchFailed": "Не удалось получить времена намаза.",
+  "genericLoadError": "Не удалось загрузить времена намаза."
+}

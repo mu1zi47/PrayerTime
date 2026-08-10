@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'l10n/app_localizations.dart';
+import 'models/app_locale.dart';
 import 'navigation.dart';
 import 'screens/azan_playing_screen.dart';
 import 'screens/root_shell.dart';
@@ -27,7 +30,8 @@ class PrayerTimeApp extends StatefulWidget {
   State<PrayerTimeApp> createState() => _PrayerTimeAppState();
 }
 
-class _PrayerTimeAppState extends State<PrayerTimeApp> with WidgetsBindingObserver {
+class _PrayerTimeAppState extends State<PrayerTimeApp>
+    with WidgetsBindingObserver {
   late final AppState _appState = widget.appState ?? AppState();
 
   @override
@@ -37,7 +41,10 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> with WidgetsBindingObserv
     _appState.notifications.onNotificationTapped = (fired) {
       navigatorKey.currentState?.push(
         MaterialPageRoute(
-          builder: (_) => AzanPlayingScreen(kind: fired.kind, azanSoundId: fired.azanSoundId),
+          builder: (_) => AzanPlayingScreen(
+            kind: fired.kind,
+            azanSoundId: fired.azanSoundId,
+          ),
         ),
       );
     };
@@ -67,32 +74,42 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> with WidgetsBindingObserv
     // what lets `themeMode` below actually react to Settings changing it —
     // MaterialApp is what resolves light/dark/system into a real theme, so
     // the listener has to sit at or above it.
+    //
+    // `home` is passed in via `child` rather than built inside the builder:
+    // every AppState.notifyListeners() call (city, madhab, azan sound, …)
+    // would otherwise recreate `_ThemedRoot` — and with it the entire
+    // RootShell subtree — from scratch on every change, which is what made
+    // toggling the theme (a full recolor on top of that) visibly janky.
+    // With `child`, that subtree keeps its widget identity across unrelated
+    // state changes; it still rebuilds correctly when the theme itself
+    // changes, since `_ThemedRoot.build` reads `Theme.of(context)` and so
+    // is separately notified by that InheritedWidget regardless.
     return AnimatedBuilder(
       animation: _appState,
-      builder: (context, _) {
+      child: _ThemedRoot(appState: _appState),
+      builder: (context, child) {
         return MaterialApp(
           navigatorKey: navigatorKey,
-          title: 'Намаз Times',
+          title: 'Prayer times',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: _appState.themeMode,
-          home: _ThemedRoot(appState: _appState),
+          locale: _appState.locale.localeValue,
+          localizationsDelegates: const [
+            ...AppLocalizations.localizationsDelegates,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: child,
         );
       },
     );
   }
 }
 
-/// Bridges `MaterialApp`'s resolved brightness — light/dark/system, already
-/// including live OS theme changes — into [AppColors]' active palette and
-/// into the system status/navigation bar icon contrast.
-///
-/// [AppColors] is a static facade rather than an inherited/context lookup
-/// (see its doc comment), so it needs exactly one place to stay in sync;
-/// this is that place. It has to sit *below* `MaterialApp` (as `home`) —
-/// only there does `Theme.of(context)` see the theme MaterialApp actually
-/// picked, rather than whatever (if anything) is above the app.
 class _ThemedRoot extends StatelessWidget {
   final AppState appState;
 
@@ -108,7 +125,9 @@ class _ThemedRoot extends StatelessWidget {
         statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
         statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
         systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        systemNavigationBarIconBrightness: isDark
+            ? Brightness.light
+            : Brightness.dark,
         systemNavigationBarContrastEnforced: false,
       ),
       child: RootShell(appState: appState),

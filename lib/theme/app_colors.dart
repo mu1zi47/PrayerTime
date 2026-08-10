@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// One full set of color tokens for the "Organic" design system — either
-/// the light or the dark palette.
 class AppPalette {
   final Color bg;
   final Color surface;
@@ -151,16 +149,7 @@ const _dark = AppPalette(
   accent2_900: Color(0xFFE3EBD3),
 );
 
-/// Color tokens ported from the "Organic" design system
-/// (`_ds/organic-8800a805.../styles.css`), exposed as static getters over
-/// whichever of [lightPalette]/[darkPalette] is currently active.
-///
-/// This stays a static facade (rather than a `Theme.of(context)` lookup)
-/// so the ~70 existing `AppColors.xxx` call sites across the app didn't
-/// all need rewriting to thread `context` through. [setDark] is called
-/// once per rebuild, from the widget that resolves `MaterialApp`'s actual
-/// light/dark theme (see `_ThemedRoot` in main.dart) — every screen below
-/// it then picks up the new palette the next time it (re)builds.
+
 class AppColors {
   AppColors._();
 

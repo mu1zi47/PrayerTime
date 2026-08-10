@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Как оповещать о намазе. Пока это только настройка (реальная доставка
-/// уведомлений/азана не реализована) — задел на будущее.
 enum NotifMode {
   azan,
   notification,

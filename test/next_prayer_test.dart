@@ -32,7 +32,7 @@ void main() {
 
     expect(next?.kind, PrayerKind.asr);
     expect(next?.time, '16:37');
-    expect(next?.countdownLabel, 'через 1 ч 4 мин');
+    expect(next?.remaining, const Duration(hours: 1, minutes: 4));
   });
 
   test('after Isha, wraps to tomorrow\'s Fajr', () {
@@ -49,5 +49,15 @@ void main() {
 
     expect(next?.kind, PrayerKind.zuhr);
     expect(next?.time, '12:47');
+  });
+
+  test('right after Fajr but before sunrise, the current prayer is Fajr', () {
+    final cityNow = DateTime.utc(2026, 8, 10, 4, 0);
+    expect(computeCurrentPrayer([today, tomorrow], cityNow), PrayerKind.fajr);
+  });
+
+  test('between sunrise and Zuhr, no prayer is current (not still Fajr)', () {
+    final cityNow = DateTime.utc(2026, 8, 10, 9, 0);
+    expect(computeCurrentPrayer([today, tomorrow], cityNow), PrayerKind.sunrise);
   });
 }

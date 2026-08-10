@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Needed to fetch prayer times from the Aladhan API. Debug/profile
+         builds get this for free from Flutter's own debug manifest, but
+         release builds only see this main manifest — without it here,
+         every network call fails with SocketException in release builds. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Needed to schedule/show prayer-time notifications and azan alarms,
          including a full-screen alarm-style takeover on the lock screen. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
@@ -15,7 +20,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
-        android:label="prayertime"
+        android:label="Prayer times"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

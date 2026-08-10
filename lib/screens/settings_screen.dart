@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../data/reference_data.dart';
+import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
-import '../widgets/app_switch.dart';
 import '../widgets/segmented_control.dart';
 import '../widgets/settings_widgets.dart';
 import 'city_screen.dart';
 import 'language_screen.dart';
+import 'method_screen.dart';
 import 'notifications_screen.dart';
+import 'now_bar_screen.dart';
 
-/// Ported from the "Настройки" screen in the design.
 class SettingsScreen extends StatelessWidget {
   final AppState appState;
 
@@ -25,28 +26,41 @@ class SettingsScreen extends StatelessWidget {
     return AnimatedBuilder(
       animation: appState,
       builder: (context, _) {
+        final t = AppLocalizations.of(context)!;
         return ListView(
           padding: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
           children: [
-            Text('Настройки', style: AppTextStyles.heading(fontSize: 22)),
+            Text(t.settingsScreenTitle, style: AppTextStyles.heading(fontSize: 22)),
             const SizedBox(height: 16),
             SettingsGroup(
-              kicker: 'Город',
+              kicker: t.cityKicker,
               children: [
                 OptRow(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => CityScreen(appState: appState)),
                   ),
-                  child: Text(appState.selectedCity, style: AppTextStyles.body(fontSize: 15)),
+                  child: Text(cityNameFor(t, appState.selectedCityId), style: AppTextStyles.body(fontSize: 15)),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             SettingsGroup(
-              kicker: 'Мазхаб (расчёт Аср)',
+              kicker: t.methodScreenTitle,
+              children: [
+                OptRow(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => MethodScreen(appState: appState)),
+                  ),
+                  child: Text(appState.methodLabel, style: AppTextStyles.body(fontSize: 15)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SettingsGroup(
+              kicker: t.madhabKicker,
               children: [
                 SegmentedControl(
-                  options: const ['Шафии', 'Ханафи'],
+                  options: [t.madhabShafi, t.madhabHanafi],
                   selectedIndex: appState.madhab == 'shafi' ? 0 : 1,
                   onSelect: (i) => appState.selectMadhab(i == 0 ? 'shafi' : 'hanafi'),
                 ),
@@ -54,7 +68,36 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SettingsGroup(
-              kicker: 'Язык',
+              kicker: t.notificationsScreenTitle,
+              children: [
+                OptRow(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => NotificationsScreen(appState: appState)),
+                  ),
+                  child: Text(t.azanAndReminders, style: AppTextStyles.body(fontSize: 15)),
+                ),
+              ],
+            ),
+            // Samsung One UI 7+ only — hidden entirely elsewhere rather than
+            // shown disabled, since it'd otherwise be dead UI for the vast
+            // majority of devices (see AppState.nowBarSupported).
+            if (appState.nowBarSupported) ...[
+              const SizedBox(height: 8),
+              SettingsGroup(
+                kicker: t.nowBarScreenTitle,
+                children: [
+                  OptRow(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => NowBarScreen(appState: appState)),
+                    ),
+                    child: Text(t.nowBarSettingsRow, style: AppTextStyles.body(fontSize: 15)),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 8),
+            SettingsGroup(
+              kicker: t.languageScreenTitle,
               children: [
                 OptRow(
                   onTap: () => Navigator.of(context).push(
@@ -66,10 +109,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SettingsGroup(
-              kicker: 'Тема',
+              kicker: t.themeKicker,
               children: [
                 SegmentedControl(
-                  options: const ['Светлая', 'Тёмная', 'Системная'],
+                  options: [t.themeLight, t.themeDark, t.themeSystem],
                   selectedIndex: switch (appState.themeMode) {
                     ThemeMode.light => 0,
                     ThemeMode.dark => 1,
@@ -83,65 +126,6 @@ class SettingsScreen extends StatelessWidget {
                     },
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SettingsGroup(
-              kicker: 'Уведомления',
-              children: [
-                OptRow(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => NotificationsScreen(appState: appState)),
-                  ),
-                  child: Text('Азан и напоминания', style: AppTextStyles.body(fontSize: 15)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SettingsGroup(
-              kicker: 'Now Bar',
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8, left: 2),
-                  child: Text(
-                    'Доступно только на Samsung с One UI 7 и выше',
-                    style: AppTextStyles.body(fontSize: 12, color: AppColors.text).copyWith(
-                      color: AppColors.text.withValues(alpha: 0.55),
-                    ),
-                  ),
-                ),
-                if (appState.nowBarSupported) ...[
-                  SettingsRow(
-                    trailing: AppSwitch(
-                      value: appState.nowBarCurrentPrayer,
-                      onChanged: (_) => appState.toggleNowBarCurrentPrayer(),
-                    ),
-                    child: Text('Показывать текущий намаз', style: AppTextStyles.body(fontSize: 15)),
-                  ),
-                  SettingsRow(
-                    trailing: AppSwitch(
-                      value: appState.nowBarNextPrayer,
-                      onChanged: (_) => appState.toggleNowBarNextPrayer(),
-                    ),
-                    child: Text('Показывать следующий намаз', style: AppTextStyles.body(fontSize: 15)),
-                  ),
-                  if (!appState.nowBarPermissionGranted)
-                    OptRow(
-                      onTap: () => appState.openNowBarSettings(),
-                      background: AppColors.accent100,
-                      child: Text(
-                        'Разрешить показ в Now Bar',
-                        style: AppTextStyles.body(fontSize: 15, color: AppColors.accent700, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                ] else
-                  Padding(
-                    padding: const EdgeInsets.only(left: 2),
-                    child: Text(
-                      'Ваше устройство не поддерживается',
-                      style: AppTextStyles.body(fontSize: 13, color: AppColors.accent700),
-                    ),
-                  ),
               ],
             ),
           ],

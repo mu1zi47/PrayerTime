@@ -1,0 +1,220 @@
+{
+  "@@locale": "uz_Cyrl",
+
+  "navPrayer": "Намоз",
+  "navMore": "Яна",
+  "navSettings": "Созламалар",
+
+  "nextPrayerLabel": "Кейинги намоз",
+  "todayLabel": "Бугун",
+  "retryButton": "Қайта уриниш",
+
+  "prayerTimeLabel": "Намоз вақти",
+  "stopButton": "Тўхтатиш",
+
+  "azanScreenTitle": "Азон",
+  "azanPlaceholderNote": "Ҳозирча барча қорилар учун битта вақтинчалик сигнал ўйналади — ҳақиқий ёзувлар кейинроқ қўшилади.",
+
+  "citySelectTitle": "Шаҳарни танлаш",
+  "citySearchHint": "Шаҳар қидириш",
+  "cityAutoDetect": "Автоматик аниқлаш",
+
+  "cityMoscow": "Москва",
+  "cityKazan": "Қозон",
+  "cityUfa": "Уфа",
+  "cityGrozny": "Грозний",
+  "cityMakhachkala": "Махачқала",
+  "cityIstanbul": "Истанбул",
+  "cityCairo": "Қоҳира",
+  "cityJakarta": "Жакарта",
+  "cityTashkent": "Тошкент",
+  "cityAlmaty": "Алмати",
+  "cityBaku": "Боку",
+  "cityMecca": "Макка",
+
+  "countryRussia": "Россия",
+  "countryTurkey": "Туркия",
+  "countryEgypt": "Миср",
+  "countryIndonesia": "Индонезия",
+  "countryUzbekistan": "Ўзбекистон",
+  "countryKazakhstan": "Қозоғистон",
+  "countryAzerbaijan": "Озарбайжон",
+  "countrySaudiArabia": "Саудия Арабистони",
+
+  "methodScreenTitle": "Ҳисоблаш усули",
+
+  "methodUzbekistan": "Ўзбекистон мусулмонлари идораси",
+  "methodKarachi": "Ислом фанлари университети, Карачи",
+  "methodIsna": "Шимолий Америка Ислом жамияти",
+  "methodMwl": "Бутунжаҳон мусулмонлар лигаси",
+  "methodUmmAlQura": "Умм ал-Қура университети, Макка",
+  "methodEgypt": "Миср Бош бошқармаси",
+  "methodTurkey": "Туркия Диний ишлар бошқармаси",
+
+  "languageScreenTitle": "Тил",
+
+  "allahNamesTitle": "Аллоҳнинг исмлари",
+  "myPrayersTitle": "Менинг намозларим",
+  "allahNamesSubtitle": "Асмаул Ҳусна",
+  "tabAll": "Барчаси",
+  "tabFavorites": "Танланганлар",
+  "nothingFound": "Ҳеч нарса топилмади",
+  "favoritesEmpty": "Танланганларга қўшилган исмлар шу ерда кўринади",
+  "namesSearchHint": "Рақами, номи, маъноси бўйича қидириш",
+  "descriptionLabel": "Таъриф",
+
+  "notificationsScreenTitle": "Билдиришномалар",
+  "azanByPrayersKicker": "Ҳар намоз учун азон",
+  "soundKicker": "Товуш",
+  "azanSoundRow": "Азон — {reciter}",
+  "@azanSoundRow": {
+    "placeholders": {
+      "reciter": {"type": "String"}
+    }
+  },
+  "reciterAbdulbasit": "Абдулбосит Абдуссамад",
+  "reciterAknazar": "Ақназар Маратули",
+  "reciterAliAhmedMulla": "Али Аҳмад Мулла",
+  "reciterAhmedAlNufais": "Аҳмад ан-Нуфайс",
+  "reciterBaubek": "Баубек Бердигалиули",
+  "reciterMustafaIsmail": "Мустафо Исмоил",
+  "reciterMishari": "Мишари Рашид ал-Афаси",
+  "reciterMustafaOzcan": "Мустафо Ўзжан Гунешдоғди",
+  "reciterMansurZahrani": "Мансур аз-Заҳроний",
+  "reciterNasirQatami": "Носир ал-Қатомий",
+  "reciterRaadKurdi": "Раад Муҳаммад ал-Курдий",
+  "reciterSaidmuhammed": "Саидмуҳаммад Нигмат",
+  "reciterNoteTakbirShort": "такбир, қисқа версия",
+  "reciterNoteStudioRecording": "студия ёзуви",
+
+  "quietKicker": "Жимлик",
+  "dontDisturbNight": "Кечаси безовта қилмаслик",
+
+  "nowBarScreenTitle": "Now Bar",
+  "nowBarAvailability": "Фақат One UI 7 ва ундан юқори Samsung қурилмаларида мавжуд",
+  "nowBarShowCurrent": "Жорий намозни кўрсатиш",
+  "nowBarShowNext": "Кейинги намозни кўрсатиш",
+  "nowBarAllowPermission": "Now Bar'да кўрсатишга рухсат бериш",
+
+  "myPrayersSubtitle": "Ўқилган намозларни белгиланг",
+  "prayerLogDone": "{total} тадан {done} таси бажарилди",
+  "@prayerLogDone": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "prayerLogLateSuffix": " · Вақтида эмас: {count}",
+  "@prayerLogLateSuffix": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notYetDue": "Ҳали вақти келмаган",
+  "statusOnTime": "Ўз вақтида",
+  "statusLate": "Вақтида эмас",
+
+  "settingsScreenTitle": "Созламалар",
+  "cityKicker": "Шаҳар",
+  "madhabKicker": "Мазҳаб (Аср ҳисоби)",
+  "madhabShafi": "Шофиий",
+  "madhabHanafi": "Ҳанафий",
+  "azanAndReminders": "Азон ва эслатмалар",
+  "nowBarSettingsRow": "Жорий ва кейинги намоз",
+  "themeKicker": "Мавзу",
+  "themeLight": "Ёруғ",
+  "themeDark": "Қоронғи",
+  "themeSystem": "Тизим",
+
+  "prayerFajr": "Бомдод",
+  "prayerSunrise": "Қуёш чиқиши",
+  "prayerZuhr": "Пешин",
+  "prayerAsr": "Аср",
+  "prayerMaghrib": "Шом",
+  "prayerIsha": "Хуфтон",
+
+  "weekdayShortMon": "Ду",
+  "weekdayShortTue": "Се",
+  "weekdayShortWed": "Чо",
+  "weekdayShortThu": "Па",
+  "weekdayShortFri": "Жу",
+  "weekdayShortSat": "Ша",
+  "weekdayShortSun": "Як",
+
+  "weekdayFullMon": "душанба",
+  "weekdayFullTue": "сешанба",
+  "weekdayFullWed": "чоршанба",
+  "weekdayFullThu": "пайшанба",
+  "weekdayFullFri": "жума",
+  "weekdayFullSat": "шанба",
+  "weekdayFullSun": "якшанба",
+
+  "month01": "январ",
+  "month02": "феврал",
+  "month03": "март",
+  "month04": "апрел",
+  "month05": "май",
+  "month06": "июн",
+  "month07": "июл",
+  "month08": "август",
+  "month09": "сентябр",
+  "month10": "октябр",
+  "month11": "ноябр",
+  "month12": "декабр",
+
+  "countdownHoursMinutes": "{hours} соат {minutes} дақиқадан сўнг",
+  "@countdownHoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "countdownHoursOnly": "{hours} соатдан сўнг",
+  "@countdownHoursOnly": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "countdownMinutesOnly": "{minutes} дақиқадан сўнг",
+  "@countdownMinutesOnly": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "notifAzanTitle": "Азон — {prayer}",
+  "@notifAzanTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifPlainTitle": "{prayer} намози вақти бўлди",
+  "@notifPlainTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifBody": "Намоз ўқиш вақти",
+
+  "nowBarNotificationTitle": "Намоз",
+  "nowBarCurrentLine": "Ҳозир: {prayer}",
+  "@nowBarCurrentLine": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "nowBarNextLine": "Кейин: {prayer}, {time}",
+  "@nowBarNextLine": {
+    "placeholders": {
+      "prayer": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+
+  "errorTimeout": "Кутиш вақти тугади. Интернет алоқасини текширинг.",
+  "errorNoConnection": "Интернет алоқаси йўқ.",
+  "errorServiceUnavailable": "Намоз вақтлари хизмати вақтинча ишламаяпти.",
+  "errorParseFailed": "Хизмат жавобини қайта ишлаб бўлмади.",
+  "errorFetchFailed": "Намоз вақтларини олиб бўлмади.",
+  "genericLoadError": "Намоз вақтларини юклаб бўлмади."
+}

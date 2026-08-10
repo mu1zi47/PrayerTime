@@ -1,0 +1,222 @@
+{
+  "@@locale": "uz",
+  "navPrayer": "Namoz",
+  "navMore": "Yana",
+  "navSettings": "Sozlamalar",
+  "nextPrayerLabel": "Keyingi namoz",
+  "todayLabel": "Bugun",
+  "retryButton": "Qayta urinish",
+  "prayerTimeLabel": "Namoz vaqti",
+  "stopButton": "To'xtatish",
+  "azanScreenTitle": "Azon",
+  "azanPlaceholderNote": "Hozircha barcha qorilar uchun bitta vaqtinchalik signal o'ynaladi — haqiqiy yozuvlar keyinroq qo'shiladi.",
+  "citySelectTitle": "Shaharni tanlash",
+  "citySearchHint": "Shahar qidirish",
+  "cityAutoDetect": "Avtomatik aniqlash",
+  "cityMoscow": "Moskva",
+  "cityKazan": "Qozon",
+  "cityUfa": "Ufa",
+  "cityGrozny": "Grozniy",
+  "cityMakhachkala": "Maxachqala",
+  "cityIstanbul": "Istanbul",
+  "cityCairo": "Qohira",
+  "cityJakarta": "Jakarta",
+  "cityTashkent": "Toshkent",
+  "cityAlmaty": "Almati",
+  "cityBaku": "Boku",
+  "cityMecca": "Makka",
+  "countryRussia": "Rossiya",
+  "countryTurkey": "Turkiya",
+  "countryEgypt": "Misr",
+  "countryIndonesia": "Indoneziya",
+  "countryUzbekistan": "O'zbekiston",
+  "countryKazakhstan": "Qozog'iston",
+  "countryAzerbaijan": "Ozarbayjon",
+  "countrySaudiArabia": "Saudiya Arabistoni",
+  "methodScreenTitle": "Hisoblash usuli",
+  "methodUzbekistan": "O'zbekiston musulmonlari idorasi",
+  "methodKarachi": "Islom fanlari universiteti, Karachi",
+  "methodIsna": "Shimoliy Amerika Islom jamiyati",
+  "methodMwl": "Butunjahon musulmonlar ligasi",
+  "methodUmmAlQura": "Umm al-Qura universiteti, Makka",
+  "methodEgypt": "Misr Bosh boshqarmasi",
+  "methodTurkey": "Turkiya Diniy ishlar boshqarmasi",
+  "languageScreenTitle": "Til",
+  "allahNamesTitle": "Allohning ismlari",
+  "myPrayersTitle": "Mening namozlarim",
+  "allahNamesSubtitle": "Asmaul Husna",
+  "tabAll": "Barchasi",
+  "tabFavorites": "Tanlanganlar",
+  "nothingFound": "Hech narsa topilmadi",
+  "favoritesEmpty": "Tanlanganlarga qo'shilgan ismlar shu yerda ko'rinadi",
+  "namesSearchHint": "Raqami, nomi, ma'nosi bo'yicha qidirish",
+  "descriptionLabel": "Ta'rif",
+  "notificationsScreenTitle": "Bildirishnomalar",
+  "azanByPrayersKicker": "Har namoz uchun azon",
+  "soundKicker": "Tovush",
+  "azanSoundRow": "Azon — {reciter}",
+  "@azanSoundRow": {
+    "placeholders": {
+      "reciter": {
+        "type": "String"
+      }
+    }
+  },
+  "reciterAbdulbasit": "Abdulbosit Abdussamad",
+  "reciterAknazar": "Aqnazar Maratuli",
+  "reciterAliAhmedMulla": "Ali Ahmad Mulla",
+  "reciterAhmedAlNufais": "Ahmad an-Nufays",
+  "reciterBaubek": "Baubek Berdigaliuli",
+  "reciterMustafaIsmail": "Mustafo Ismoil",
+  "reciterMishari": "Mishari Rashid al-Afasi",
+  "reciterMustafaOzcan": "Mustafo O'zjan Guneshdog'di",
+  "reciterMansurZahrani": "Mansur az-Zahroniy",
+  "reciterNasirQatami": "Nosir al-Qatomiy",
+  "reciterRaadKurdi": "Raad Muhammad al-Kurdiy",
+  "reciterSaidmuhammed": "Saidmuhammad Nigmat",
+  "reciterNoteTakbirShort": "takbir, qisqa versiya",
+  "reciterNoteStudioRecording": "studiya yozuvi",
+  "quietKicker": "Jimlik",
+  "dontDisturbNight": "Kechasi bezovta qilmaslik",
+  "nowBarScreenTitle": "Now Bar",
+  "nowBarAvailability": "Faqat One UI 7 va undan yuqori Samsung qurilmalarida mavjud",
+  "nowBarShowCurrent": "Joriy namozni ko'rsatish",
+  "nowBarShowNext": "Keyingi namozni ko'rsatish",
+  "nowBarAllowPermission": "Now Bar'da ko'rsatishga ruxsat berish",
+  "myPrayersSubtitle": "O'qilgan namozlarni belgilang",
+  "prayerLogDone": "{total} tadan {done} tasi bajarildi",
+  "@prayerLogDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "prayerLogLateSuffix": " · Vaqtida emas: {count}",
+  "@prayerLogLateSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notYetDue": "Hali vaqti kelmagan",
+  "statusOnTime": "O'z vaqtida",
+  "statusLate": "Vaqtida emas",
+  "settingsScreenTitle": "Sozlamalar",
+  "cityKicker": "Shahar",
+  "madhabKicker": "Mazhab (Asr hisobi)",
+  "madhabShafi": "Shofi'iy",
+  "madhabHanafi": "Hanafiy",
+  "azanAndReminders": "Azon va eslatmalar",
+  "nowBarSettingsRow": "Joriy va keyingi namoz",
+  "themeKicker": "Mavzu",
+  "themeLight": "Yorug'",
+  "themeDark": "Qorong'i",
+  "themeSystem": "Tizim",
+  "prayerFajr": "Bomdod",
+  "prayerSunrise": "Quyosh chiqishi",
+  "prayerZuhr": "Peshin",
+  "prayerAsr": "Asr",
+  "prayerMaghrib": "Shom",
+  "prayerIsha": "Xufton",
+  "weekdayShortMon": "Du",
+  "weekdayShortTue": "Se",
+  "weekdayShortWed": "Cho",
+  "weekdayShortThu": "Pa",
+  "weekdayShortFri": "Ju",
+  "weekdayShortSat": "Sha",
+  "weekdayShortSun": "Yak",
+  "weekdayFullMon": "dushanba",
+  "weekdayFullTue": "seshanba",
+  "weekdayFullWed": "chorshanba",
+  "weekdayFullThu": "payshanba",
+  "weekdayFullFri": "juma",
+  "weekdayFullSat": "shanba",
+  "weekdayFullSun": "yakshanba",
+  "month01": "yanvar",
+  "month02": "fevral",
+  "month03": "mart",
+  "month04": "aprel",
+  "month05": "may",
+  "month06": "iyun",
+  "month07": "iyul",
+  "month08": "avgust",
+  "month09": "sentabr",
+  "month10": "oktabr",
+  "month11": "noyabr",
+  "month12": "dekabr",
+  "countdownHoursMinutes": "{hours} soat {minutes} daqiqadan so'ng",
+  "@countdownHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "countdownHoursOnly": "{hours} soatdan so'ng",
+  "@countdownHoursOnly": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "countdownMinutesOnly": "{minutes} daqiqadan so'ng",
+  "@countdownMinutesOnly": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "notifAzanTitle": "Azon — {prayer}",
+  "@notifAzanTitle": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifPlainTitle": "{prayer} namozi vaqti bo'ldi",
+  "@notifPlainTitle": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifBody": "Namoz o'qish vaqti",
+  "nowBarNotificationTitle": "Namoz",
+  "nowBarCurrentLine": "Hozir: {prayer}",
+  "@nowBarCurrentLine": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "nowBarNextLine": "Keyin: {prayer}, {time}",
+  "@nowBarNextLine": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTimeout": "Kutish vaqti tugadi. Internet aloqasini tekshiring.",
+  "errorNoConnection": "Internet aloqasi yo'q.",
+  "errorServiceUnavailable": "Namoz vaqtlari xizmati vaqtincha ishlamayapti.",
+  "errorParseFailed": "Xizmat javobini qayta ishlab bo'lmadi.",
+  "errorFetchFailed": "Namoz vaqtlarini olib bo'lmadi.",
+  "genericLoadError": "Namoz vaqtlarini yuklab bo'lmadi."
+}

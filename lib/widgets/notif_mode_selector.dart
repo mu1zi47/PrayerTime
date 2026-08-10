@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/notif_mode.dart';
 import '../theme/app_colors.dart';
 
-/// Компактный переключатель на 3 иконки — азан / уведомление / без звука.
-/// Тот же язык дизайна, что у [SegmentedControl]: скользящая капсула
-/// в акцентном цвете вокруг выбранной иконки.
 class NotifModeSelector extends StatelessWidget {
   final NotifMode value;
   final ValueChanged<NotifMode> onChanged;

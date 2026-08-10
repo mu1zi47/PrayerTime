@@ -7,9 +7,6 @@ import 'home_screen.dart';
 import 'more_screen.dart';
 import 'settings_screen.dart';
 
-/// Root tab shell hosting the primary screens (Намаз / Ещё / Настройки).
-/// The tab bar floats over the content rather than reserving its own
-/// row, so screens scroll underneath it.
 class RootShell extends StatefulWidget {
   final AppState appState;
 
@@ -21,8 +18,34 @@ class RootShell extends StatefulWidget {
 
 class _RootShellState extends State<RootShell> {
   int _tabIndex = 0;
+  late final PageController _pageController;
 
-  void _goToTab(int index) => setState(() => _tabIndex = index);
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _tabIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _goToTab(int index) {
+    // Sliding across more than one tab in a single animated scroll forces
+    // the skipped-over page to build mid-animation, which is what caused
+    // the jank jumping straight from "Намаз" to "Настройки". A plain
+    // instant switch for multi-tab jumps avoids that; adjacent taps keep
+    // the animated slide.
+    final distance = (index - _tabIndex).abs();
+    setState(() => _tabIndex = index);
+    if (distance <= 1) {
+      _pageController.animateToPage(index, duration: const Duration(milliseconds: 320), curve: Curves.easeOutCubic);
+    } else {
+      _pageController.jumpToPage(index);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +65,15 @@ class _RootShellState extends State<RootShell> {
               child: AnimatedBuilder(
                 animation: appState,
                 builder: (context, _) {
-                  return IndexedStack(
-                    index: _tabIndex,
+                  return PageView(
+                    controller: _pageController,
+                    onPageChanged: (i) => setState(() => _tabIndex = i),
                     children: [
                       HomeScreen(
-                        key: ValueKey('${appState.selectedCity}|${appState.method}|${appState.madhab}'),
+                        key: ValueKey('${appState.selectedCityId}|${appState.method}|${appState.madhab}'),
                         appState: appState,
                       ),
-                      MoreScreen(),
+                      MoreScreen(appState: appState),
                       SettingsScreen(appState: appState),
                     ],
                   );

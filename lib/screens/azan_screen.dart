@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../data/azan_sounds.dart';
+import '../l10n/app_localizations.dart';
 import '../models/azan_sound.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 
-/// Reciter picker. Tapping a row selects it (persisted) and starts a
-/// looping preview so the user immediately hears what they picked;
-/// tapping the same, currently-playing row again just stops the preview.
 class AzanScreen extends StatefulWidget {
   final AppState appState;
 
@@ -58,6 +56,7 @@ class _AzanScreenState extends State<AzanScreen> {
       body: AnimatedBuilder(
         animation: widget.appState,
         builder: (context, _) {
+          final t = AppLocalizations.of(context)!;
           return ListView(
             padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, padding.bottom + 18),
             children: [
@@ -65,15 +64,14 @@ class _AzanScreenState extends State<AzanScreen> {
                 children: [
                   ScreenBackButton(onTap: () => Navigator.of(context).pop()),
                   const SizedBox(width: 12),
-                  Text('Азан', style: AppTextStyles.heading(fontSize: 22)),
+                  Text(t.azanScreenTitle, style: AppTextStyles.heading(fontSize: 22)),
                 ],
               ),
               const SizedBox(height: 6),
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  'Пока у всех чтецов звучит один и тот же временный сигнал — '
-                  'настоящие записи будут добавлены позже.',
+                  t.azanPlaceholderNote,
                   style: AppTextStyles.body(fontSize: 12, color: AppColors.text).copyWith(
                     color: AppColors.text.withValues(alpha: 0.55),
                   ),
@@ -83,6 +81,7 @@ class _AzanScreenState extends State<AzanScreen> {
               for (final sound in AzanSounds.all)
                 _AzanRow(
                   sound: sound,
+                  t: t,
                   selected: sound.id == widget.appState.azanSoundId,
                   playing: sound.id == _playingId,
                   onTap: () => _tap(sound),
@@ -97,11 +96,18 @@ class _AzanScreenState extends State<AzanScreen> {
 
 class _AzanRow extends StatelessWidget {
   final AzanSound sound;
+  final AppLocalizations t;
   final bool selected;
   final bool playing;
   final VoidCallback onTap;
 
-  const _AzanRow({required this.sound, required this.selected, required this.playing, required this.onTap});
+  const _AzanRow({
+    required this.sound,
+    required this.t,
+    required this.selected,
+    required this.playing,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -137,10 +143,10 @@ class _AzanRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(sound.reciterName, style: AppTextStyles.heading(fontSize: 14)),
-                    if (sound.note != null)
+                    Text(reciterNameFor(t, sound.id), style: AppTextStyles.heading(fontSize: 14)),
+                    if (reciterNoteFor(t, sound.id) != null)
                       Text(
-                        sound.note!,
+                        reciterNoteFor(t, sound.id)!,
                         style: AppTextStyles.body(fontSize: 11, color: AppColors.text).copyWith(
                           color: AppColors.text.withValues(alpha: 0.55),
                         ),

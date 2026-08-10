@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// Ported from the design's `trackStyle`/`thumbStyle` helpers: a
-/// 44×26 pill track with a 22×22 white thumb.
 class AppSwitch extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;

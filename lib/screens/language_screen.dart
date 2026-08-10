@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 
-/// Language picker. Only persists the choice for now — see [AppLocale]'s
-/// doc comment: none of the app's strings are translated yet, so picking
-/// a language here doesn't change any visible text.
 class LanguageScreen extends StatelessWidget {
   final AppState appState;
 
@@ -24,6 +22,7 @@ class LanguageScreen extends StatelessWidget {
       body: AnimatedBuilder(
         animation: appState,
         builder: (context, _) {
+          final t = AppLocalizations.of(context)!;
           return ListView(
             padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, padding.bottom + 18),
             children: [
@@ -31,7 +30,7 @@ class LanguageScreen extends StatelessWidget {
                 children: [
                   ScreenBackButton(onTap: () => Navigator.of(context).pop()),
                   const SizedBox(width: 12),
-                  Text('Язык', style: AppTextStyles.heading(fontSize: 22)),
+                  Text(t.languageScreenTitle, style: AppTextStyles.heading(fontSize: 22)),
                 ],
               ),
               const SizedBox(height: 16),

@@ -3,11 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Text styles for the Organic design system. The design's original
-/// Caprasimo/Figtree pairing has no Cyrillic glyphs, so Russian text
-/// silently fell back to the default system font — Unbounded (headings)
-/// and Nunito (body) keep the same rounded, warm character while fully
-/// supporting Cyrillic.
 class AppTextStyles {
   AppTextStyles._();
 

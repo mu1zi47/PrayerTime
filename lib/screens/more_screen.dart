@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'names_screen.dart';
+import 'prayer_log_screen.dart';
 
 class _MoreItemSpec {
   final IconData icon;
@@ -12,18 +15,23 @@ class _MoreItemSpec {
   const _MoreItemSpec({required this.icon, required this.label, required this.screenBuilder});
 }
 
-final _items = [
-  _MoreItemSpec(
-    icon: Icons.auto_awesome_rounded,
-    label: 'Имена Аллаха',
-    screenBuilder: (_) => const NamesScreen(),
-  ),
-];
+List<_MoreItemSpec> _items(AppState appState, AppLocalizations t) => [
+      _MoreItemSpec(
+        icon: Icons.auto_awesome_rounded,
+        label: t.allahNamesTitle,
+        screenBuilder: (_) => NamesScreen(appState: appState),
+      ),
+      _MoreItemSpec(
+        icon: Icons.checklist_rounded,
+        label: t.myPrayersTitle,
+        screenBuilder: (_) => PrayerLogScreen(appState: appState),
+      ),
+    ];
 
-/// Grid of extra features, reached from the nav bar's "Ещё" tab. Currently
-/// just links to [NamesScreen]; more tiles will land here over time.
 class MoreScreen extends StatelessWidget {
-  const MoreScreen({super.key});
+  final AppState appState;
+
+  const MoreScreen({super.key, required this.appState});
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +39,15 @@ class MoreScreen extends StatelessWidget {
     // should scroll edge-to-edge, under the transparent status bar, rather
     // than stop short of it. CustomScrollView (instead of ListView) so the
     // title and the grid share one scroll position.
+    final t = AppLocalizations.of(context)!;
     final topInset = MediaQuery.paddingOf(context).top;
+    final items = _items(appState, t);
     return CustomScrollView(
       slivers: [
         SliverPadding(
           padding: EdgeInsets.fromLTRB(18, topInset + 16, 18, 16),
           sliver: SliverToBoxAdapter(
-            child: Text('Ещё', style: AppTextStyles.heading(fontSize: 22)),
+            child: Text(t.navMore, style: AppTextStyles.heading(fontSize: 22)),
           ),
         ),
         SliverPadding(
@@ -50,8 +60,8 @@ class MoreScreen extends StatelessWidget {
               childAspectRatio: 1.1,
             ),
             delegate: SliverChildBuilderDelegate(
-              (context, i) => _MoreTile(spec: _items[i]),
-              childCount: _items.length,
+              (context, i) => _MoreTile(spec: items[i]),
+              childCount: items.length,
             ),
           ),
         ),

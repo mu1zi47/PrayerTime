@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// The six salah times, in display order — matches `.pray-ic` icon
-/// choices from the design (rounded stroke icons per prayer).
+import '../l10n/app_localizations.dart';
+
 enum PrayerKind { fajr, sunrise, zuhr, asr, maghrib, isha }
 
 IconData iconForPrayer(PrayerKind kind) {
@@ -21,20 +21,23 @@ IconData iconForPrayer(PrayerKind kind) {
   }
 }
 
-String nameForPrayer(PrayerKind kind) {
+/// [t] is an [AppLocalizations] instance — from `AppLocalizations.of(context)!`
+/// in a widget build method, or from `lookupAppLocalizations(locale)`
+/// anywhere without a BuildContext (see AppState, NotificationService).
+String nameForPrayer(AppLocalizations t, PrayerKind kind) {
   switch (kind) {
     case PrayerKind.fajr:
-      return 'Фаджр';
+      return t.prayerFajr;
     case PrayerKind.sunrise:
-      return 'Восход';
+      return t.prayerSunrise;
     case PrayerKind.zuhr:
-      return 'Зухр';
+      return t.prayerZuhr;
     case PrayerKind.asr:
-      return 'Аср';
+      return t.prayerAsr;
     case PrayerKind.maghrib:
-      return 'Магриб';
+      return t.prayerMaghrib;
     case PrayerKind.isha:
-      return 'Иша';
+      return t.prayerIsha;
   }
 }
 

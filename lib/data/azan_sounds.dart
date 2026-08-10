@@ -1,43 +1,51 @@
+import '../l10n/app_localizations.dart';
 import '../models/azan_sound.dart';
 
-/// Реестр чтецов азана. Все записи сейчас звучат одним и тем же
-/// сгенерированным тоном-заглушкой ([placeholderAsset]) — реальные записи
-/// конкретных чтецов защищены авторским правом и не могут быть встроены
-/// без лицензии. Чтобы подставить настоящую запись, положи файл в
-/// `assets/audio/<id>.mp3`, зарегистрируй его в pubspec.yaml и укажи
-/// путь в [AzanSounds.assetFor].
 class AzanSounds {
   AzanSounds._();
 
   static const placeholderAsset = 'assets/audio/azan_placeholder.wav';
 
   static const List<AzanSound> all = [
-    AzanSound(id: 'abdulbasit', reciterName: 'Абдульбасит Абдуссамат'),
-    AzanSound(id: 'aknazar', reciterName: 'Акназар Маратулы'),
-    AzanSound(id: 'ali_ahmed_mulla', reciterName: 'Али Ахмед Мулла'),
-    AzanSound(id: 'ahmed_al_nufais', reciterName: 'Ахмед аль-Нуфайс'),
-    AzanSound(id: 'baubek', reciterName: 'Баубек Бердыгалиулы'),
-    AzanSound(id: 'mustafa_ismail', reciterName: 'Мустафа Исмаил'),
-    AzanSound(id: 'mishari', reciterName: 'Мишари Рашид аль-Афаси'),
-    AzanSound(
-      id: 'mishari_takbir_short',
-      reciterName: 'Мишари Рашид аль-Афаси',
-      note: 'такбир, короткая версия',
-    ),
-    AzanSound(id: 'mustafa_ozcan', reciterName: 'Мустафа Осджан Гунешдогды'),
-    AzanSound(id: 'mansur_zahrani', reciterName: 'Мансур аз-Захрани'),
-    AzanSound(id: 'nasir_qatami', reciterName: 'Насир аль-Катами'),
-    AzanSound(id: 'raad_kurdi', reciterName: 'Раад Мухаммад аль-Курди'),
-    AzanSound(
-      id: 'ahmed_al_nufais_2',
-      reciterName: 'Ахмед аль-Нуфайс',
-      note: 'студийная запись',
-    ),
-    AzanSound(id: 'saidmuhammed', reciterName: 'Саидмухаммед Ныгмат'),
+    AzanSound(id: 'abdulbasit'),
+    AzanSound(id: 'aknazar'),
+    AzanSound(id: 'ali_ahmed_mulla'),
+    AzanSound(id: 'ahmed_al_nufais'),
+    AzanSound(id: 'baubek'),
+    AzanSound(id: 'mustafa_ismail'),
+    AzanSound(id: 'mishari'),
+    AzanSound(id: 'mishari_takbir_short'),
+    AzanSound(id: 'mustafa_ozcan'),
+    AzanSound(id: 'mansur_zahrani'),
+    AzanSound(id: 'nasir_qatami'),
+    AzanSound(id: 'raad_kurdi'),
+    AzanSound(id: 'ahmed_al_nufais_2'),
+    AzanSound(id: 'saidmuhammed'),
   ];
 
   static AzanSound byId(String id) => all.firstWhere((s) => s.id == id, orElse: () => all.first);
 
-  /// Путь к аудио для данного чтеца. Пока все указывают на заглушку.
   static String assetFor(String id) => placeholderAsset;
 }
+
+String reciterNameFor(AppLocalizations t, String soundId) => switch (soundId) {
+      'abdulbasit' => t.reciterAbdulbasit,
+      'aknazar' => t.reciterAknazar,
+      'ali_ahmed_mulla' => t.reciterAliAhmedMulla,
+      'ahmed_al_nufais' || 'ahmed_al_nufais_2' => t.reciterAhmedAlNufais,
+      'baubek' => t.reciterBaubek,
+      'mustafa_ismail' => t.reciterMustafaIsmail,
+      'mishari' || 'mishari_takbir_short' => t.reciterMishari,
+      'mustafa_ozcan' => t.reciterMustafaOzcan,
+      'mansur_zahrani' => t.reciterMansurZahrani,
+      'nasir_qatami' => t.reciterNasirQatami,
+      'raad_kurdi' => t.reciterRaadKurdi,
+      'saidmuhammed' => t.reciterSaidmuhammed,
+      _ => soundId,
+    };
+
+String? reciterNoteFor(AppLocalizations t, String soundId) => switch (soundId) {
+      'mishari_takbir_short' => t.reciterNoteTakbirShort,
+      'ahmed_al_nufais_2' => t.reciterNoteStudioRecording,
+      _ => null,
+    };

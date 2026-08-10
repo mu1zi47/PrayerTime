@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'prayer_icon.dart';
 
-/// Ported from `.pray-row` / `.pray-row.active` / `.pray-ic`.
 class PrayerRow extends StatelessWidget {
   final PrayerKind kind;
   final String time;
@@ -21,6 +21,7 @@ class PrayerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final fg = active ? AppColors.bg : AppColors.text;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -45,7 +46,7 @@ class PrayerRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  nameForPrayer(kind),
+                  nameForPrayer(t, kind),
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.heading(fontSize: 15, color: fg),
                 ),

@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// Ported from `.date-pill` / `.date-pill.sel`. `isToday` draws an
-/// accent outline so today stays identifiable even when a different
-/// day is selected (filled accent background).
 class DatePill extends StatelessWidget {
   final String weekday;
   final String dayNumber;

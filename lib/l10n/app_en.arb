@@ -1,0 +1,220 @@
+{
+  "@@locale": "en",
+
+  "navPrayer": "Prayer",
+  "navMore": "More",
+  "navSettings": "Settings",
+
+  "nextPrayerLabel": "Next prayer",
+  "todayLabel": "Today",
+  "retryButton": "Retry",
+
+  "prayerTimeLabel": "Prayer time",
+  "stopButton": "Stop",
+
+  "azanScreenTitle": "Azan",
+  "azanPlaceholderNote": "For now every reciter plays the same placeholder sound — real recordings will be added later.",
+
+  "citySelectTitle": "Choose a city",
+  "citySearchHint": "Search city",
+  "cityAutoDetect": "Detect automatically",
+
+  "cityMoscow": "Moscow",
+  "cityKazan": "Kazan",
+  "cityUfa": "Ufa",
+  "cityGrozny": "Grozny",
+  "cityMakhachkala": "Makhachkala",
+  "cityIstanbul": "Istanbul",
+  "cityCairo": "Cairo",
+  "cityJakarta": "Jakarta",
+  "cityTashkent": "Tashkent",
+  "cityAlmaty": "Almaty",
+  "cityBaku": "Baku",
+  "cityMecca": "Mecca",
+
+  "countryRussia": "Russia",
+  "countryTurkey": "Turkey",
+  "countryEgypt": "Egypt",
+  "countryIndonesia": "Indonesia",
+  "countryUzbekistan": "Uzbekistan",
+  "countryKazakhstan": "Kazakhstan",
+  "countryAzerbaijan": "Azerbaijan",
+  "countrySaudiArabia": "Saudi Arabia",
+
+  "methodScreenTitle": "Calculation method",
+
+  "methodUzbekistan": "Muslim Board of Uzbekistan",
+  "methodKarachi": "University of Islamic Sciences, Karachi",
+  "methodIsna": "Islamic Society of North America",
+  "methodMwl": "Muslim World League",
+  "methodUmmAlQura": "Umm Al-Qura University, Makkah",
+  "methodEgypt": "Egyptian General Authority of Survey",
+  "methodTurkey": "Turkey Diyanet (Presidency of Religious Affairs)",
+
+  "languageScreenTitle": "Language",
+
+  "allahNamesTitle": "Names of Allah",
+  "myPrayersTitle": "My prayers",
+  "allahNamesSubtitle": "Al-Asma-ul-Husna",
+  "tabAll": "All",
+  "tabFavorites": "Favorites",
+  "nothingFound": "Nothing found",
+  "favoritesEmpty": "Names you add to favorites will show up here",
+  "namesSearchHint": "Search by number, name, meaning",
+  "descriptionLabel": "Description",
+
+  "notificationsScreenTitle": "Notifications",
+  "azanByPrayersKicker": "Azan per prayer",
+  "soundKicker": "Sound",
+  "azanSoundRow": "Azan — {reciter}",
+  "@azanSoundRow": {
+    "placeholders": {
+      "reciter": {"type": "String"}
+    }
+  },
+  "reciterAbdulbasit": "Abdul Basit Abdul Samad",
+  "reciterAknazar": "Aknazar Maratuly",
+  "reciterAliAhmedMulla": "Ali Ahmed Mulla",
+  "reciterAhmedAlNufais": "Ahmed Al Nufais",
+  "reciterBaubek": "Baubek Berdygaliuly",
+  "reciterMustafaIsmail": "Mustafa Ismail",
+  "reciterMishari": "Mishary Rashid Alafasy",
+  "reciterMustafaOzcan": "Mustafa Ozcan Gunesdogdu",
+  "reciterMansurZahrani": "Mansour Al Zahrani",
+  "reciterNasirQatami": "Nasser Al Qatami",
+  "reciterRaadKurdi": "Raad Mohammad Al Kurdi",
+  "reciterSaidmuhammed": "Saidmuhammed Nygmat",
+  "reciterNoteTakbirShort": "takbir, short version",
+  "reciterNoteStudioRecording": "studio recording",
+
+  "quietKicker": "Quiet hours",
+  "dontDisturbNight": "Do not disturb at night",
+
+  "nowBarScreenTitle": "Now Bar",
+  "nowBarAvailability": "Available only on Samsung with One UI 7 and up",
+  "nowBarShowCurrent": "Show current prayer",
+  "nowBarShowNext": "Show next prayer",
+  "nowBarAllowPermission": "Allow showing in Now Bar",
+
+  "myPrayersSubtitle": "Mark the prayers you've prayed",
+  "prayerLogDone": "{done} of {total} done",
+  "@prayerLogDone": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "prayerLogLateSuffix": " · Late: {count}",
+  "@prayerLogLateSuffix": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "notYetDue": "Not yet due",
+  "statusOnTime": "On time",
+  "statusLate": "Late",
+
+  "settingsScreenTitle": "Settings",
+  "cityKicker": "City",
+  "madhabKicker": "Madhab (Asr calculation)",
+  "madhabShafi": "Shafi'i",
+  "madhabHanafi": "Hanafi",
+  "azanAndReminders": "Azan & reminders",
+  "nowBarSettingsRow": "Current & next prayer",
+  "themeKicker": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+
+  "prayerFajr": "Fajr",
+  "prayerSunrise": "Sunrise",
+  "prayerZuhr": "Dhuhr",
+  "prayerAsr": "Asr",
+  "prayerMaghrib": "Maghrib",
+  "prayerIsha": "Isha",
+
+  "weekdayShortMon": "Mon",
+  "weekdayShortTue": "Tue",
+  "weekdayShortWed": "Wed",
+  "weekdayShortThu": "Thu",
+  "weekdayShortFri": "Fri",
+  "weekdayShortSat": "Sat",
+  "weekdayShortSun": "Sun",
+
+  "weekdayFullMon": "Monday",
+  "weekdayFullTue": "Tuesday",
+  "weekdayFullWed": "Wednesday",
+  "weekdayFullThu": "Thursday",
+  "weekdayFullFri": "Friday",
+  "weekdayFullSat": "Saturday",
+  "weekdayFullSun": "Sunday",
+
+  "month01": "January",
+  "month02": "February",
+  "month03": "March",
+  "month04": "April",
+  "month05": "May",
+  "month06": "June",
+  "month07": "July",
+  "month08": "August",
+  "month09": "September",
+  "month10": "October",
+  "month11": "November",
+  "month12": "December",
+
+  "countdownHoursMinutes": "in {hours}h {minutes}m",
+  "@countdownHoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "countdownHoursOnly": "in {hours}h",
+  "@countdownHoursOnly": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "countdownMinutesOnly": "in {minutes}m",
+  "@countdownMinutesOnly": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "notifAzanTitle": "Azan — {prayer}",
+  "@notifAzanTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifPlainTitle": "{prayer} prayer time",
+  "@notifPlainTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifBody": "Time to pray",
+
+  "nowBarNotificationTitle": "Prayer",
+  "nowBarCurrentLine": "Now: {prayer}",
+  "@nowBarCurrentLine": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "nowBarNextLine": "Next: {prayer} at {time}",
+  "@nowBarNextLine": {
+    "placeholders": {
+      "prayer": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+
+  "errorTimeout": "Request timed out. Check your internet connection.",
+  "errorNoConnection": "No internet connection.",
+  "errorServiceUnavailable": "The prayer times service is temporarily unavailable.",
+  "errorParseFailed": "Couldn't parse the service response.",
+  "errorFetchFailed": "Couldn't fetch prayer times.",
+  "genericLoadError": "Couldn't load prayer times."
+}

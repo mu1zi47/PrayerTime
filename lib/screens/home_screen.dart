@@ -3,14 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../data/next_prayer.dart';
+import '../data/reference_data.dart';
+import '../l10n/app_localizations.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/date_pill.dart';
 import '../widgets/prayer_icon.dart';
 import '../widgets/prayer_row.dart';
+import 'city_screen.dart';
 
-/// Ported from the "Главный" screen in the design.
 class HomeScreen extends StatefulWidget {
   final AppState appState;
 
@@ -42,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final appState = widget.appState;
     final days = appState.days;
 
@@ -71,22 +74,27 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.accent2_100,
-              borderRadius: BorderRadius.circular(999),
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => CityScreen(appState: appState)),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.location_on_rounded, size: 14, color: AppColors.accent2_800),
-                const SizedBox(width: 6),
-                Text(
-                  appState.selectedCity,
-                  style: AppTextStyles.body(fontSize: 12, color: AppColors.accent2_800),
-                ),
-              ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.accent2_100,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.location_on_rounded, size: 14, color: AppColors.accent2_800),
+                  const SizedBox(width: 6),
+                  Text(
+                    cityNameFor(t, appState.selectedCityId),
+                    style: AppTextStyles.body(fontSize: 12, color: AppColors.accent2_800),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -95,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Text(selectedDay.fullLabel, style: AppTextStyles.heading(fontSize: 22)),
+              child: Text(selectedDay.fullLabel(t), style: AppTextStyles.heading(fontSize: 22)),
             ),
             const SizedBox(width: 8),
             _TodayChip(
@@ -116,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, i) {
               final d = days[i];
               return DatePill(
-                weekday: d.weekdayShort,
+                weekday: d.weekdayShort(t),
                 dayNumber: d.dayNumber,
                 selected: i == selectedIndex,
                 isToday: i == _todayIndex,
@@ -135,7 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
               current: showingToday && current == PrayerKind.fajr,
             ),
             const SizedBox(height: 8),
-            PrayerRow(kind: PrayerKind.sunrise, time: selectedDay.sunrise),
+            PrayerRow(
+              kind: PrayerKind.sunrise,
+              time: selectedDay.sunrise,
+              current: showingToday && current == PrayerKind.sunrise,
+            ),
             const SizedBox(height: 8),
             PrayerRow(
               kind: PrayerKind.zuhr,
@@ -178,6 +190,7 @@ class _NextPrayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
@@ -192,7 +205,7 @@ class _NextPrayerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Следующий намаз',
+                  t.nextPrayerLabel,
                   style: AppTextStyles.body(
                     fontSize: 11,
                     color: AppColors.bg,
@@ -200,7 +213,7 @@ class _NextPrayerCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  nameForPrayer(info.kind),
+                  nameForPrayer(t, info.kind),
                   style: AppTextStyles.heading(fontSize: 24, color: AppColors.bg),
                 ),
                 Text(
@@ -213,7 +226,7 @@ class _NextPrayerCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  info.countdownLabel,
+                  info.countdownLabel(t),
                   style: AppTextStyles.body(
                     fontSize: 12,
                     color: AppColors.bg,
@@ -229,11 +242,6 @@ class _NextPrayerCard extends StatelessWidget {
   }
 }
 
-/// Always occupies the same slot next to the date title — when a past/
-/// future day is selected it's an active "jump to today" button; when
-/// today is already selected it becomes a quiet status pill instead of
-/// disappearing, so the title's available width (and everything below)
-/// never shifts depending on selection.
 class _TodayChip extends StatelessWidget {
   final bool isToday;
   final VoidCallback onTap;
@@ -242,6 +250,7 @@ class _TodayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: isToday ? null : onTap,
       child: AnimatedContainer(
@@ -260,7 +269,7 @@ class _TodayChip extends StatelessWidget {
               const SizedBox(width: 4),
             ],
             Text(
-              'Сегодня',
+              t.todayLabel,
               style: AppTextStyles.body(
                 fontSize: 12,
                 color: isToday ? AppColors.accent2_800 : AppColors.accent,
@@ -291,6 +300,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -314,7 +324,7 @@ class _ErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  'Повторить',
+                  t.retryButton,
                   style: AppTextStyles.body(
                     fontSize: 14,
                     color: AppColors.bg,

@@ -8,9 +8,6 @@ import 'package:prayertime/services/notification_service.dart';
 import 'package:prayertime/services/prayer_times_api.dart';
 import 'package:prayertime/state/app_state.dart';
 
-/// Resolves instantly with fixed data — keeps the test deterministic and
-/// network-free, since `RootShell.initState()` fires a real fetch and
-/// `pumpAndSettle()` would otherwise wait on (or flake on) live HTTP.
 class _InstantFakeApi extends PrayerTimesApi {
   @override
   Future<List<PrayerDay>> fetchUpcomingDays({
@@ -18,6 +15,7 @@ class _InstantFakeApi extends PrayerTimesApi {
     required int methodCode,
     required int school,
     required DateTime from,
+    String? tune,
     int count = 10,
   }) async {
     return [

@@ -745,3 +745,4 @@ class AllahNames {
     ),
   ];
 }
+

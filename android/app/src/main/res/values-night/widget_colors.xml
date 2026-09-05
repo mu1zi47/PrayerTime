@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only the preview-time aliases (see values/widget_colors.xml) follow the
+     system here. The real colors are chosen per the app's own theme setting,
+     in PrayerWidgetProvider. -->
+<resources>
+    <color name="widget_bg">@color/widget_bg_dark</color>
+    <color name="widget_text">@color/widget_text_dark</color>
+    <color name="widget_text_muted">@color/widget_text_muted_dark</color>
+    <color name="widget_accent2">@color/widget_accent2_dark</color>
+    <color name="widget_button_text">@color/widget_button_text_dark</color>
+</resources>

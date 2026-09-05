@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../data/allah_names.dart';
 import '../l10n/app_localizations.dart';
 import '../models/allah_name.dart';
 import '../state/app_state.dart';
@@ -11,11 +10,16 @@ import '../widgets/screen_back_button.dart';
 class AllahNameDetailScreen extends StatefulWidget {
   final AllahName name;
   final AppState appState;
+  // Which names Back/Forward step through — the full list normally, or just
+  // the favorites when opened from the "Избранное" tab, so browsing stays
+  // within whichever list the user was actually looking at.
+  final List<AllahName> names;
 
   const AllahNameDetailScreen({
     super.key,
     required this.name,
     required this.appState,
+    required this.names,
   });
 
   @override
@@ -28,19 +32,19 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _index = AllahNames.all.indexWhere((n) => n.number == widget.name.number);
+    _index = widget.names.indexWhere((n) => n.number == widget.name.number);
     if (_index < 0) _index = 0;
   }
 
   void _step(int delta) {
     final next = _index + delta;
-    if (next < 0 || next >= AllahNames.all.length) return;
+    if (next < 0 || next >= widget.names.length) return;
     setState(() => _index = next);
   }
 
   @override
   Widget build(BuildContext context) {
-    final name = AllahNames.all[_index];
+    final name = widget.names[_index];
     final padding = MediaQuery.paddingOf(context);
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -179,7 +183,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                     right: 6,
                     child: _NavArrowButton(
                       icon: Icons.chevron_right_rounded,
-                      enabled: _index < AllahNames.all.length - 1,
+                      enabled: _index < widget.names.length - 1,
                       onTap: () => _step(1),
                     ),
                   ),

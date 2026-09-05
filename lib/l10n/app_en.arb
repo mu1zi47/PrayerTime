@@ -6,18 +6,34 @@
   "navSettings": "Settings",
 
   "nextPrayerLabel": "Next prayer",
+  "nextPrayerTomorrowLabel": "Tomorrow, {date}",
+  "@nextPrayerTomorrowLabel": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "yesterdayCurrentLabel": "Yesterday, {date}",
+  "@yesterdayCurrentLabel": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
   "todayLabel": "Today",
   "retryButton": "Retry",
 
   "prayerTimeLabel": "Prayer time",
   "stopButton": "Stop",
 
-  "azanScreenTitle": "Azan",
-  "azanPlaceholderNote": "For now every reciter plays the same placeholder sound — real recordings will be added later.",
-
   "citySelectTitle": "Choose a city",
   "citySearchHint": "Search city",
   "cityAutoDetect": "Detect automatically",
+  "cityAutoDetecting": "Detecting your location…",
+  "cityCurrentLocation": "Current location",
+  "cityLocationServiceDisabled": "Turn on location services in your device settings",
+  "cityLocationPermissionDenied": "Location access denied. Allow it in settings",
+  "cityLocationErrorGeneric": "Couldn't determine your location",
+  "cityOpenSettingsButton": "Open settings",
+  "cityOnlineResultsTitle": "Found online",
 
   "cityMoscow": "Moscow",
   "cityKazan": "Kazan",
@@ -31,6 +47,18 @@
   "cityAlmaty": "Almaty",
   "cityBaku": "Baku",
   "cityMecca": "Mecca",
+  "cityMedina": "Medina",
+  "cityMinsk": "Minsk",
+  "cityAstana": "Astana",
+  "cityYerevan": "Yerevan",
+  "cityChisinau": "Chisinau",
+  "cityBishkek": "Bishkek",
+  "cityDushanbe": "Dushanbe",
+  "cityAshgabat": "Ashgabat",
+  "citySamarkand": "Samarkand",
+  "cityBukhara": "Bukhara",
+  "cityNamangan": "Namangan",
+  "cityAndijan": "Andijan",
 
   "countryRussia": "Russia",
   "countryTurkey": "Turkey",
@@ -40,6 +68,12 @@
   "countryKazakhstan": "Kazakhstan",
   "countryAzerbaijan": "Azerbaijan",
   "countrySaudiArabia": "Saudi Arabia",
+  "countryBelarus": "Belarus",
+  "countryArmenia": "Armenia",
+  "countryMoldova": "Moldova",
+  "countryKyrgyzstan": "Kyrgyzstan",
+  "countryTajikistan": "Tajikistan",
+  "countryTurkmenistan": "Turkmenistan",
 
   "methodScreenTitle": "Calculation method",
 
@@ -54,8 +88,8 @@
   "languageScreenTitle": "Language",
 
   "allahNamesTitle": "Names of Allah",
-  "myPrayersTitle": "My prayers",
   "allahNamesSubtitle": "Al-Asma-ul-Husna",
+
   "tabAll": "All",
   "tabFavorites": "Favorites",
   "nothingFound": "Nothing found",
@@ -64,68 +98,40 @@
   "descriptionLabel": "Description",
 
   "notificationsScreenTitle": "Notifications",
-  "azanByPrayersKicker": "Azan per prayer",
-  "soundKicker": "Sound",
-  "azanSoundRow": "Azan — {reciter}",
-  "@azanSoundRow": {
-    "placeholders": {
-      "reciter": {"type": "String"}
-    }
-  },
-  "reciterAbdulbasit": "Abdul Basit Abdul Samad",
-  "reciterAknazar": "Aknazar Maratuly",
-  "reciterAliAhmedMulla": "Ali Ahmed Mulla",
-  "reciterAhmedAlNufais": "Ahmed Al Nufais",
-  "reciterBaubek": "Baubek Berdygaliuly",
-  "reciterMustafaIsmail": "Mustafa Ismail",
-  "reciterMishari": "Mishary Rashid Alafasy",
-  "reciterMustafaOzcan": "Mustafa Ozcan Gunesdogdu",
-  "reciterMansurZahrani": "Mansour Al Zahrani",
-  "reciterNasirQatami": "Nasser Al Qatami",
-  "reciterRaadKurdi": "Raad Mohammad Al Kurdi",
-  "reciterSaidmuhammed": "Saidmuhammed Nygmat",
-  "reciterNoteTakbirShort": "takbir, short version",
-  "reciterNoteStudioRecording": "studio recording",
+  "azanByPrayersKicker": "Notifications per prayer",
 
   "quietKicker": "Quiet hours",
   "dontDisturbNight": "Do not disturb at night",
 
-  "nowBarScreenTitle": "Now Bar",
-  "nowBarAvailability": "Available only on Samsung with One UI 7 and up",
-  "nowBarShowCurrent": "Show current prayer",
-  "nowBarShowNext": "Show next prayer",
-  "nowBarAllowPermission": "Allow showing in Now Bar",
 
-  "myPrayersSubtitle": "Mark the prayers you've prayed",
-  "prayerLogDone": "{done} of {total} done",
-  "@prayerLogDone": {
+  "logSheetTitle": "How did {prayer} go?",
+  "@logSheetTitle": {
     "placeholders": {
-      "done": {"type": "int"},
-      "total": {"type": "int"}
+      "prayer": {"type": "String"}
     }
   },
-  "prayerLogLateSuffix": " · Late: {count}",
-  "@prayerLogLateSuffix": {
-    "placeholders": {
-      "count": {"type": "int"}
-    }
-  },
-  "notYetDue": "Not yet due",
-  "statusOnTime": "On time",
-  "statusLate": "Late",
+  "logSheetSubtitle": "Mark how you prayed this one",
+  "logSheetOnTime": "Prayed on time",
+  "logSheetLate": "Prayed late",
+  "logSheetClear": "Clear this mark",
 
   "settingsScreenTitle": "Settings",
+  "prayerSettingsTitle": "Prayer times",
+  "systemSettingsTitle": "System settings",
   "cityKicker": "City",
   "madhabKicker": "Madhab (Asr calculation)",
   "madhabShafi": "Shafi'i",
   "madhabHanafi": "Hanafi",
-  "azanAndReminders": "Azan & reminders",
-  "nowBarSettingsRow": "Current & next prayer",
+  "azanAndReminders": "Notifications & reminders",
   "themeKicker": "Theme",
   "themeLight": "Light",
   "themeDark": "Dark",
   "themeSystem": "System",
 
+  "tahajjudKicker": "Tahajjud prayer",
+  "tahajjudEnableRow": "Show Tahajjud prayer",
+
+  "prayerTahajjud": "Tahajjud",
   "prayerFajr": "Fajr",
   "prayerSunrise": "Sunrise",
   "prayerZuhr": "Dhuhr",
@@ -182,12 +188,6 @@
     }
   },
 
-  "notifAzanTitle": "Azan — {prayer}",
-  "@notifAzanTitle": {
-    "placeholders": {
-      "prayer": {"type": "String"}
-    }
-  },
   "notifPlainTitle": "{prayer} prayer time",
   "@notifPlainTitle": {
     "placeholders": {
@@ -195,26 +195,36 @@
     }
   },
   "notifBody": "Time to pray",
+  "notifMarkDoneAction": "Done",
 
-  "nowBarNotificationTitle": "Prayer",
-  "nowBarCurrentLine": "Now: {prayer}",
-  "@nowBarCurrentLine": {
-    "placeholders": {
-      "prayer": {"type": "String"}
-    }
-  },
-  "nowBarNextLine": "Next: {prayer} at {time}",
-  "@nowBarNextLine": {
-    "placeholders": {
-      "prayer": {"type": "String"},
-      "time": {"type": "String"}
-    }
-  },
 
   "errorTimeout": "Request timed out. Check your internet connection.",
   "errorNoConnection": "No internet connection.",
   "errorServiceUnavailable": "The prayer times service is temporarily unavailable.",
   "errorParseFailed": "Couldn't parse the service response.",
   "errorFetchFailed": "Couldn't fetch prayer times.",
-  "genericLoadError": "Couldn't load prayer times."
+  "genericLoadError": "Couldn't load prayer times.",
+  "errorOfflineSettingsChange": "An internet connection is required to change these settings.",
+
+  "calendarScreenTitle": "Prayer calendar",
+  "legendOnTime": "On time",
+  "legendQada": "Late",
+  "legendMissed": "Missed",
+  "notifEveningReminderTitle": "Don't forget to log your prayers",
+  "notifEveningReminderBody": "Open the app and mark how today's prayers went",
+
+  "notifPrayerEndingTitle": "{prayer} is almost over",
+  "@notifPrayerEndingTitle": {
+    "placeholders": {
+      "prayer": {"type": "String"}
+    }
+  },
+  "notifPrayerEndingBody": "{minutes} min left, and this prayer still isn't marked as prayed",
+  "@notifPrayerEndingBody": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "widgetMarkedLabel": "Logged",
+  "widgetNoDataLabel": "Open the app"
 }

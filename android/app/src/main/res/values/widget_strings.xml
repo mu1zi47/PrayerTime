@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only the widget's name in the picker lives here. Everything the widget
+     itself renders comes from the app's own localizations (see
+     HomeWidgetBridge on the Dart side), so the widget follows the language
+     picked *in the app* rather than the system one. -->
+<resources>
+    <string name="widget_label">Prayer times</string>
+    <string name="widget_description">Current and next prayer, with a countdown</string>
+    <!-- Only ever shown before the app has written its payload once (a fresh
+         install), when there is no app language on record yet. -->
+    <string name="widget_no_data">Open the app</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- On the filled panel the button goes *darker* than its background, like
+     the alarm widget's own icon circle (#ff3110a7 on #cc5533ee). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/widget_marked_button" />
+</shape>

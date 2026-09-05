@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Fully rounded, and the panel is the same 76dp tall as One UI's own
+         stock widgets (measured against the built-in alarm widget), so this
+         sits in the same visual family on the home screen. -->
+    <corners android:radius="46dp" />
+    <solid android:color="@color/widget_bg_dark" />
+</shape>

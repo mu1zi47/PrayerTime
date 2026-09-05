@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// A two-(or-more)-way toggle styled like [FloatingTabBar]: an
-/// accent-filled capsule that slides between options (rather than
-/// re-coloring in place), with labels cross-fading between selected
-/// and unselected styles as it passes underneath them.
+/// A minimal text-tabs control — plain labels with a short accent underline
+/// on the selected one, the same "no fill, no border, just an accent mark"
+/// language as HomeScreen's own day strip, rather than a filled sliding
+/// capsule.
 class SegmentedControl extends StatelessWidget {
   final List<String> options;
   final int selectedIndex;
@@ -21,69 +21,48 @@ class SegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final segmentWidth = constraints.maxWidth / options.length;
-          return Stack(
-            children: [
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 320),
-                curve: Curves.easeOutCubic,
-                left: segmentWidth * selectedIndex,
-                width: segmentWidth,
-                top: 0,
-                bottom: 0,
-                child: Container(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < options.length; i++) ...[
+          if (i > 0) const SizedBox(width: 24),
+          GestureDetector(
+            onTap: () => onSelect(i),
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: i == selectedIndex
+                        ? FontWeight.w800
+                        : FontWeight.w600,
+                    color: i == selectedIndex
+                        ? AppColors.accent
+                        : AppColors.text.withValues(alpha: 0.5),
+                  ),
+                  child: Text(options[i]),
+                ),
+                const SizedBox(height: 6),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  height: 3,
+                  width: i == selectedIndex ? 22 : 0,
                   decoration: BoxDecoration(
                     color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(999),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.accent700.withValues(alpha: 0.25),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  for (var i = 0; i < options.length; i++)
-                    SizedBox(
-                      width: segmentWidth,
-                      child: GestureDetector(
-                        onTap: () => onSelect(i),
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Center(
-                            child: AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 320),
-                              curve: Curves.easeOutCubic,
-                              style: AppTextStyles.body(
-                                fontSize: 13,
-                                color: i == selectedIndex ? AppColors.bg : AppColors.text.withValues(alpha: 0.65),
-                                fontWeight: i == selectedIndex ? FontWeight.w700 : FontWeight.w400,
-                              ),
-                              child: Text(options[i]),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

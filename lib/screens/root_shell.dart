@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/edge_gesture_guard.dart';
 import '../widgets/floating_tab_bar.dart';
 import 'home_screen.dart';
 import 'more_screen.dart';
@@ -41,7 +42,11 @@ class _RootShellState extends State<RootShell> {
     final distance = (index - _tabIndex).abs();
     setState(() => _tabIndex = index);
     if (distance <= 1) {
-      _pageController.animateToPage(index, duration: const Duration(milliseconds: 320), curve: Curves.easeOutCubic);
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
     } else {
       _pageController.jumpToPage(index);
     }
@@ -61,30 +66,46 @@ class _RootShellState extends State<RootShell> {
         backgroundColor: AppColors.bg,
         body: Stack(
           children: [
+            // No AnimatedBuilder here — each tab (already) listens to
+            // appState on its own for just what it needs, so this stays a
+            // stable PageView instead of rebuilding all three tabs together
+            // on every single AppState change anywhere in the app.
             Positioned.fill(
-              child: AnimatedBuilder(
-                animation: appState,
-                builder: (context, _) {
-                  return PageView(
+              // Left/right guard against Android's own back gesture at the
+              // screen edges — needed because this PageView (the tab swipe)
+              // reaches all the way to both edges. topExclusion carves out
+              // HomeScreen's own top strip (its city row, sitting at rest
+              // right under the status bar) from that guard, so that button
+              // stays tappable near the edges without the row having to
+              // leave HomeScreen's normal scrolling content — see
+              // HomeScreen's build() for the matching height. Bottom guards
+              // against the swipe-up-to-minimize strip the same way, scoped
+              // to just the scrolling content and not FloatingTabBar below.
+              child: EdgeGestureGuard(
+                left: true,
+                right: true,
+                bottom: true,
+                topExclusion: MediaQuery.paddingOf(context).top + 70,
+                child: RepaintBoundary(
+                  child: PageView(
                     controller: _pageController,
                     onPageChanged: (i) => setState(() => _tabIndex = i),
                     children: [
-                      HomeScreen(
-                        key: ValueKey('${appState.selectedCityId}|${appState.method}|${appState.madhab}'),
-                        appState: appState,
-                      ),
+                      HomeScreen(appState: appState),
                       MoreScreen(appState: appState),
                       SettingsScreen(appState: appState),
                     ],
-                  );
-                },
+                  ),
+                ),
               ),
             ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: FloatingTabBar(index: _tabIndex, onSelect: _goToTab),
+              child: RepaintBoundary(
+                child: FloatingTabBar(index: _tabIndex, onSelect: _goToTab),
+              ),
             ),
           ],
         ),

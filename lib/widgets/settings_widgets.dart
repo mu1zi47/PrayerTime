@@ -11,12 +11,14 @@ class SectionKicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8, left: 2),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.body(fontSize: 10, color: AppColors.accent700).copyWith(
-          letterSpacing: 1.1,
-        ),
+        style: AppTextStyles.body(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          color: AppColors.accent,
+        ).copyWith(letterSpacing: 1.0),
       ),
     );
   }
@@ -26,46 +28,48 @@ class SettingsGroup extends StatelessWidget {
   final String kicker;
   final List<Widget> children;
 
-  const SettingsGroup({super.key, required this.kicker, required this.children});
+  const SettingsGroup({
+    super.key,
+    required this.kicker,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SectionKicker(kicker),
-        ...children,
-      ],
+      children: [SectionKicker(kicker), ...children],
     );
   }
 }
 
+/// A flat, divider-separated line — the same "plain rows, one hairline
+/// each" table look as HomeScreen's own schedule, rather than a stack of
+/// individually rounded, filled buttons.
 class OptRow extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
-  final Color? background;
 
-  const OptRow({super.key, required this.child, this.onTap, this.background});
+  const OptRow({super.key, required this.child, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-          decoration: BoxDecoration(
-            color: background ?? AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          child: Row(
-            children: [
-              Expanded(child: child),
-              Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.text),
-            ],
-          ),
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.divider)),
+        ),
+        child: Row(
+          children: [
+            Expanded(child: child),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: AppColors.text.withValues(alpha: 0.35),
+            ),
+          ],
         ),
       ),
     );
@@ -80,20 +84,16 @@ class SettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        child: Row(
-          children: [
-            Expanded(child: child),
-            trailing,
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 13),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.divider)),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: child),
+          trailing,
+        ],
       ),
     );
   }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The outer frame is transparent and fills the cell; the panel inside is a
+     fixed-height pill centered in it, matched to One UI's stock alarm widget
+     — same height, same left-hand circular button — so the two read as a
+     set. The dp figures look large because One UI draws widget content at
+     ~0.83 scale; they were picked to land on the alarm widget's measured
+     76dp panel and 57dp icon on screen.
+
+     The big line is the prayer that's on now — the one the button logs — so
+     the check mark can't be misread as belonging to the small "next prayer"
+     line under it. Every color here is a placeholder for the widget picker's
+     preview: PrayerWidgetProvider repaints all of them, both for the app's
+     chosen theme and for whether that prayer is logged. Only classes tagged
+     @RemoteView can appear in a widget layout, hence no plain <View>. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/widget_root"
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/widget_bg_light"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="20dp">
+
+        <!-- A check to log the prayer, a cross to undo it once logged (see
+             PrayerWidgetProvider, which swaps both the icon and the colors).
+             The localized wording rides along as the content description, so
+             TalkBack still announces what tapping does. -->
+        <ImageView
+            android:id="@+id/widget_mark_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/widget_button_light"
+            android:padding="20dp"
+            android:src="@drawable/ic_widget_check" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_current_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:textColor="@color/widget_text"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/widget_next_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/widget_text_muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Outside the text column on purpose: in there it aligned to the
+             headline's baseline and sat visibly high against the panel.
+             A Chronometer counts itself down, so the widget doesn't have to
+             be redrawn every minute to keep the number honest — see
+             PrayerWidgetProvider, which only reschedules at the moment the
+             window it counts to actually closes. -->
+        <Chronometer
+            android:id="@+id/widget_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/widget_accent2"
+            android:textSize="18sp" />
+    </LinearLayout>
+</FrameLayout>

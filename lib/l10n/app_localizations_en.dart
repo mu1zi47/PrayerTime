@@ -21,6 +21,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextPrayerLabel => 'Next prayer';
 
   @override
+  String nextPrayerTomorrowLabel(String date) {
+    return 'Tomorrow, $date';
+  }
+
+  @override
+  String yesterdayCurrentLabel(String date) {
+    return 'Yesterday, $date';
+  }
+
+  @override
   String get todayLabel => 'Today';
 
   @override
@@ -33,13 +43,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stopButton => 'Stop';
 
   @override
-  String get azanScreenTitle => 'Azan';
-
-  @override
-  String get azanPlaceholderNote =>
-      'For now every reciter plays the same placeholder sound — real recordings will be added later.';
-
-  @override
   String get citySelectTitle => 'Choose a city';
 
   @override
@@ -47,6 +50,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cityAutoDetect => 'Detect automatically';
+
+  @override
+  String get cityAutoDetecting => 'Detecting your location…';
+
+  @override
+  String get cityCurrentLocation => 'Current location';
+
+  @override
+  String get cityLocationServiceDisabled =>
+      'Turn on location services in your device settings';
+
+  @override
+  String get cityLocationPermissionDenied =>
+      'Location access denied. Allow it in settings';
+
+  @override
+  String get cityLocationErrorGeneric => 'Couldn\'t determine your location';
+
+  @override
+  String get cityOpenSettingsButton => 'Open settings';
+
+  @override
+  String get cityOnlineResultsTitle => 'Found online';
 
   @override
   String get cityMoscow => 'Moscow';
@@ -85,6 +111,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cityMecca => 'Mecca';
 
   @override
+  String get cityMedina => 'Medina';
+
+  @override
+  String get cityMinsk => 'Minsk';
+
+  @override
+  String get cityAstana => 'Astana';
+
+  @override
+  String get cityYerevan => 'Yerevan';
+
+  @override
+  String get cityChisinau => 'Chisinau';
+
+  @override
+  String get cityBishkek => 'Bishkek';
+
+  @override
+  String get cityDushanbe => 'Dushanbe';
+
+  @override
+  String get cityAshgabat => 'Ashgabat';
+
+  @override
+  String get citySamarkand => 'Samarkand';
+
+  @override
+  String get cityBukhara => 'Bukhara';
+
+  @override
+  String get cityNamangan => 'Namangan';
+
+  @override
+  String get cityAndijan => 'Andijan';
+
+  @override
   String get countryRussia => 'Russia';
 
   @override
@@ -107,6 +169,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get countrySaudiArabia => 'Saudi Arabia';
+
+  @override
+  String get countryBelarus => 'Belarus';
+
+  @override
+  String get countryArmenia => 'Armenia';
+
+  @override
+  String get countryMoldova => 'Moldova';
+
+  @override
+  String get countryKyrgyzstan => 'Kyrgyzstan';
+
+  @override
+  String get countryTajikistan => 'Tajikistan';
+
+  @override
+  String get countryTurkmenistan => 'Turkmenistan';
 
   @override
   String get methodScreenTitle => 'Calculation method';
@@ -139,9 +219,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allahNamesTitle => 'Names of Allah';
 
   @override
-  String get myPrayersTitle => 'My prayers';
-
-  @override
   String get allahNamesSubtitle => 'Al-Asma-ul-Husna';
 
   @override
@@ -166,57 +243,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsScreenTitle => 'Notifications';
 
   @override
-  String get azanByPrayersKicker => 'Azan per prayer';
-
-  @override
-  String get soundKicker => 'Sound';
-
-  @override
-  String azanSoundRow(String reciter) {
-    return 'Azan — $reciter';
-  }
-
-  @override
-  String get reciterAbdulbasit => 'Abdul Basit Abdul Samad';
-
-  @override
-  String get reciterAknazar => 'Aknazar Maratuly';
-
-  @override
-  String get reciterAliAhmedMulla => 'Ali Ahmed Mulla';
-
-  @override
-  String get reciterAhmedAlNufais => 'Ahmed Al Nufais';
-
-  @override
-  String get reciterBaubek => 'Baubek Berdygaliuly';
-
-  @override
-  String get reciterMustafaIsmail => 'Mustafa Ismail';
-
-  @override
-  String get reciterMishari => 'Mishary Rashid Alafasy';
-
-  @override
-  String get reciterMustafaOzcan => 'Mustafa Ozcan Gunesdogdu';
-
-  @override
-  String get reciterMansurZahrani => 'Mansour Al Zahrani';
-
-  @override
-  String get reciterNasirQatami => 'Nasser Al Qatami';
-
-  @override
-  String get reciterRaadKurdi => 'Raad Mohammad Al Kurdi';
-
-  @override
-  String get reciterSaidmuhammed => 'Saidmuhammed Nygmat';
-
-  @override
-  String get reciterNoteTakbirShort => 'takbir, short version';
-
-  @override
-  String get reciterNoteStudioRecording => 'studio recording';
+  String get azanByPrayersKicker => 'Notifications per prayer';
 
   @override
   String get quietKicker => 'Quiet hours';
@@ -225,45 +252,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dontDisturbNight => 'Do not disturb at night';
 
   @override
-  String get nowBarScreenTitle => 'Now Bar';
-
-  @override
-  String get nowBarAvailability =>
-      'Available only on Samsung with One UI 7 and up';
-
-  @override
-  String get nowBarShowCurrent => 'Show current prayer';
-
-  @override
-  String get nowBarShowNext => 'Show next prayer';
-
-  @override
-  String get nowBarAllowPermission => 'Allow showing in Now Bar';
-
-  @override
-  String get myPrayersSubtitle => 'Mark the prayers you\'ve prayed';
-
-  @override
-  String prayerLogDone(int done, int total) {
-    return '$done of $total done';
+  String logSheetTitle(String prayer) {
+    return 'How did $prayer go?';
   }
 
   @override
-  String prayerLogLateSuffix(int count) {
-    return ' · Late: $count';
-  }
+  String get logSheetSubtitle => 'Mark how you prayed this one';
 
   @override
-  String get notYetDue => 'Not yet due';
+  String get logSheetOnTime => 'Prayed on time';
 
   @override
-  String get statusOnTime => 'On time';
+  String get logSheetLate => 'Prayed late';
 
   @override
-  String get statusLate => 'Late';
+  String get logSheetClear => 'Clear this mark';
 
   @override
   String get settingsScreenTitle => 'Settings';
+
+  @override
+  String get prayerSettingsTitle => 'Prayer times';
+
+  @override
+  String get systemSettingsTitle => 'System settings';
 
   @override
   String get cityKicker => 'City';
@@ -278,10 +290,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get madhabHanafi => 'Hanafi';
 
   @override
-  String get azanAndReminders => 'Azan & reminders';
-
-  @override
-  String get nowBarSettingsRow => 'Current & next prayer';
+  String get azanAndReminders => 'Notifications & reminders';
 
   @override
   String get themeKicker => 'Theme';
@@ -294,6 +303,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeSystem => 'System';
+
+  @override
+  String get tahajjudKicker => 'Tahajjud prayer';
+
+  @override
+  String get tahajjudEnableRow => 'Show Tahajjud prayer';
+
+  @override
+  String get prayerTahajjud => 'Tahajjud';
 
   @override
   String get prayerFajr => 'Fajr';
@@ -407,11 +425,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String notifAzanTitle(String prayer) {
-    return 'Azan — $prayer';
-  }
-
-  @override
   String notifPlainTitle(String prayer) {
     return '$prayer prayer time';
   }
@@ -420,17 +433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifBody => 'Time to pray';
 
   @override
-  String get nowBarNotificationTitle => 'Prayer';
-
-  @override
-  String nowBarCurrentLine(String prayer) {
-    return 'Now: $prayer';
-  }
-
-  @override
-  String nowBarNextLine(String prayer, String time) {
-    return 'Next: $prayer at $time';
-  }
+  String get notifMarkDoneAction => 'Done';
 
   @override
   String get errorTimeout =>
@@ -451,4 +454,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericLoadError => 'Couldn\'t load prayer times.';
+
+  @override
+  String get errorOfflineSettingsChange =>
+      'An internet connection is required to change these settings.';
+
+  @override
+  String get calendarScreenTitle => 'Prayer calendar';
+
+  @override
+  String get legendOnTime => 'On time';
+
+  @override
+  String get legendQada => 'Late';
+
+  @override
+  String get legendMissed => 'Missed';
+
+  @override
+  String get notifEveningReminderTitle => 'Don\'t forget to log your prayers';
+
+  @override
+  String get notifEveningReminderBody =>
+      'Open the app and mark how today\'s prayers went';
+
+  @override
+  String notifPrayerEndingTitle(String prayer) {
+    return '$prayer is almost over';
+  }
+
+  @override
+  String notifPrayerEndingBody(int minutes) {
+    return '$minutes min left, and this prayer still isn\'t marked as prayed';
+  }
+
+  @override
+  String get widgetMarkedLabel => 'Logged';
+
+  @override
+  String get widgetNoDataLabel => 'Open the app';
 }

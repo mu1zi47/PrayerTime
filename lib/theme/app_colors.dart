@@ -75,39 +75,45 @@ class AppPalette {
   Color get divider => text.withValues(alpha: 0.16);
 }
 
+// A deep-navy / gold / teal identity — the same ramp *shape* as the app's
+// original warm-terracotta palette (each step keeps its original saturation
+// and lightness), just rotated to a new set of hues, so every screen that
+// already leans on a specific shade (accent700 for readable label text,
+// neutral300 for a subtle border, etc.) keeps the same relative contrast it
+// always had.
 const _light = AppPalette(
-  bg: Color(0xFFF5EAD8),
-  surface: Color(0xFFEBDDC5),
-  text: Color(0xFF201E1D),
-  accent: Color(0xFFC67139),
-  accent2: Color(0xFF7A8A5E),
-  neutral100: Color(0xFFF9F4ED),
-  neutral200: Color(0xFFEEE7DB),
-  neutral300: Color(0xFFDCD3C4),
-  neutral400: Color(0xFFC0B6A5),
-  neutral500: Color(0xFFA19786),
-  neutral600: Color(0xFF82796A),
-  neutral700: Color(0xFF645C50),
-  neutral800: Color(0xFF474238),
-  neutral900: Color(0xFF2E2B25),
-  accent100: Color(0xFFFFF2EB),
-  accent200: Color(0xFFFFE1D0),
-  accent300: Color(0xFFFFC6A5),
-  accent400: Color(0xFFF6A06B),
-  accent500: Color(0xFFD67F48),
-  accent600: Color(0xFFB2622D),
-  accent700: Color(0xFF8C491A),
-  accent800: Color(0xFF643312),
-  accent900: Color(0xFF402310),
-  accent2_100: Color(0xFFF0FAE1),
-  accent2_200: Color(0xFFE1EECC),
-  accent2_300: Color(0xFFCCDBB2),
-  accent2_400: Color(0xFFAEBF92),
-  accent2_500: Color(0xFF8FA073),
-  accent2_600: Color(0xFF728157),
-  accent2_700: Color(0xFF56633F),
-  accent2_800: Color(0xFF3D472B),
-  accent2_900: Color(0xFF272E1B),
+  bg: Color(0xFFF2F4F8),
+  surface: Color(0xFFFFFFFF),
+  text: Color(0xFF16213C),
+  accent: Color(0xFFB27509),
+  accent2: Color(0xFF1E6F65),
+  neutral100: Color(0xFFEDF0F9),
+  neutral200: Color(0xFFDBE0EE),
+  neutral300: Color(0xFFC4CBDC),
+  neutral400: Color(0xFFA5ADC0),
+  neutral500: Color(0xFF868EA1),
+  neutral600: Color(0xFF6A7182),
+  neutral700: Color(0xFF505664),
+  neutral800: Color(0xFF383C47),
+  neutral900: Color(0xFF25282E),
+  accent100: Color(0xFFFAEBD1),
+  accent200: Color(0xFFF7DFB6),
+  accent300: Color(0xFFFFDFA5),
+  accent400: Color(0xFFF6C46B),
+  accent500: Color(0xFFD6A348),
+  accent600: Color(0xFFB2822D),
+  accent700: Color(0xFF8C631A),
+  accent800: Color(0xFF644612),
+  accent900: Color(0xFF402F10),
+  accent2_100: Color(0xFFD7F4F0),
+  accent2_200: Color(0xFFC0EDE7),
+  accent2_300: Color(0xFFB2DBD6),
+  accent2_400: Color(0xFF92BFB9),
+  accent2_500: Color(0xFF73A09A),
+  accent2_600: Color(0xFF57817C),
+  accent2_700: Color(0xFF3F635F),
+  accent2_800: Color(0xFF2B4744),
+  accent2_900: Color(0xFF1B2E2C),
 );
 
 // Mirrors `_light`'s internal logic (the NNN scales run from "closest to
@@ -115,40 +121,39 @@ const _light = AppPalette(
 // flipped, since in dark mode the darkest tone is the background and the
 // lightest is the readable-on-dark end.
 const _dark = AppPalette(
-  bg: Color(0xFF17130F),
-  surface: Color(0xFF241E17),
-  text: Color(0xFFF3E9DA),
-  accent: Color(0xFFE08A52),
-  accent2: Color(0xFF9AAE7C),
-  neutral100: Color(0xFF211C16),
-  neutral200: Color(0xFF2C2620),
-  neutral300: Color(0xFF3A3229),
-  neutral400: Color(0xFF4C4235),
-  neutral500: Color(0xFF665A49),
-  neutral600: Color(0xFF82725D),
-  neutral700: Color(0xFFA08D73),
-  neutral800: Color(0xFFC2AF95),
-  neutral900: Color(0xFFE4D9C7),
-  accent100: Color(0xFF3A2415),
-  accent200: Color(0xFF4A2E1B),
-  accent300: Color(0xFF5D3A22),
-  accent400: Color(0xFF7A4B2A),
-  accent500: Color(0xFF9C5F35),
-  accent600: Color(0xFFC67139),
-  accent700: Color(0xFFE08A52),
-  accent800: Color(0xFFF0AC7C),
-  accent900: Color(0xFFFBE0CC),
-  accent2_100: Color(0xFF1E2416),
-  accent2_200: Color(0xFF29321D),
-  accent2_300: Color(0xFF384325),
-  accent2_400: Color(0xFF4D5A32),
-  accent2_500: Color(0xFF647240),
-  accent2_600: Color(0xFF7C8F52),
-  accent2_700: Color(0xFF9AAE7C),
-  accent2_800: Color(0xFFBFCDA6),
-  accent2_900: Color(0xFFE3EBD3),
+  bg: Color(0xFF0D1526),
+  surface: Color(0xFF17223C),
+  text: Color(0xFFF4EFE3),
+  accent: Color(0xFFE7B248),
+  accent2: Color(0xFF1E6F65),
+  neutral100: Color(0xFF161A21),
+  neutral200: Color(0xFF20242C),
+  neutral300: Color(0xFF292E3A),
+  neutral400: Color(0xFF353C4C),
+  neutral500: Color(0xFF495266),
+  neutral600: Color(0xFF5D6982),
+  neutral700: Color(0xFF7381A0),
+  neutral800: Color(0xFF95A3C2),
+  neutral900: Color(0xFFC7D0E4),
+  accent100: Color(0xFF3A2E15),
+  accent200: Color(0xFF4A3A1B),
+  accent300: Color(0xFF5D4922),
+  accent400: Color(0xFF7A5F2A),
+  accent500: Color(0xFF9C7A35),
+  accent600: Color(0xFFC69739),
+  accent700: Color(0xFFE0B152),
+  accent800: Color(0xFFF0C97C),
+  accent900: Color(0xFFFBEBCC),
+  accent2_100: Color(0xFF162422),
+  accent2_200: Color(0xFF1D322F),
+  accent2_300: Color(0xFF25433F),
+  accent2_400: Color(0xFF325A55),
+  accent2_500: Color(0xFF40726C),
+  accent2_600: Color(0xFF528F87),
+  accent2_700: Color(0xFF7CAEA8),
+  accent2_800: Color(0xFFA6CDC8),
+  accent2_900: Color(0xFFD3EBE8),
 );
-
 
 class AppColors {
   AppColors._();
@@ -200,10 +205,13 @@ class AppColors {
   static Color get accent2_900 => _active.accent2_900;
 }
 
+// Flatter, less "bubbly" than the original scale — matches the corner
+// language HomeScreen's own panels/rows settled on (10-12px), rather than
+// the very round 16/28 the rest of the app inherited from before.
 class AppRadius {
   AppRadius._();
 
   static const sm = 8.0;
-  static const md = 16.0;
-  static const lg = 28.0;
+  static const md = 12.0;
+  static const lg = 16.0;
 }

@@ -5,28 +5,32 @@ import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'names_screen.dart';
-import 'prayer_log_screen.dart';
+import 'prayer_calendar_screen.dart';
 
 class _MoreItemSpec {
   final IconData icon;
   final String label;
   final WidgetBuilder screenBuilder;
 
-  const _MoreItemSpec({required this.icon, required this.label, required this.screenBuilder});
+  const _MoreItemSpec({
+    required this.icon,
+    required this.label,
+    required this.screenBuilder,
+  });
 }
 
 List<_MoreItemSpec> _items(AppState appState, AppLocalizations t) => [
-      _MoreItemSpec(
-        icon: Icons.auto_awesome_rounded,
-        label: t.allahNamesTitle,
-        screenBuilder: (_) => NamesScreen(appState: appState),
-      ),
-      _MoreItemSpec(
-        icon: Icons.checklist_rounded,
-        label: t.myPrayersTitle,
-        screenBuilder: (_) => PrayerLogScreen(appState: appState),
-      ),
-    ];
+  _MoreItemSpec(
+    icon: Icons.auto_awesome_rounded,
+    label: t.allahNamesTitle,
+    screenBuilder: (_) => NamesScreen(appState: appState),
+  ),
+  _MoreItemSpec(
+    icon: Icons.calendar_month_rounded,
+    label: t.calendarScreenTitle,
+    screenBuilder: (_) => PrayerCalendarScreen(appState: appState),
+  ),
+];
 
 class MoreScreen extends StatelessWidget {
   final AppState appState;
@@ -78,7 +82,9 @@ class _MoreTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: spec.screenBuilder)),
+      onTap: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: spec.screenBuilder)),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -94,7 +100,10 @@ class _MoreTile extends StatelessWidget {
               width: 38,
               height: 38,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: AppColors.accent100, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: AppColors.accent100,
+                shape: BoxShape.circle,
+              ),
               child: Icon(spec.icon, size: 19, color: AppColors.accent700),
             ),
             Text(spec.label, style: AppTextStyles.heading(fontSize: 14)),

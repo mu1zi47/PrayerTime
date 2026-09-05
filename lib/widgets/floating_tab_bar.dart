@@ -14,10 +14,10 @@ class _TabSpec {
 }
 
 List<_TabSpec> _tabs(AppLocalizations t) => [
-      _TabSpec(Icons.home_rounded, t.navPrayer),
-      _TabSpec(Icons.grid_view_rounded, t.navMore),
-      _TabSpec(Icons.tune_rounded, t.navSettings),
-    ];
+  _TabSpec(Icons.home_rounded, t.navPrayer),
+  _TabSpec(Icons.grid_view_rounded, t.navMore),
+  _TabSpec(Icons.tune_rounded, t.navSettings),
+];
 
 /// A floating, pill-shaped nav bar in the style of Samsung One UI 8.5/9 —
 /// detached from the screen edge, glassy/blurred, with a filled capsule
@@ -26,7 +26,11 @@ class FloatingTabBar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
 
-  const FloatingTabBar({super.key, required this.index, required this.onSelect});
+  const FloatingTabBar({
+    super.key,
+    required this.index,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +44,21 @@ class FloatingTabBar extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(999),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+              // Real-time blur is one of the more expensive things a frame
+              // can do (especially on Impeller, Android's default rendering
+              // backend as of this Flutter version) and this bar sits over
+              // content that's constantly changing during tab transitions —
+              // a much smaller sigma keeps the glassy look while cutting
+              // that per-frame cost substantially.
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: AppColors.surface.withValues(alpha: 0.78),
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.4),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.neutral900.withValues(alpha: 0.2),
@@ -80,7 +92,11 @@ class _FloatingTabButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _FloatingTabButton({required this.spec, required this.selected, required this.onTap});
+  const _FloatingTabButton({
+    required this.spec,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +106,10 @@ class _FloatingTabButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(horizontal: selected ? 20 : 16, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: selected ? 20 : 16,
+          vertical: 12,
+        ),
         decoration: BoxDecoration(
           color: selected ? AppColors.accent : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
@@ -101,7 +120,9 @@ class _FloatingTabButton extends StatelessWidget {
             Icon(
               spec.icon,
               size: 20,
-              color: selected ? AppColors.bg : AppColors.text.withValues(alpha: 0.55),
+              color: selected
+                  ? AppColors.bg
+                  : AppColors.text.withValues(alpha: 0.55),
             ),
             AnimatedSize(
               duration: const Duration(milliseconds: 320),

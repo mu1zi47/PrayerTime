@@ -4,21 +4,15 @@
          release builds only see this main manifest — without it here,
          every network call fails with SocketException in release builds. -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Needed to schedule/show prayer-time notifications and azan alarms,
-         including a full-screen alarm-style takeover on the lock screen. -->
+    <!-- Needed for the "detect automatically" button on the city picker. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- Needed to schedule/show prayer-time notifications. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!-- The Now Bar notification (current/next prayer) is backed by a real
-         foreground service using Android 16's "Live Updates" / promoted-
-         notification APIs — the same mechanism actual Now Bar apps use —
-         rather than a plain ongoing notification (see NowBarService). -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
-    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
         android:label="Prayer times"
         android:name="${applicationName}"
@@ -51,7 +45,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Reschedules pending prayer/azan alarms after a reboot or app
+        <!-- Reschedules pending prayer-time alarms after a reboot or app
              update, since AlarmManager entries don't survive those. -->
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
@@ -63,13 +57,29 @@
         </receiver>
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
 
-        <!-- Foreground service behind the Now Bar notification (current/next
-             prayer). "dataSync" mirrors the type real Now Bar apps use for
-             this kind of periodically-refreshed live status. -->
-        <service
-            android:name=".NowBarService"
+        <!-- Handles taps on a notification's action buttons (e.g. the
+             "Прочитал"/"Done" button on a prayer notification) — without
+             this, the button shows but tapping it does nothing, since the
+             PendingIntent it fires has no declared receiver to catch it. -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"/>
+
+        <!-- Home-screen widget: current prayer, next prayer, countdown and a
+             "prayed" button (see PrayerWidgetProvider). Unexported on
+             purpose — the system delivers APPWIDGET_UPDATE to it directly,
+             and everything else it reacts to is an explicit intent this app
+             sends itself, so no other app can drive its "mark as prayed"
+             action. -->
+        <receiver
+            android:name=".widget.PrayerWidgetProvider"
             android:exported="false"
-            android:foregroundServiceType="dataSync"/>
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/prayer_widget_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

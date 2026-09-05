@@ -21,6 +21,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nextPrayerLabel => 'Следующий намаз';
 
   @override
+  String nextPrayerTomorrowLabel(String date) {
+    return 'Завтра, $date';
+  }
+
+  @override
+  String yesterdayCurrentLabel(String date) {
+    return 'Вчера, $date';
+  }
+
+  @override
   String get todayLabel => 'Сегодня';
 
   @override
@@ -33,13 +43,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stopButton => 'Остановить';
 
   @override
-  String get azanScreenTitle => 'Азан';
-
-  @override
-  String get azanPlaceholderNote =>
-      'Пока у всех чтецов звучит один и тот же временный сигнал — настоящие записи будут добавлены позже.';
-
-  @override
   String get citySelectTitle => 'Выбор города';
 
   @override
@@ -47,6 +50,29 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cityAutoDetect => 'Определить автоматически';
+
+  @override
+  String get cityAutoDetecting => 'Определяем ваше местоположение…';
+
+  @override
+  String get cityCurrentLocation => 'Текущее местоположение';
+
+  @override
+  String get cityLocationServiceDisabled =>
+      'Включите геолокацию в настройках устройства';
+
+  @override
+  String get cityLocationPermissionDenied =>
+      'Нет доступа к геолокации. Разрешите доступ в настройках';
+
+  @override
+  String get cityLocationErrorGeneric => 'Не удалось определить местоположение';
+
+  @override
+  String get cityOpenSettingsButton => 'Открыть настройки';
+
+  @override
+  String get cityOnlineResultsTitle => 'Найдено онлайн';
 
   @override
   String get cityMoscow => 'Москва';
@@ -85,6 +111,42 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cityMecca => 'Мекка';
 
   @override
+  String get cityMedina => 'Медина';
+
+  @override
+  String get cityMinsk => 'Минск';
+
+  @override
+  String get cityAstana => 'Астана';
+
+  @override
+  String get cityYerevan => 'Ереван';
+
+  @override
+  String get cityChisinau => 'Кишинёв';
+
+  @override
+  String get cityBishkek => 'Бишкек';
+
+  @override
+  String get cityDushanbe => 'Душанбе';
+
+  @override
+  String get cityAshgabat => 'Ашхабад';
+
+  @override
+  String get citySamarkand => 'Самарканд';
+
+  @override
+  String get cityBukhara => 'Бухара';
+
+  @override
+  String get cityNamangan => 'Наманган';
+
+  @override
+  String get cityAndijan => 'Андижан';
+
+  @override
   String get countryRussia => 'Россия';
 
   @override
@@ -107,6 +169,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get countrySaudiArabia => 'Саудовская Аравия';
+
+  @override
+  String get countryBelarus => 'Беларусь';
+
+  @override
+  String get countryArmenia => 'Армения';
+
+  @override
+  String get countryMoldova => 'Молдова';
+
+  @override
+  String get countryKyrgyzstan => 'Киргизия';
+
+  @override
+  String get countryTajikistan => 'Таджикистан';
+
+  @override
+  String get countryTurkmenistan => 'Туркменистан';
 
   @override
   String get methodScreenTitle => 'Метод расчёта';
@@ -139,9 +219,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get allahNamesTitle => 'Имена Аллаха';
 
   @override
-  String get myPrayersTitle => 'Мои намазы';
-
-  @override
   String get allahNamesSubtitle => 'Аль-Асма уль-Хусна';
 
   @override
@@ -166,57 +243,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationsScreenTitle => 'Уведомления';
 
   @override
-  String get azanByPrayersKicker => 'Азан по намазам';
-
-  @override
-  String get soundKicker => 'Звук';
-
-  @override
-  String azanSoundRow(String reciter) {
-    return 'Азан — $reciter';
-  }
-
-  @override
-  String get reciterAbdulbasit => 'Абдульбасит Абдуссамат';
-
-  @override
-  String get reciterAknazar => 'Акназар Маратулы';
-
-  @override
-  String get reciterAliAhmedMulla => 'Али Ахмед Мулла';
-
-  @override
-  String get reciterAhmedAlNufais => 'Ахмед аль-Нуфайс';
-
-  @override
-  String get reciterBaubek => 'Баубек Бердыгалиулы';
-
-  @override
-  String get reciterMustafaIsmail => 'Мустафа Исмаил';
-
-  @override
-  String get reciterMishari => 'Мишари Рашид аль-Афаси';
-
-  @override
-  String get reciterMustafaOzcan => 'Мустафа Осджан Гунешдогды';
-
-  @override
-  String get reciterMansurZahrani => 'Мансур аз-Захрани';
-
-  @override
-  String get reciterNasirQatami => 'Насир аль-Катами';
-
-  @override
-  String get reciterRaadKurdi => 'Раад Мухаммад аль-Курди';
-
-  @override
-  String get reciterSaidmuhammed => 'Саидмухаммед Ныгмат';
-
-  @override
-  String get reciterNoteTakbirShort => 'такбир, короткая версия';
-
-  @override
-  String get reciterNoteStudioRecording => 'студийная запись';
+  String get azanByPrayersKicker => 'Уведомления по намазам';
 
   @override
   String get quietKicker => 'Тишина';
@@ -225,45 +252,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dontDisturbNight => 'Не беспокоить ночью';
 
   @override
-  String get nowBarScreenTitle => 'Now Bar';
-
-  @override
-  String get nowBarAvailability =>
-      'Доступно только на Samsung с One UI 7 и выше';
-
-  @override
-  String get nowBarShowCurrent => 'Показывать текущий намаз';
-
-  @override
-  String get nowBarShowNext => 'Показывать следующий намаз';
-
-  @override
-  String get nowBarAllowPermission => 'Разрешить показ в Now Bar';
-
-  @override
-  String get myPrayersSubtitle => 'Отмечайте прочитанные намазы';
-
-  @override
-  String prayerLogDone(int done, int total) {
-    return 'Выполнено $done из $total';
+  String logSheetTitle(String prayer) {
+    return 'Как прошёл $prayer?';
   }
 
   @override
-  String prayerLogLateSuffix(int count) {
-    return ' · Не вовремя: $count';
-  }
+  String get logSheetSubtitle => 'Отметьте, как вы совершили этот намаз';
 
   @override
-  String get notYetDue => 'Ещё не наступил';
+  String get logSheetOnTime => 'Прочитал вовремя';
 
   @override
-  String get statusOnTime => 'Вовремя';
+  String get logSheetLate => 'Прочитал с опозданием';
 
   @override
-  String get statusLate => 'Не вовремя';
+  String get logSheetClear => 'Убрать отметку';
 
   @override
   String get settingsScreenTitle => 'Настройки';
+
+  @override
+  String get prayerSettingsTitle => 'Время намаза';
+
+  @override
+  String get systemSettingsTitle => 'Системные настройки';
 
   @override
   String get cityKicker => 'Город';
@@ -278,10 +290,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get madhabHanafi => 'Ханафи';
 
   @override
-  String get azanAndReminders => 'Азан и напоминания';
-
-  @override
-  String get nowBarSettingsRow => 'Текущий и следующий намаз';
+  String get azanAndReminders => 'Уведомления и напоминания';
 
   @override
   String get themeKicker => 'Тема';
@@ -294,6 +303,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get themeSystem => 'Системная';
+
+  @override
+  String get tahajjudKicker => 'Тахаджуд-намаз';
+
+  @override
+  String get tahajjudEnableRow => 'Показывать тахаджуд-намаз';
+
+  @override
+  String get prayerTahajjud => 'Тахаджуд';
 
   @override
   String get prayerFajr => 'Фаджр';
@@ -407,11 +425,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String notifAzanTitle(String prayer) {
-    return 'Азан — $prayer';
-  }
-
-  @override
   String notifPlainTitle(String prayer) {
     return 'Наступил намаз $prayer';
   }
@@ -420,17 +433,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notifBody => 'Время совершить намаз';
 
   @override
-  String get nowBarNotificationTitle => 'Намаз';
-
-  @override
-  String nowBarCurrentLine(String prayer) {
-    return 'Сейчас: $prayer';
-  }
-
-  @override
-  String nowBarNextLine(String prayer, String time) {
-    return 'Далее: $prayer в $time';
-  }
+  String get notifMarkDoneAction => 'Прочитал';
 
   @override
   String get errorTimeout =>
@@ -451,4 +454,43 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get genericLoadError => 'Не удалось загрузить времена намаза.';
+
+  @override
+  String get errorOfflineSettingsChange =>
+      'Чтобы изменить эти настройки, нужно подключение к интернету.';
+
+  @override
+  String get calendarScreenTitle => 'Календарь намазов';
+
+  @override
+  String get legendOnTime => 'Вовремя';
+
+  @override
+  String get legendQada => 'С опозданием';
+
+  @override
+  String get legendMissed => 'Пропущено';
+
+  @override
+  String get notifEveningReminderTitle => 'Не забудьте отметить намазы';
+
+  @override
+  String get notifEveningReminderBody =>
+      'Загляните в приложение и отметьте, как прошёл сегодняшний день';
+
+  @override
+  String notifPrayerEndingTitle(String prayer) {
+    return 'Время намаза $prayer заканчивается';
+  }
+
+  @override
+  String notifPrayerEndingBody(int minutes) {
+    return 'Осталось $minutes мин, а намаз ещё не отмечен как прочитанный';
+  }
+
+  @override
+  String get widgetMarkedLabel => 'Отмечено';
+
+  @override
+  String get widgetNoDataLabel => 'Откройте приложение';
 }

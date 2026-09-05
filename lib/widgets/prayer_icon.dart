@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
-enum PrayerKind { fajr, sunrise, zuhr, asr, maghrib, isha }
+enum PrayerKind { tahajjud, fajr, sunrise, zuhr, asr, maghrib, isha }
 
 IconData iconForPrayer(PrayerKind kind) {
   switch (kind) {
+    case PrayerKind.tahajjud:
+      return Icons.bedtime_rounded;
     case PrayerKind.fajr:
       return Icons.wb_twilight_rounded;
     case PrayerKind.sunrise:
@@ -26,6 +28,8 @@ IconData iconForPrayer(PrayerKind kind) {
 /// anywhere without a BuildContext (see AppState, NotificationService).
 String nameForPrayer(AppLocalizations t, PrayerKind kind) {
   switch (kind) {
+    case PrayerKind.tahajjud:
+      return t.prayerTahajjud;
     case PrayerKind.fajr:
       return t.prayerFajr;
     case PrayerKind.sunrise:
@@ -43,6 +47,8 @@ String nameForPrayer(AppLocalizations t, PrayerKind kind) {
 
 String arabicForPrayer(PrayerKind kind) {
   switch (kind) {
+    case PrayerKind.tahajjud:
+      return 'التهجد';
     case PrayerKind.fajr:
       return 'الفجر';
     case PrayerKind.sunrise:

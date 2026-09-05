@@ -7,7 +7,11 @@ class NotifModeSelector extends StatelessWidget {
   final NotifMode value;
   final ValueChanged<NotifMode> onChanged;
 
-  const NotifModeSelector({super.key, required this.value, required this.onChanged});
+  const NotifModeSelector({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   static const _modes = NotifMode.values;
   static const _segmentSize = 34.0;
@@ -19,7 +23,7 @@ class NotifModeSelector extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: AppColors.bg,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Stack(
         alignment: Alignment.centerLeft,
@@ -34,7 +38,7 @@ class NotifModeSelector extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: AppColors.accent,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
             ),
           ),
@@ -51,7 +55,9 @@ class NotifModeSelector extends StatelessWidget {
                     child: Icon(
                       mode.icon,
                       size: 16,
-                      color: mode == value ? AppColors.bg : AppColors.text.withValues(alpha: 0.5),
+                      color: mode == value
+                          ? AppColors.bg
+                          : AppColors.text.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'models/app_locale.dart';
 import 'navigation.dart';
-import 'screens/azan_playing_screen.dart';
 import 'screens/root_shell.dart';
 import 'state/app_state.dart';
 import 'theme/app_colors.dart';
@@ -30,42 +29,19 @@ class PrayerTimeApp extends StatefulWidget {
   State<PrayerTimeApp> createState() => _PrayerTimeAppState();
 }
 
-class _PrayerTimeAppState extends State<PrayerTimeApp>
-    with WidgetsBindingObserver {
+class _PrayerTimeAppState extends State<PrayerTimeApp> {
   late final AppState _appState = widget.appState ?? AppState();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _appState.notifications.onNotificationTapped = (fired) {
-      navigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder: (_) => AzanPlayingScreen(
-            kind: fired.kind,
-            azanSoundId: fired.azanSoundId,
-          ),
-        ),
-      );
-    };
     _appState.init();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _appState.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Catches the user coming straight back from the Now Bar permission
-    // screen (see AppState.openNowBarSettings) so Settings reflects the
-    // change immediately instead of waiting for the next 1-minute tick.
-    if (state == AppLifecycleState.resumed) {
-      _appState.refreshNowBarPermission();
-    }
   }
 
   @override
@@ -76,7 +52,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp>
     // the listener has to sit at or above it.
     //
     // `home` is passed in via `child` rather than built inside the builder:
-    // every AppState.notifyListeners() call (city, madhab, azan sound, …)
+    // every AppState.notifyListeners() call (city, madhab, notif mode, …)
     // would otherwise recreate `_ThemedRoot` — and with it the entire
     // RootShell subtree — from scratch on every change, which is what made
     // toggling the theme (a full recolor on top of that) visibly janky.

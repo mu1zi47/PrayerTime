@@ -3,59 +3,75 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/azan_sounds.dart';
-import '../data/next_prayer.dart';
 import '../data/reference_data.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
 import '../models/notif_mode.dart';
 import '../models/prayer_day.dart';
 import '../models/prayer_log_status.dart';
+import '../services/connectivity_service.dart';
+import '../services/home_widget_bridge.dart';
 import '../services/notification_service.dart';
-import '../services/now_bar_support.dart';
+import '../services/prayer_cache_store.dart';
+import '../services/prayer_log_store.dart';
 import '../services/prayer_times_api.dart';
-import '../widgets/prayer_icon.dart';
 
 const _kCity = 'city';
+const _kCityV2 = 'city_v2';
 const _kMadhab = 'madhab';
 const _kQuiet = 'quiet';
-const _kAzanSound = 'azan_sound';
 const _kNotifPrefix = 'notif_';
 const _kThemeMode = 'theme_mode';
 const _kLocale = 'locale';
-const _kNowBarCurrent = 'now_bar_current';
-const _kNowBarNext = 'now_bar_next';
 const _kFavoriteNames = 'favorite_allah_names';
 const _kMethod = 'method';
-const _kPrayerLog = 'prayer_log';
+const _kTahajjudEnabled = 'tahajjud_enabled';
+
+// The home screen's day window: enough of the past that the current-prayer
+// calculation always has yesterday on hand (see computeCurrentPrayer's
+// todayIndex fallback), and enough of the future for a useful offline
+// preview range — see AppState.loadPrayerTimes.
+const _pastDays = 7;
+const _futureDays = 7;
 
 class AppState extends ChangeNotifier {
-  AppState({PrayerTimesApi? api, NotificationService? notifications})
-      : _api = api ?? PrayerTimesApi(),
-        _notifications = notifications ?? NotificationService();
+  AppState({
+    PrayerTimesApi? api,
+    NotificationService? notifications,
+    PrayerCacheStore? cache,
+    ConnectivityService? connectivity,
+    HomeWidgetBridge? homeWidget,
+  }) : _api = api ?? PrayerTimesApi(),
+       _notifications = notifications ?? NotificationService(),
+       _cache = cache ?? const PrayerCacheStore(),
+       _connectivity = connectivity ?? const ConnectivityService(),
+       _homeWidget = homeWidget ?? const HomeWidgetBridge();
 
   final PrayerTimesApi _api;
   final NotificationService _notifications;
+  final PrayerCacheStore _cache;
+  final ConnectivityService _connectivity;
+  final HomeWidgetBridge _homeWidget;
+  AppLifecycleListener? _lifecycle;
 
   String _method = 'uzbekistan';
   String _madhab = 'hanafi';
-  String _selectedCityId = 'tashkent';
+  City _selectedCity = ReferenceData.cities.firstWhere(
+    (c) => c.id == 'tashkent',
+  );
   bool _quiet = false;
-  String _azanSoundId = AzanSounds.all.first.id;
   ThemeMode _themeMode = ThemeMode.system;
   AppLocale _locale = AppLocale.ru;
-  bool _nowBarCurrentPrayer = true;
-  bool _nowBarNextPrayer = true;
-  bool _nowBarSupported = false;
-  bool _nowBarPermissionGranted = false;
-  Timer? _nowBarTicker;
   final Set<int> _favoriteNames = {};
+  bool _tahajjudEnabled = false;
 
   final Map<String, Map<String, PrayerLogStatus>> _prayerLog = {};
 
   final Map<String, NotifMode> _notifMode = {
+    'tahajjud': NotifMode.notification,
     'fajr': NotifMode.notification,
     'zuhr': NotifMode.notification,
     'asr': NotifMode.notification,
@@ -71,21 +87,20 @@ class AppState extends ChangeNotifier {
   String get method => _method;
   String get methodLabel => methodLabelFor(_t, _resolvedMethod.id);
   String get madhab => _madhab;
-  String get selectedCityId => _selectedCityId;
+  City get selectedCity => _selectedCity;
+  String get selectedCityId => _selectedCity.id;
+  String cityLabel(AppLocalizations t) => cityNameFor(t, _selectedCity);
   bool get quiet => _quiet;
-  String get azanSoundId => _azanSoundId;
   ThemeMode get themeMode => _themeMode;
   AppLocale get locale => _locale;
-  bool get nowBarCurrentPrayer => _nowBarCurrentPrayer;
-  bool get nowBarNextPrayer => _nowBarNextPrayer;
-  bool get nowBarSupported => _nowBarSupported;
-  bool get nowBarPermissionGranted => _nowBarPermissionGranted;
+  bool get tahajjudEnabled => _tahajjudEnabled;
   Set<int> get favoriteNames => Set.unmodifiable(_favoriteNames);
   bool isFavoriteName(int number) => _favoriteNames.contains(number);
 
   Map<String, PrayerLogStatus> prayerLogFor(DateTime date) =>
       Map.unmodifiable(_prayerLog[_dateKey(date)] ?? const {});
-  PrayerLogStatus? prayerStatusFor(DateTime date, String prayerKey) => _prayerLog[_dateKey(date)]?[prayerKey];
+  PrayerLogStatus? prayerStatusFor(DateTime date, String prayerKey) =>
+      _prayerLog[_dateKey(date)]?[prayerKey];
   Map<String, NotifMode> get notifMode => Map.unmodifiable(_notifMode);
   NotificationService get notifications => _notifications;
 
@@ -93,13 +108,89 @@ class AppState extends ChangeNotifier {
   bool get isLoadingDays => _isLoadingDays;
   String? get daysError => _daysError;
 
-  City get _city => ReferenceData.cities.firstWhere(
-        (c) => c.id == _selectedCityId,
-        orElse: () => ReferenceData.cities.first,
-      );
+  /// Index of "today" within [days] — [days] spans [_pastDays] before it
+  /// through [_futureDays] after, so unlike before, it's not always 0. Falls
+  /// back to the closest date on hand if today's own entry is missing (a
+  /// cache stale enough to no longer straddle the real today).
+  int get todayIndex {
+    if (_days.isEmpty) return 0;
+    final today = DateTime(cityNow.year, cityNow.month, cityNow.day);
+    final exact = _days.indexWhere((d) => _isSameDate(d.date, today));
+    if (exact != -1) return exact;
+    var closest = 0;
+    var bestDiff = _days.first.date.difference(today).abs();
+    for (var i = 1; i < _days.length; i++) {
+      final diff = _days[i].date.difference(today).abs();
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        closest = i;
+      }
+    }
+    return closest;
+  }
 
-  PrayerMethod get _resolvedMethod =>
-      ReferenceData.methods.firstWhere((m) => m.id == _method, orElse: () => ReferenceData.methods.first);
+  PrayerDay? get todayPrayerDay => _days.isEmpty ? null : _days[todayIndex];
+
+  /// The prayer-day currently "in progress", for logging purposes —
+  /// distinct from [todayIndex]'s plain calendar date. Between midnight and
+  /// today's own Fajr, the night before's Isha window hasn't closed yet, so
+  /// the anchor stays on yesterday's date until Fajr actually arrives (the
+  /// same boundary `computeCurrentPrayer` uses for "current prayer").
+  DateTime get _prayerDayAnchor {
+    final now = cityNow;
+    final calendarToday = DateTime(now.year, now.month, now.day);
+    PrayerDay? todayRecord;
+    for (final d in _days) {
+      if (_isSameDate(d.date, calendarToday)) {
+        todayRecord = d;
+        break;
+      }
+    }
+    if (todayRecord != null &&
+        now.isBefore(_utcCombine(todayRecord.date, todayRecord.fajr))) {
+      return calendarToday.subtract(const Duration(days: 1));
+    }
+    return calendarToday;
+  }
+
+  /// A day can only be marked/edited while it's the current prayer-day or
+  /// the one right before it — everything older is locked in, so the log
+  /// reflects what was actually true at the time rather than being
+  /// rewritable after the fact.
+  bool isDayEditable(DateTime date) {
+    final anchor = _prayerDayAnchor;
+    final target = DateTime(date.year, date.month, date.day);
+    final yesterday = anchor.subtract(const Duration(days: 1));
+    return _isSameDate(target, anchor) || _isSameDate(target, yesterday);
+  }
+
+  /// True once a day's edit window has fully closed (strictly older than
+  /// "yesterday", see [isDayEditable]) — for the calendar screen, which
+  /// needs to tell "not judged yet" apart from "judged and missed".
+  bool isDayLocked(DateTime date) {
+    final target = DateTime(date.year, date.month, date.day);
+    final yesterday = _prayerDayAnchor.subtract(const Duration(days: 1));
+    return target.isBefore(yesterday);
+  }
+
+  static bool _isSameDate(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  static DateTime _utcCombine(DateTime date, String hhmm) {
+    final parts = hhmm.split(':');
+    return DateTime.utc(
+      date.year,
+      date.month,
+      date.day,
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+    );
+  }
+
+  PrayerMethod get _resolvedMethod => ReferenceData.methods.firstWhere(
+    (m) => m.id == _method,
+    orElse: () => ReferenceData.methods.first,
+  );
 
   int get _methodCode => _resolvedMethod.aladhanCode;
   String? get _methodTune => _resolvedMethod.tune;
@@ -107,68 +198,80 @@ class AppState extends ChangeNotifier {
   int get _school => _madhab == 'hanafi' ? 1 : 0;
 
   /// Localized strings in the currently selected [locale] — for text built
-  /// outside a widget's `build()` (Now Bar, scheduled-notification titles),
-  /// where there's no BuildContext to pull `AppLocalizations.of(context)`
-  /// from.
+  /// outside a widget's `build()` (scheduled-notification titles), where
+  /// there's no BuildContext to pull `AppLocalizations.of(context)` from.
   AppLocalizations get _t => lookupAppLocalizations(_locale.localeValue);
 
-  DateTime get cityNow => DateTime.now().toUtc().add(Duration(hours: _city.utcOffsetHours));
+  DateTime get cityNow => DateTime.now().toUtc().add(_selectedCity.utcOffset);
 
   Future<void> init() async {
     await _restore();
+    // The home-screen widget writes the prayer log straight to disk, behind
+    // this object's own in-memory copy (see HomeWidgetBridge) — so whatever
+    // was marked from the widget while the app sat in the background is
+    // picked up the moment the app comes back to the foreground.
+    _lifecycle = AppLifecycleListener(onResume: _reloadPrayerLog);
+    // Routes the notification's "Прочитал"/"Done" action through the same
+    // path the "Мои намазы" screen itself uses, so it updates in-memory
+    // state (and notifies listeners) rather than only the disk copy.
+    _notifications.onMarkDone = (date, prayerKey) async =>
+        setPrayerStatus(date, prayerKey, PrayerLogStatus.onTime);
     try {
       await _notifications.init().timeout(const Duration(seconds: 5));
     } catch (_) {
       // Ignored — see doc comment above.
     }
-    _nowBarSupported = await NowBarSupport.isAvailable();
-    if (_nowBarSupported) {
-      _nowBarPermissionGranted = await _notifications.canPostPromotedNotifications();
-    }
-    _nowBarTicker = Timer.periodic(const Duration(minutes: 1), (_) {
-      refreshNowBarPermission();
-      _refreshNowBar();
-    });
     await loadPrayerTimes();
   }
 
   @override
   void dispose() {
-    _nowBarTicker?.cancel();
+    _lifecycle?.dispose();
     super.dispose();
   }
 
   Future<void> _restore() async {
     final prefs = await SharedPreferences.getInstance();
-    _selectedCityId = prefs.getString(_kCity) ?? _selectedCityId;
+    final cityJson = prefs.getString(_kCityV2);
+    if (cityJson != null) {
+      try {
+        _selectedCity = City.fromJson(
+          jsonDecode(cityJson) as Map<String, dynamic>,
+        );
+      } catch (_) {
+        // Ignored — corrupt/unreadable entry keeps the default city.
+      }
+    } else {
+      // Migrates the old plain-id format from before custom (searched/GPS)
+      // cities existed.
+      final legacyId = prefs.getString(_kCity);
+      if (legacyId != null) {
+        _selectedCity = ReferenceData.cities.firstWhere(
+          (c) => c.id == legacyId,
+          orElse: () => _selectedCity,
+        );
+      }
+    }
     _method = prefs.getString(_kMethod) ?? _method;
     _madhab = prefs.getString(_kMadhab) ?? _madhab;
     _quiet = prefs.getBool(_kQuiet) ?? _quiet;
-    _azanSoundId = prefs.getString(_kAzanSound) ?? _azanSoundId;
     _themeMode = _themeModeFromName(prefs.getString(_kThemeMode));
-    _locale = AppLocale.fromName(prefs.getString(_kLocale));
-    _nowBarCurrentPrayer = prefs.getBool(_kNowBarCurrent) ?? _nowBarCurrentPrayer;
-    _nowBarNextPrayer = prefs.getBool(_kNowBarNext) ?? _nowBarNextPrayer;
+    final savedLocale = prefs.getString(_kLocale);
+    // First launch (nothing saved yet) follows the device's own language;
+    // once the user has picked one — even by just landing on this default —
+    // that choice is what's saved and respected from then on.
+    _locale = savedLocale != null
+        ? AppLocale.fromName(savedLocale)
+        : AppLocale.fromSystemLocale(PlatformDispatcher.instance.locale);
+    _tahajjudEnabled = prefs.getBool(_kTahajjudEnabled) ?? _tahajjudEnabled;
     _favoriteNames
       ..clear()
-      ..addAll((prefs.getStringList(_kFavoriteNames) ?? const []).map(int.parse));
-    final logRaw = prefs.getString(_kPrayerLog);
-    _prayerLog.clear();
-    if (logRaw != null) {
-      try {
-        final decoded = jsonDecode(logRaw) as Map<String, dynamic>;
-        for (final dayEntry in decoded.entries) {
-          final day = <String, PrayerLogStatus>{};
-          for (final prayerEntry in (dayEntry.value as Map<String, dynamic>).entries) {
-            final status = PrayerLogStatus.fromName(prayerEntry.value as String);
-            if (status != null) day[prayerEntry.key] = status;
-          }
-          if (day.isNotEmpty) _prayerLog[dayEntry.key] = day;
-        }
-      } catch (_) {
-        // Ignored — corrupt/unreadable log starts fresh rather than crashing.
-      }
-    }
+      ..addAll(
+        (prefs.getStringList(_kFavoriteNames) ?? const []).map(int.parse),
+      );
+    _prayerLog
+      ..clear()
+      ..addAll(_decodeLog(prefs.getString(kPrayerLogPrefsKey)));
     for (final key in _notifMode.keys) {
       final saved = prefs.getString('$_kNotifPrefix$key');
       if (saved != null) _notifMode[key] = NotifMode.fromName(saved);
@@ -176,44 +279,117 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get _cacheSignature => PrayerCacheStore.signatureFor(
+    cityId: _selectedCity.id,
+    method: _method,
+    madhab: _madhab,
+  );
+
   Future<void> loadPrayerTimes() async {
     final generation = ++_requestGeneration;
     _isLoadingDays = true;
     _daysError = null;
     notifyListeners();
 
-    final city = _city;
+    final city = _selectedCity;
     final now = cityNow;
+    final today = DateTime(now.year, now.month, now.day);
+    final signature = _cacheSignature;
+
+    final online = await _connectivity.hasConnection();
+    if (generation != _requestGeneration) return;
+
+    if (!online) {
+      await _useCachedDays(generation, signature, fallbackError: null);
+      return;
+    }
 
     try {
-      final fetched = await _api.fetchUpcomingDays(
+      final fetched = await _api.fetchDaysWindow(
         city: city,
         methodCode: _methodCode,
         school: _school,
         tune: _methodTune,
-        from: DateTime(now.year, now.month, now.day),
+        centerDay: today,
+        pastDays: _pastDays,
+        futureDays: _futureDays,
       );
       if (generation != _requestGeneration) return;
-      _days = fetched;
+      _days = fetched.days;
+      // A custom (searched/GPS) city has no time zone up front — and even a
+      // curated one is worth reconciling against what the API actually
+      // resolved for its coordinates. Persist it so cityNow/notifications
+      // stay correct without waiting on another fetch.
+      if (fetched.timeZone.isNotEmpty &&
+          fetched.timeZone != _selectedCity.timeZone) {
+        _selectedCity = _selectedCity.withTimeZone(fetched.timeZone);
+        _save((p) => p.setString(_kCityV2, jsonEncode(_selectedCity.toJson())));
+      }
       _isLoadingDays = false;
       notifyListeners();
       _reschedule();
-      _refreshNowBar();
+      _syncHomeWidget();
+      // Keeps a rolling window of the max fetched days on disk, under the
+      // current city/method/madhab, for the next offline launch.
+      _cache.save(signature: signature, days: fetched.days);
     } catch (e) {
       if (generation != _requestGeneration) return;
+      final fallbackError = e is PrayerApiException
+          ? _apiErrorMessage(e.error)
+          : _t.genericLoadError;
+      await _useCachedDays(generation, signature, fallbackError: fallbackError);
+    }
+  }
+
+  /// Serves whatever's cached for [signature] — including past days, so
+  /// offline mode keeps its history/current-prayer context, not just
+  /// today-onward — or falls back to [fallbackError] (or the generic
+  /// no-connection message) when nothing usable is cached.
+  Future<void> _useCachedDays(
+    int generation,
+    String signature, {
+    required String? fallbackError,
+  }) async {
+    final cached = await _cache.load(signature);
+    if (generation != _requestGeneration) return;
+    cached?.sort((a, b) => a.date.compareTo(b.date));
+
+    if (cached != null && cached.isNotEmpty) {
+      _days = cached;
       _isLoadingDays = false;
-      _daysError = e is PrayerApiException ? _apiErrorMessage(e.error) : _t.genericLoadError;
+      _daysError = null;
+      notifyListeners();
+      _reschedule();
+      _syncHomeWidget();
+    } else {
+      _isLoadingDays = false;
+      _daysError = fallbackError ?? _t.errorNoConnection;
       notifyListeners();
     }
   }
 
   String _apiErrorMessage(PrayerApiError error) => switch (error) {
-        PrayerApiError.timeout => _t.errorTimeout,
-        PrayerApiError.noConnection => _t.errorNoConnection,
-        PrayerApiError.serviceUnavailable => _t.errorServiceUnavailable,
-        PrayerApiError.parseFailed => _t.errorParseFailed,
-        PrayerApiError.fetchFailed => _t.errorFetchFailed,
-      };
+    PrayerApiError.timeout => _t.errorTimeout,
+    PrayerApiError.noConnection => _t.errorNoConnection,
+    PrayerApiError.serviceUnavailable => _t.errorServiceUnavailable,
+    PrayerApiError.parseFailed => _t.errorParseFailed,
+    PrayerApiError.fetchFailed => _t.errorFetchFailed,
+  };
+
+  /// Rewrites the home-screen widget's own copy of the schedule (see
+  /// [HomeWidgetBridge]) — it draws itself with no Flutter engine running,
+  /// so it can't ask for any of this later.
+  void _syncHomeWidget() {
+    if (_days.isEmpty) return;
+    _homeWidget
+        .publish(
+          days: _days,
+          utcOffset: _selectedCity.utcOffset,
+          themeMode: _themeMode,
+          t: _t,
+        )
+        .catchError((_) {});
+  }
 
   void _reschedule() {
     if (_days.isEmpty) return;
@@ -223,33 +399,46 @@ class AppState extends ChangeNotifier {
         .scheduleForDays(
           days: _days,
           notifMode: _notifMode,
-          azanSoundId: _azanSoundId,
-          utcOffsetHours: _city.utcOffsetHours,
+          utcOffset: _selectedCity.utcOffset,
           locale: _locale,
           quietHoursEnabled: _quiet,
+          includeTahajjud: _tahajjudEnabled,
+          prayerLog: _prayerLog,
         )
         .catchError((_) {});
   }
 
-  void selectMadhab(String id) {
+  // City/method/madhab all require a fresh fetch (a cached batch only
+  // covers the settings it was fetched under) — so changing any of them
+  // without a connection is refused rather than silently left unresolved.
+  // Callers should surface [AppLocalizations.errorOfflineSettingsChange]
+  // when this returns false.
+
+  Future<bool> selectMadhab(String id) async {
+    if (!await _connectivity.hasConnection()) return false;
     _madhab = id;
     notifyListeners();
     loadPrayerTimes();
     _save((p) => p.setString(_kMadhab, id));
+    return true;
   }
 
-  void selectCity(String cityId) {
-    _selectedCityId = cityId;
+  Future<bool> selectCity(City city) async {
+    if (!await _connectivity.hasConnection()) return false;
+    _selectedCity = city;
     notifyListeners();
     loadPrayerTimes();
-    _save((p) => p.setString(_kCity, cityId));
+    _save((p) => p.setString(_kCityV2, jsonEncode(city.toJson())));
+    return true;
   }
 
-  void selectMethod(String id) {
+  Future<bool> selectMethod(String id) async {
+    if (!await _connectivity.hasConnection()) return false;
     _method = id;
     notifyListeners();
     loadPrayerTimes();
     _save((p) => p.setString(_kMethod, id));
+    return true;
   }
 
   void setNotifMode(String key, NotifMode mode) {
@@ -259,13 +448,6 @@ class AppState extends ChangeNotifier {
     _save((p) => p.setString('$_kNotifPrefix$key', mode.name));
   }
 
-  void selectAzanSound(String id) {
-    _azanSoundId = id;
-    notifyListeners();
-    _reschedule();
-    _save((p) => p.setString(_kAzanSound, id));
-  }
-
   void toggleQuiet() {
     _quiet = !_quiet;
     notifyListeners();
@@ -273,30 +455,107 @@ class AppState extends ChangeNotifier {
     _reschedule();
   }
 
+  // Tahajjud (last-third-of-the-night prayer): an opt-in extra row on the
+  // home screen, rather than one of the five always-scheduled prayers —
+  // most users don't pray it nightly. Its own notification mode lives in
+  // [_notifMode] under the 'tahajjud' key, same as the other five.
+  void toggleTahajjud() {
+    _tahajjudEnabled = !_tahajjudEnabled;
+    notifyListeners();
+    _save((p) => p.setBool(_kTahajjudEnabled, _tahajjudEnabled));
+    _reschedule();
+  }
+
   void setThemeMode(ThemeMode mode) {
     _themeMode = mode;
     notifyListeners();
     _save((p) => p.setString(_kThemeMode, mode.name));
+    // The home-screen widget follows this setting too, rather than the
+    // phone's own dark mode — see HomeWidgetBridge.
+    _syncHomeWidget();
   }
 
   void setLocale(AppLocale locale) {
     _locale = locale;
     notifyListeners();
     _save((p) => p.setString(_kLocale, locale.name));
-    // Scheduled-notification titles and the Now Bar text are both built
-    // eagerly (see [_t]'s doc comment) — refresh them so they pick up the
-    // new language too, not just the UI.
+    // Scheduled-notification titles are built eagerly (see [_t]'s doc
+    // comment) — refresh them so they pick up the new language too, not
+    // just the UI. The widget's payload carries pre-translated strings for
+    // the same reason.
     _reschedule();
-    _refreshNowBar();
+    _syncHomeWidget();
   }
 
   void toggleFavoriteName(int number) {
     if (!_favoriteNames.remove(number)) _favoriteNames.add(number);
     notifyListeners();
-    _save((p) => p.setStringList(_kFavoriteNames, _favoriteNames.map((n) => n.toString()).toList()));
+    _save(
+      (p) => p.setStringList(
+        _kFavoriteNames,
+        _favoriteNames.map((n) => n.toString()).toList(),
+      ),
+    );
   }
 
-  void setPrayerStatus(DateTime date, String prayerKey, PrayerLogStatus? status) {
+  static Map<String, Map<String, PrayerLogStatus>> _decodeLog(String? raw) {
+    final log = <String, Map<String, PrayerLogStatus>>{};
+    if (raw == null) return log;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      for (final dayEntry in decoded.entries) {
+        final day = <String, PrayerLogStatus>{};
+        for (final prayerEntry
+            in (dayEntry.value as Map<String, dynamic>).entries) {
+          final status = PrayerLogStatus.fromName(prayerEntry.value as String);
+          if (status != null) day[prayerEntry.key] = status;
+        }
+        if (day.isNotEmpty) log[dayEntry.key] = day;
+      }
+    } catch (_) {
+      // Ignored — corrupt/unreadable log starts fresh rather than crashing.
+    }
+    return log;
+  }
+
+  /// Re-reads the log from disk, for marks this object didn't make itself —
+  /// the home-screen widget's "prayed" button (see [_lifecycle]). Rebuilds
+  /// the notification schedule too, so a prayer marked out there stops its
+  /// pending end-of-window reminder as well.
+  Future<void> _reloadPrayerLog() async {
+    final prefs = await SharedPreferences.getInstance();
+    // shared_preferences caches everything in Dart, and the widget's write
+    // bypassed that cache entirely.
+    await prefs.reload();
+    final fresh = _decodeLog(prefs.getString(kPrayerLogPrefsKey));
+    if (_sameLog(fresh, _prayerLog)) return;
+    _prayerLog
+      ..clear()
+      ..addAll(fresh);
+    notifyListeners();
+    _reschedule();
+  }
+
+  static bool _sameLog(
+    Map<String, Map<String, PrayerLogStatus>> a,
+    Map<String, Map<String, PrayerLogStatus>> b,
+  ) {
+    if (a.length != b.length) return false;
+    for (final entry in a.entries) {
+      final other = b[entry.key];
+      if (other == null || other.length != entry.value.length) return false;
+      for (final prayer in entry.value.entries) {
+        if (other[prayer.key] != prayer.value) return false;
+      }
+    }
+    return true;
+  }
+
+  void setPrayerStatus(
+    DateTime date,
+    String prayerKey,
+    PrayerLogStatus? status,
+  ) {
     final key = _dateKey(date);
     final day = _prayerLog.putIfAbsent(key, () => {});
     if (status == null || day[prayerKey] == status) {
@@ -304,80 +563,38 @@ class AppState extends ChangeNotifier {
     } else {
       day[prayerKey] = status;
     }
+    final marked = day.containsKey(prayerKey);
     if (day.isEmpty) _prayerLog.remove(key);
+    // A prayer that's now marked has nothing left to be reminded about, so
+    // its pending "window is closing" nudge is dropped on the spot (see
+    // NotificationService.cancelPrayerEndReminder). Un-marking one instead
+    // has to put that reminder back, which only a full reschedule knows how
+    // to do — it's the rarer path, so it can afford the extra work.
+    if (marked) {
+      _notifications.cancelPrayerEndReminder(date, prayerKey).catchError((_) {});
+    } else {
+      _reschedule();
+    }
     notifyListeners();
+    // The widget reads the log straight from disk rather than from this
+    // object, so it's told to redraw only once that write has landed.
     _save(
       (p) => p.setString(
-        _kPrayerLog,
-        jsonEncode(_prayerLog.map((k, v) => MapEntry(k, v.map((pk, status) => MapEntry(pk, status.name))))),
+        kPrayerLogPrefsKey,
+        jsonEncode(
+          _prayerLog.map(
+            (k, v) =>
+                MapEntry(k, v.map((pk, status) => MapEntry(pk, status.name))),
+          ),
+        ),
       ),
-    );
+    ).then((_) => _homeWidget.refresh()).catchError((_) {});
   }
 
-  String _dateKey(DateTime d) =>
-      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+  String _dateKey(DateTime d) => PrayerLogStore.dateKey(d);
 
-  // Settings for Samsung's "Now Bar" (One UI 7+'s Dynamic-Island-style
-  // surface for ongoing notifications) — see [NowBarSupport] for how
-  // device eligibility is determined.
-  void toggleNowBarCurrentPrayer() {
-    _nowBarCurrentPrayer = !_nowBarCurrentPrayer;
-    notifyListeners();
-    _save((p) => p.setBool(_kNowBarCurrent, _nowBarCurrentPrayer));
-    _refreshNowBar();
-  }
-
-  void toggleNowBarNextPrayer() {
-    _nowBarNextPrayer = !_nowBarNextPrayer;
-    notifyListeners();
-    _save((p) => p.setBool(_kNowBarNext, _nowBarNextPrayer));
-    _refreshNowBar();
-  }
-
-  Future<void> refreshNowBarPermission() async {
-    if (!_nowBarSupported) return;
-    final granted = await _notifications.canPostPromotedNotifications();
-    if (granted != _nowBarPermissionGranted) {
-      _nowBarPermissionGranted = granted;
-      notifyListeners();
-    }
-  }
-
-  Future<void> openNowBarSettings() => _notifications.openPromotedNotificationSettings();
-
-  void _refreshNowBar() {
-    if (!_nowBarSupported) return;
-    if (_days.isEmpty || (!_nowBarCurrentPrayer && !_nowBarNextPrayer)) {
-      _notifications.cancelNowBar();
-      return;
-    }
-
-    final now = cityNow;
-    final current = computeCurrentPrayer(_days, now);
-    final next = computeNextPrayer(_days, now);
-    final t = _t;
-
-    final lines = <String>[
-      if (_nowBarCurrentPrayer && current != null) t.nowBarCurrentLine(nameForPrayer(t, current)),
-      if (_nowBarNextPrayer && next != null) t.nowBarNextLine(nameForPrayer(t, next.kind), next.time),
-    ];
-
-    if (lines.isEmpty) {
-      _notifications.cancelNowBar();
-      return;
-    }
-
-    // The short, glanceable text shown in the Now Bar's compact pill —
-    // prefers whichever of current/next is actually enabled.
-    final shortText = _nowBarCurrentPrayer && current != null
-        ? nameForPrayer(t, current)
-        : (next != null ? nameForPrayer(t, next.kind) : '');
-
-    _notifications.showNowBar(title: t.nowBarNotificationTitle, body: lines.join(' · '), shortText: shortText);
-  }
-
-  static ThemeMode _themeModeFromName(String? name) =>
-      ThemeMode.values.firstWhere((m) => m.name == name, orElse: () => ThemeMode.system);
+  static ThemeMode _themeModeFromName(String? name) => ThemeMode.values
+      .firstWhere((m) => m.name == name, orElse: () => ThemeMode.system);
 
   Future<void> _save(Future<void> Function(SharedPreferences) write) async {
     final prefs = await SharedPreferences.getInstance();

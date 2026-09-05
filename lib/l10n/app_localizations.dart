@@ -126,6 +126,18 @@ abstract class AppLocalizations {
   /// **'Следующий намаз'**
   String get nextPrayerLabel;
 
+  /// No description provided for @nextPrayerTomorrowLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Завтра, {date}'**
+  String nextPrayerTomorrowLabel(String date);
+
+  /// No description provided for @yesterdayCurrentLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вчера, {date}'**
+  String yesterdayCurrentLabel(String date);
+
   /// No description provided for @todayLabel.
   ///
   /// In ru, this message translates to:
@@ -150,18 +162,6 @@ abstract class AppLocalizations {
   /// **'Остановить'**
   String get stopButton;
 
-  /// No description provided for @azanScreenTitle.
-  ///
-  /// In ru, this message translates to:
-  /// **'Азан'**
-  String get azanScreenTitle;
-
-  /// No description provided for @azanPlaceholderNote.
-  ///
-  /// In ru, this message translates to:
-  /// **'Пока у всех чтецов звучит один и тот же временный сигнал — настоящие записи будут добавлены позже.'**
-  String get azanPlaceholderNote;
-
   /// No description provided for @citySelectTitle.
   ///
   /// In ru, this message translates to:
@@ -179,6 +179,48 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Определить автоматически'**
   String get cityAutoDetect;
+
+  /// No description provided for @cityAutoDetecting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Определяем ваше местоположение…'**
+  String get cityAutoDetecting;
+
+  /// No description provided for @cityCurrentLocation.
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущее местоположение'**
+  String get cityCurrentLocation;
+
+  /// No description provided for @cityLocationServiceDisabled.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включите геолокацию в настройках устройства'**
+  String get cityLocationServiceDisabled;
+
+  /// No description provided for @cityLocationPermissionDenied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет доступа к геолокации. Разрешите доступ в настройках'**
+  String get cityLocationPermissionDenied;
+
+  /// No description provided for @cityLocationErrorGeneric.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось определить местоположение'**
+  String get cityLocationErrorGeneric;
+
+  /// No description provided for @cityOpenSettingsButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть настройки'**
+  String get cityOpenSettingsButton;
+
+  /// No description provided for @cityOnlineResultsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найдено онлайн'**
+  String get cityOnlineResultsTitle;
 
   /// No description provided for @cityMoscow.
   ///
@@ -252,6 +294,78 @@ abstract class AppLocalizations {
   /// **'Мекка'**
   String get cityMecca;
 
+  /// No description provided for @cityMedina.
+  ///
+  /// In ru, this message translates to:
+  /// **'Медина'**
+  String get cityMedina;
+
+  /// No description provided for @cityMinsk.
+  ///
+  /// In ru, this message translates to:
+  /// **'Минск'**
+  String get cityMinsk;
+
+  /// No description provided for @cityAstana.
+  ///
+  /// In ru, this message translates to:
+  /// **'Астана'**
+  String get cityAstana;
+
+  /// No description provided for @cityYerevan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ереван'**
+  String get cityYerevan;
+
+  /// No description provided for @cityChisinau.
+  ///
+  /// In ru, this message translates to:
+  /// **'Кишинёв'**
+  String get cityChisinau;
+
+  /// No description provided for @cityBishkek.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бишкек'**
+  String get cityBishkek;
+
+  /// No description provided for @cityDushanbe.
+  ///
+  /// In ru, this message translates to:
+  /// **'Душанбе'**
+  String get cityDushanbe;
+
+  /// No description provided for @cityAshgabat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ашхабад'**
+  String get cityAshgabat;
+
+  /// No description provided for @citySamarkand.
+  ///
+  /// In ru, this message translates to:
+  /// **'Самарканд'**
+  String get citySamarkand;
+
+  /// No description provided for @cityBukhara.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бухара'**
+  String get cityBukhara;
+
+  /// No description provided for @cityNamangan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Наманган'**
+  String get cityNamangan;
+
+  /// No description provided for @cityAndijan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Андижан'**
+  String get cityAndijan;
+
   /// No description provided for @countryRussia.
   ///
   /// In ru, this message translates to:
@@ -299,6 +413,42 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Саудовская Аравия'**
   String get countrySaudiArabia;
+
+  /// No description provided for @countryBelarus.
+  ///
+  /// In ru, this message translates to:
+  /// **'Беларусь'**
+  String get countryBelarus;
+
+  /// No description provided for @countryArmenia.
+  ///
+  /// In ru, this message translates to:
+  /// **'Армения'**
+  String get countryArmenia;
+
+  /// No description provided for @countryMoldova.
+  ///
+  /// In ru, this message translates to:
+  /// **'Молдова'**
+  String get countryMoldova;
+
+  /// No description provided for @countryKyrgyzstan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Киргизия'**
+  String get countryKyrgyzstan;
+
+  /// No description provided for @countryTajikistan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Таджикистан'**
+  String get countryTajikistan;
+
+  /// No description provided for @countryTurkmenistan.
+  ///
+  /// In ru, this message translates to:
+  /// **'Туркменистан'**
+  String get countryTurkmenistan;
 
   /// No description provided for @methodScreenTitle.
   ///
@@ -360,12 +510,6 @@ abstract class AppLocalizations {
   /// **'Имена Аллаха'**
   String get allahNamesTitle;
 
-  /// No description provided for @myPrayersTitle.
-  ///
-  /// In ru, this message translates to:
-  /// **'Мои намазы'**
-  String get myPrayersTitle;
-
   /// No description provided for @allahNamesSubtitle.
   ///
   /// In ru, this message translates to:
@@ -417,104 +561,8 @@ abstract class AppLocalizations {
   /// No description provided for @azanByPrayersKicker.
   ///
   /// In ru, this message translates to:
-  /// **'Азан по намазам'**
+  /// **'Уведомления по намазам'**
   String get azanByPrayersKicker;
-
-  /// No description provided for @soundKicker.
-  ///
-  /// In ru, this message translates to:
-  /// **'Звук'**
-  String get soundKicker;
-
-  /// No description provided for @azanSoundRow.
-  ///
-  /// In ru, this message translates to:
-  /// **'Азан — {reciter}'**
-  String azanSoundRow(String reciter);
-
-  /// No description provided for @reciterAbdulbasit.
-  ///
-  /// In ru, this message translates to:
-  /// **'Абдульбасит Абдуссамат'**
-  String get reciterAbdulbasit;
-
-  /// No description provided for @reciterAknazar.
-  ///
-  /// In ru, this message translates to:
-  /// **'Акназар Маратулы'**
-  String get reciterAknazar;
-
-  /// No description provided for @reciterAliAhmedMulla.
-  ///
-  /// In ru, this message translates to:
-  /// **'Али Ахмед Мулла'**
-  String get reciterAliAhmedMulla;
-
-  /// No description provided for @reciterAhmedAlNufais.
-  ///
-  /// In ru, this message translates to:
-  /// **'Ахмед аль-Нуфайс'**
-  String get reciterAhmedAlNufais;
-
-  /// No description provided for @reciterBaubek.
-  ///
-  /// In ru, this message translates to:
-  /// **'Баубек Бердыгалиулы'**
-  String get reciterBaubek;
-
-  /// No description provided for @reciterMustafaIsmail.
-  ///
-  /// In ru, this message translates to:
-  /// **'Мустафа Исмаил'**
-  String get reciterMustafaIsmail;
-
-  /// No description provided for @reciterMishari.
-  ///
-  /// In ru, this message translates to:
-  /// **'Мишари Рашид аль-Афаси'**
-  String get reciterMishari;
-
-  /// No description provided for @reciterMustafaOzcan.
-  ///
-  /// In ru, this message translates to:
-  /// **'Мустафа Осджан Гунешдогды'**
-  String get reciterMustafaOzcan;
-
-  /// No description provided for @reciterMansurZahrani.
-  ///
-  /// In ru, this message translates to:
-  /// **'Мансур аз-Захрани'**
-  String get reciterMansurZahrani;
-
-  /// No description provided for @reciterNasirQatami.
-  ///
-  /// In ru, this message translates to:
-  /// **'Насир аль-Катами'**
-  String get reciterNasirQatami;
-
-  /// No description provided for @reciterRaadKurdi.
-  ///
-  /// In ru, this message translates to:
-  /// **'Раад Мухаммад аль-Курди'**
-  String get reciterRaadKurdi;
-
-  /// No description provided for @reciterSaidmuhammed.
-  ///
-  /// In ru, this message translates to:
-  /// **'Саидмухаммед Ныгмат'**
-  String get reciterSaidmuhammed;
-
-  /// No description provided for @reciterNoteTakbirShort.
-  ///
-  /// In ru, this message translates to:
-  /// **'такбир, короткая версия'**
-  String get reciterNoteTakbirShort;
-
-  /// No description provided for @reciterNoteStudioRecording.
-  ///
-  /// In ru, this message translates to:
-  /// **'студийная запись'**
-  String get reciterNoteStudioRecording;
 
   /// No description provided for @quietKicker.
   ///
@@ -528,77 +576,53 @@ abstract class AppLocalizations {
   /// **'Не беспокоить ночью'**
   String get dontDisturbNight;
 
-  /// No description provided for @nowBarScreenTitle.
+  /// No description provided for @logSheetTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Now Bar'**
-  String get nowBarScreenTitle;
+  /// **'Как прошёл {prayer}?'**
+  String logSheetTitle(String prayer);
 
-  /// No description provided for @nowBarAvailability.
+  /// No description provided for @logSheetSubtitle.
   ///
   /// In ru, this message translates to:
-  /// **'Доступно только на Samsung с One UI 7 и выше'**
-  String get nowBarAvailability;
+  /// **'Отметьте, как вы совершили этот намаз'**
+  String get logSheetSubtitle;
 
-  /// No description provided for @nowBarShowCurrent.
+  /// No description provided for @logSheetOnTime.
   ///
   /// In ru, this message translates to:
-  /// **'Показывать текущий намаз'**
-  String get nowBarShowCurrent;
+  /// **'Прочитал вовремя'**
+  String get logSheetOnTime;
 
-  /// No description provided for @nowBarShowNext.
+  /// No description provided for @logSheetLate.
   ///
   /// In ru, this message translates to:
-  /// **'Показывать следующий намаз'**
-  String get nowBarShowNext;
+  /// **'Прочитал с опозданием'**
+  String get logSheetLate;
 
-  /// No description provided for @nowBarAllowPermission.
+  /// No description provided for @logSheetClear.
   ///
   /// In ru, this message translates to:
-  /// **'Разрешить показ в Now Bar'**
-  String get nowBarAllowPermission;
-
-  /// No description provided for @myPrayersSubtitle.
-  ///
-  /// In ru, this message translates to:
-  /// **'Отмечайте прочитанные намазы'**
-  String get myPrayersSubtitle;
-
-  /// No description provided for @prayerLogDone.
-  ///
-  /// In ru, this message translates to:
-  /// **'Выполнено {done} из {total}'**
-  String prayerLogDone(int done, int total);
-
-  /// No description provided for @prayerLogLateSuffix.
-  ///
-  /// In ru, this message translates to:
-  /// **' · Не вовремя: {count}'**
-  String prayerLogLateSuffix(int count);
-
-  /// No description provided for @notYetDue.
-  ///
-  /// In ru, this message translates to:
-  /// **'Ещё не наступил'**
-  String get notYetDue;
-
-  /// No description provided for @statusOnTime.
-  ///
-  /// In ru, this message translates to:
-  /// **'Вовремя'**
-  String get statusOnTime;
-
-  /// No description provided for @statusLate.
-  ///
-  /// In ru, this message translates to:
-  /// **'Не вовремя'**
-  String get statusLate;
+  /// **'Убрать отметку'**
+  String get logSheetClear;
 
   /// No description provided for @settingsScreenTitle.
   ///
   /// In ru, this message translates to:
   /// **'Настройки'**
   String get settingsScreenTitle;
+
+  /// No description provided for @prayerSettingsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время намаза'**
+  String get prayerSettingsTitle;
+
+  /// No description provided for @systemSettingsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Системные настройки'**
+  String get systemSettingsTitle;
 
   /// No description provided for @cityKicker.
   ///
@@ -627,14 +651,8 @@ abstract class AppLocalizations {
   /// No description provided for @azanAndReminders.
   ///
   /// In ru, this message translates to:
-  /// **'Азан и напоминания'**
+  /// **'Уведомления и напоминания'**
   String get azanAndReminders;
-
-  /// No description provided for @nowBarSettingsRow.
-  ///
-  /// In ru, this message translates to:
-  /// **'Текущий и следующий намаз'**
-  String get nowBarSettingsRow;
 
   /// No description provided for @themeKicker.
   ///
@@ -659,6 +677,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Системная'**
   String get themeSystem;
+
+  /// No description provided for @tahajjudKicker.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тахаджуд-намаз'**
+  String get tahajjudKicker;
+
+  /// No description provided for @tahajjudEnableRow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать тахаджуд-намаз'**
+  String get tahajjudEnableRow;
+
+  /// No description provided for @prayerTahajjud.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тахаджуд'**
+  String get prayerTahajjud;
 
   /// No description provided for @prayerFajr.
   ///
@@ -870,12 +906,6 @@ abstract class AppLocalizations {
   /// **'через {minutes} мин'**
   String countdownMinutesOnly(int minutes);
 
-  /// No description provided for @notifAzanTitle.
-  ///
-  /// In ru, this message translates to:
-  /// **'Азан — {prayer}'**
-  String notifAzanTitle(String prayer);
-
   /// No description provided for @notifPlainTitle.
   ///
   /// In ru, this message translates to:
@@ -888,23 +918,11 @@ abstract class AppLocalizations {
   /// **'Время совершить намаз'**
   String get notifBody;
 
-  /// No description provided for @nowBarNotificationTitle.
+  /// No description provided for @notifMarkDoneAction.
   ///
   /// In ru, this message translates to:
-  /// **'Намаз'**
-  String get nowBarNotificationTitle;
-
-  /// No description provided for @nowBarCurrentLine.
-  ///
-  /// In ru, this message translates to:
-  /// **'Сейчас: {prayer}'**
-  String nowBarCurrentLine(String prayer);
-
-  /// No description provided for @nowBarNextLine.
-  ///
-  /// In ru, this message translates to:
-  /// **'Далее: {prayer} в {time}'**
-  String nowBarNextLine(String prayer, String time);
+  /// **'Прочитал'**
+  String get notifMarkDoneAction;
 
   /// No description provided for @errorTimeout.
   ///
@@ -941,6 +959,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Не удалось загрузить времена намаза.'**
   String get genericLoadError;
+
+  /// No description provided for @errorOfflineSettingsChange.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чтобы изменить эти настройки, нужно подключение к интернету.'**
+  String get errorOfflineSettingsChange;
+
+  /// No description provided for @calendarScreenTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Календарь намазов'**
+  String get calendarScreenTitle;
+
+  /// No description provided for @legendOnTime.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вовремя'**
+  String get legendOnTime;
+
+  /// No description provided for @legendQada.
+  ///
+  /// In ru, this message translates to:
+  /// **'С опозданием'**
+  String get legendQada;
+
+  /// No description provided for @legendMissed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пропущено'**
+  String get legendMissed;
+
+  /// No description provided for @notifEveningReminderTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не забудьте отметить намазы'**
+  String get notifEveningReminderTitle;
+
+  /// No description provided for @notifEveningReminderBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загляните в приложение и отметьте, как прошёл сегодняшний день'**
+  String get notifEveningReminderBody;
+
+  /// No description provided for @notifPrayerEndingTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время намаза {prayer} заканчивается'**
+  String notifPrayerEndingTitle(String prayer);
+
+  /// No description provided for @notifPrayerEndingBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Осталось {minutes} мин, а намаз ещё не отмечен как прочитанный'**
+  String notifPrayerEndingBody(int minutes);
+
+  /// No description provided for @widgetMarkedLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмечено'**
+  String get widgetMarkedLabel;
+
+  /// No description provided for @widgetNoDataLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Откройте приложение'**
+  String get widgetNoDataLabel;
 }
 
 class _AppLocalizationsDelegate

@@ -11,11 +11,15 @@ class ScreenBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         width: 38,
         height: 38,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: AppColors.surface, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          shape: BoxShape.circle,
+        ),
         child: Icon(Icons.arrow_back_rounded, size: 18, color: AppColors.text),
       ),
     );

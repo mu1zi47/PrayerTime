@@ -21,6 +21,16 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nextPrayerLabel => 'Keyingi namoz';
 
   @override
+  String nextPrayerTomorrowLabel(String date) {
+    return 'Ertaga, $date';
+  }
+
+  @override
+  String yesterdayCurrentLabel(String date) {
+    return 'Kecha, $date';
+  }
+
+  @override
   String get todayLabel => 'Bugun';
 
   @override
@@ -33,13 +43,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get stopButton => 'To\'xtatish';
 
   @override
-  String get azanScreenTitle => 'Azon';
-
-  @override
-  String get azanPlaceholderNote =>
-      'Hozircha barcha qorilar uchun bitta vaqtinchalik signal o\'ynaladi — haqiqiy yozuvlar keyinroq qo\'shiladi.';
-
-  @override
   String get citySelectTitle => 'Shaharni tanlash';
 
   @override
@@ -47,6 +50,29 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get cityAutoDetect => 'Avtomatik aniqlash';
+
+  @override
+  String get cityAutoDetecting => 'Joylashuvingiz aniqlanmoqda…';
+
+  @override
+  String get cityCurrentLocation => 'Joriy joylashuv';
+
+  @override
+  String get cityLocationServiceDisabled =>
+      'Qurilma sozlamalarida geolokatsiyani yoqing';
+
+  @override
+  String get cityLocationPermissionDenied =>
+      'Geolokatsiyaga ruxsat berilmagan. Sozlamalarda ruxsat bering';
+
+  @override
+  String get cityLocationErrorGeneric => 'Joylashuvni aniqlab bo\'lmadi';
+
+  @override
+  String get cityOpenSettingsButton => 'Sozlamalarni ochish';
+
+  @override
+  String get cityOnlineResultsTitle => 'Internetdan topildi';
 
   @override
   String get cityMoscow => 'Moskva';
@@ -85,6 +111,42 @@ class AppLocalizationsUz extends AppLocalizations {
   String get cityMecca => 'Makka';
 
   @override
+  String get cityMedina => 'Madina';
+
+  @override
+  String get cityMinsk => 'Minsk';
+
+  @override
+  String get cityAstana => 'Ostona';
+
+  @override
+  String get cityYerevan => 'Yerevan';
+
+  @override
+  String get cityChisinau => 'Kishinyov';
+
+  @override
+  String get cityBishkek => 'Bishkek';
+
+  @override
+  String get cityDushanbe => 'Dushanbe';
+
+  @override
+  String get cityAshgabat => 'Ashxobod';
+
+  @override
+  String get citySamarkand => 'Samarqand';
+
+  @override
+  String get cityBukhara => 'Buxoro';
+
+  @override
+  String get cityNamangan => 'Namangan';
+
+  @override
+  String get cityAndijan => 'Andijon';
+
+  @override
   String get countryRussia => 'Rossiya';
 
   @override
@@ -107,6 +169,24 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get countrySaudiArabia => 'Saudiya Arabistoni';
+
+  @override
+  String get countryBelarus => 'Belarus';
+
+  @override
+  String get countryArmenia => 'Armaniston';
+
+  @override
+  String get countryMoldova => 'Moldova';
+
+  @override
+  String get countryKyrgyzstan => 'Qirg\'iziston';
+
+  @override
+  String get countryTajikistan => 'Tojikiston';
+
+  @override
+  String get countryTurkmenistan => 'Turkmaniston';
 
   @override
   String get methodScreenTitle => 'Hisoblash usuli';
@@ -139,9 +219,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get allahNamesTitle => 'Allohning ismlari';
 
   @override
-  String get myPrayersTitle => 'Mening namozlarim';
-
-  @override
   String get allahNamesSubtitle => 'Asmaul Husna';
 
   @override
@@ -167,57 +244,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get notificationsScreenTitle => 'Bildirishnomalar';
 
   @override
-  String get azanByPrayersKicker => 'Har namoz uchun azon';
-
-  @override
-  String get soundKicker => 'Tovush';
-
-  @override
-  String azanSoundRow(String reciter) {
-    return 'Azon — $reciter';
-  }
-
-  @override
-  String get reciterAbdulbasit => 'Abdulbosit Abdussamad';
-
-  @override
-  String get reciterAknazar => 'Aqnazar Maratuli';
-
-  @override
-  String get reciterAliAhmedMulla => 'Ali Ahmad Mulla';
-
-  @override
-  String get reciterAhmedAlNufais => 'Ahmad an-Nufays';
-
-  @override
-  String get reciterBaubek => 'Baubek Berdigaliuli';
-
-  @override
-  String get reciterMustafaIsmail => 'Mustafo Ismoil';
-
-  @override
-  String get reciterMishari => 'Mishari Rashid al-Afasi';
-
-  @override
-  String get reciterMustafaOzcan => 'Mustafo O\'zjan Guneshdog\'di';
-
-  @override
-  String get reciterMansurZahrani => 'Mansur az-Zahroniy';
-
-  @override
-  String get reciterNasirQatami => 'Nosir al-Qatomiy';
-
-  @override
-  String get reciterRaadKurdi => 'Raad Muhammad al-Kurdiy';
-
-  @override
-  String get reciterSaidmuhammed => 'Saidmuhammad Nigmat';
-
-  @override
-  String get reciterNoteTakbirShort => 'takbir, qisqa versiya';
-
-  @override
-  String get reciterNoteStudioRecording => 'studiya yozuvi';
+  String get azanByPrayersKicker => 'Har namoz uchun bildirishnoma';
 
   @override
   String get quietKicker => 'Jimlik';
@@ -226,45 +253,30 @@ class AppLocalizationsUz extends AppLocalizations {
   String get dontDisturbNight => 'Kechasi bezovta qilmaslik';
 
   @override
-  String get nowBarScreenTitle => 'Now Bar';
-
-  @override
-  String get nowBarAvailability =>
-      'Faqat One UI 7 va undan yuqori Samsung qurilmalarida mavjud';
-
-  @override
-  String get nowBarShowCurrent => 'Joriy namozni ko\'rsatish';
-
-  @override
-  String get nowBarShowNext => 'Keyingi namozni ko\'rsatish';
-
-  @override
-  String get nowBarAllowPermission => 'Now Bar\'da ko\'rsatishga ruxsat berish';
-
-  @override
-  String get myPrayersSubtitle => 'O\'qilgan namozlarni belgilang';
-
-  @override
-  String prayerLogDone(int done, int total) {
-    return '$total tadan $done tasi bajarildi';
+  String logSheetTitle(String prayer) {
+    return '$prayer qanday o\'tdi?';
   }
 
   @override
-  String prayerLogLateSuffix(int count) {
-    return ' · Vaqtida emas: $count';
-  }
+  String get logSheetSubtitle => 'Bu namozni qanday o\'qiganingizni belgilang';
 
   @override
-  String get notYetDue => 'Hali vaqti kelmagan';
+  String get logSheetOnTime => 'O\'z vaqtida o\'qidim';
 
   @override
-  String get statusOnTime => 'O\'z vaqtida';
+  String get logSheetLate => 'Kechikib o\'qidim';
 
   @override
-  String get statusLate => 'Vaqtida emas';
+  String get logSheetClear => 'Belgini olib tashlash';
 
   @override
   String get settingsScreenTitle => 'Sozlamalar';
+
+  @override
+  String get prayerSettingsTitle => 'Namoz vaqti';
+
+  @override
+  String get systemSettingsTitle => 'Tizim sozlamalari';
 
   @override
   String get cityKicker => 'Shahar';
@@ -279,10 +291,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get madhabHanafi => 'Hanafiy';
 
   @override
-  String get azanAndReminders => 'Azon va eslatmalar';
-
-  @override
-  String get nowBarSettingsRow => 'Joriy va keyingi namoz';
+  String get azanAndReminders => 'Bildirishnomalar va eslatmalar';
 
   @override
   String get themeKicker => 'Mavzu';
@@ -295,6 +304,15 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get themeSystem => 'Tizim';
+
+  @override
+  String get tahajjudKicker => 'Tahajjud namozi';
+
+  @override
+  String get tahajjudEnableRow => 'Tahajjud namozini ko\'rsatish';
+
+  @override
+  String get prayerTahajjud => 'Tahajjud';
 
   @override
   String get prayerFajr => 'Bomdod';
@@ -408,11 +426,6 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String notifAzanTitle(String prayer) {
-    return 'Azon — $prayer';
-  }
-
-  @override
   String notifPlainTitle(String prayer) {
     return '$prayer namozi vaqti bo\'ldi';
   }
@@ -421,17 +434,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get notifBody => 'Namoz o\'qish vaqti';
 
   @override
-  String get nowBarNotificationTitle => 'Namoz';
-
-  @override
-  String nowBarCurrentLine(String prayer) {
-    return 'Hozir: $prayer';
-  }
-
-  @override
-  String nowBarNextLine(String prayer, String time) {
-    return 'Keyin: $prayer, $time';
-  }
+  String get notifMarkDoneAction => 'Bajardim';
 
   @override
   String get errorTimeout =>
@@ -452,6 +455,46 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get genericLoadError => 'Namoz vaqtlarini yuklab bo\'lmadi.';
+
+  @override
+  String get errorOfflineSettingsChange =>
+      'Ushbu sozlamalarni o\'zgartirish uchun internet ulanishi kerak.';
+
+  @override
+  String get calendarScreenTitle => 'Namoz taqvimi';
+
+  @override
+  String get legendOnTime => 'O\'z vaqtida';
+
+  @override
+  String get legendQada => 'Kechikib';
+
+  @override
+  String get legendMissed => 'O\'tkazib yuborilgan';
+
+  @override
+  String get notifEveningReminderTitle =>
+      'Namozlaringizni belgilashni unutmang';
+
+  @override
+  String get notifEveningReminderBody =>
+      'Ilovaga kirib, bugungi namozlaringiz qanday o\'tganini belgilang';
+
+  @override
+  String notifPrayerEndingTitle(String prayer) {
+    return '$prayer vaqti tugayapti';
+  }
+
+  @override
+  String notifPrayerEndingBody(int minutes) {
+    return '$minutes daqiqa qoldi, namoz hali o\'qilgan deb belgilanmagan';
+  }
+
+  @override
+  String get widgetMarkedLabel => 'Belgilandi';
+
+  @override
+  String get widgetNoDataLabel => 'Ilovani oching';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -471,6 +514,16 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get nextPrayerLabel => 'Кейинги намоз';
 
   @override
+  String nextPrayerTomorrowLabel(String date) {
+    return 'Эртага, $date';
+  }
+
+  @override
+  String yesterdayCurrentLabel(String date) {
+    return 'Кеча, $date';
+  }
+
+  @override
   String get todayLabel => 'Бугун';
 
   @override
@@ -483,13 +536,6 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get stopButton => 'Тўхтатиш';
 
   @override
-  String get azanScreenTitle => 'Азон';
-
-  @override
-  String get azanPlaceholderNote =>
-      'Ҳозирча барча қорилар учун битта вақтинчалик сигнал ўйналади — ҳақиқий ёзувлар кейинроқ қўшилади.';
-
-  @override
   String get citySelectTitle => 'Шаҳарни танлаш';
 
   @override
@@ -497,6 +543,29 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get cityAutoDetect => 'Автоматик аниқлаш';
+
+  @override
+  String get cityAutoDetecting => 'Жойлашувингиз аниқланмоқда…';
+
+  @override
+  String get cityCurrentLocation => 'Жорий жойлашув';
+
+  @override
+  String get cityLocationServiceDisabled =>
+      'Қурилма созламаларида геолокацияни ёқинг';
+
+  @override
+  String get cityLocationPermissionDenied =>
+      'Геолокацияга рухсат берилмаган. Созламаларда рухсат беринг';
+
+  @override
+  String get cityLocationErrorGeneric => 'Жойлашувни аниқлаб бўлмади';
+
+  @override
+  String get cityOpenSettingsButton => 'Созламаларни очиш';
+
+  @override
+  String get cityOnlineResultsTitle => 'Интернетдан топилди';
 
   @override
   String get cityMoscow => 'Москва';
@@ -535,6 +604,42 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get cityMecca => 'Макка';
 
   @override
+  String get cityMedina => 'Мадина';
+
+  @override
+  String get cityMinsk => 'Минск';
+
+  @override
+  String get cityAstana => 'Остона';
+
+  @override
+  String get cityYerevan => 'Ереван';
+
+  @override
+  String get cityChisinau => 'Кишинёв';
+
+  @override
+  String get cityBishkek => 'Бишкек';
+
+  @override
+  String get cityDushanbe => 'Душанбе';
+
+  @override
+  String get cityAshgabat => 'Ашхобод';
+
+  @override
+  String get citySamarkand => 'Самарқанд';
+
+  @override
+  String get cityBukhara => 'Бухоро';
+
+  @override
+  String get cityNamangan => 'Наманган';
+
+  @override
+  String get cityAndijan => 'Андижон';
+
+  @override
   String get countryRussia => 'Россия';
 
   @override
@@ -557,6 +662,24 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get countrySaudiArabia => 'Саудия Арабистони';
+
+  @override
+  String get countryBelarus => 'Беларусь';
+
+  @override
+  String get countryArmenia => 'Арманистон';
+
+  @override
+  String get countryMoldova => 'Молдова';
+
+  @override
+  String get countryKyrgyzstan => 'Қирғизистон';
+
+  @override
+  String get countryTajikistan => 'Тожикистон';
+
+  @override
+  String get countryTurkmenistan => 'Туркманистон';
 
   @override
   String get methodScreenTitle => 'Ҳисоблаш усули';
@@ -589,9 +712,6 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get allahNamesTitle => 'Аллоҳнинг исмлари';
 
   @override
-  String get myPrayersTitle => 'Менинг намозларим';
-
-  @override
   String get allahNamesSubtitle => 'Асмаул Ҳусна';
 
   @override
@@ -617,57 +737,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get notificationsScreenTitle => 'Билдиришномалар';
 
   @override
-  String get azanByPrayersKicker => 'Ҳар намоз учун азон';
-
-  @override
-  String get soundKicker => 'Товуш';
-
-  @override
-  String azanSoundRow(String reciter) {
-    return 'Азон — $reciter';
-  }
-
-  @override
-  String get reciterAbdulbasit => 'Абдулбосит Абдуссамад';
-
-  @override
-  String get reciterAknazar => 'Ақназар Маратули';
-
-  @override
-  String get reciterAliAhmedMulla => 'Али Аҳмад Мулла';
-
-  @override
-  String get reciterAhmedAlNufais => 'Аҳмад ан-Нуфайс';
-
-  @override
-  String get reciterBaubek => 'Баубек Бердигалиули';
-
-  @override
-  String get reciterMustafaIsmail => 'Мустафо Исмоил';
-
-  @override
-  String get reciterMishari => 'Мишари Рашид ал-Афаси';
-
-  @override
-  String get reciterMustafaOzcan => 'Мустафо Ўзжан Гунешдоғди';
-
-  @override
-  String get reciterMansurZahrani => 'Мансур аз-Заҳроний';
-
-  @override
-  String get reciterNasirQatami => 'Носир ал-Қатомий';
-
-  @override
-  String get reciterRaadKurdi => 'Раад Муҳаммад ал-Курдий';
-
-  @override
-  String get reciterSaidmuhammed => 'Саидмуҳаммад Нигмат';
-
-  @override
-  String get reciterNoteTakbirShort => 'такбир, қисқа версия';
-
-  @override
-  String get reciterNoteStudioRecording => 'студия ёзуви';
+  String get azanByPrayersKicker => 'Ҳар намоз учун билдиришнома';
 
   @override
   String get quietKicker => 'Жимлик';
@@ -676,45 +746,30 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get dontDisturbNight => 'Кечаси безовта қилмаслик';
 
   @override
-  String get nowBarScreenTitle => 'Now Bar';
-
-  @override
-  String get nowBarAvailability =>
-      'Фақат One UI 7 ва ундан юқори Samsung қурилмаларида мавжуд';
-
-  @override
-  String get nowBarShowCurrent => 'Жорий намозни кўрсатиш';
-
-  @override
-  String get nowBarShowNext => 'Кейинги намозни кўрсатиш';
-
-  @override
-  String get nowBarAllowPermission => 'Now Bar\'да кўрсатишга рухсат бериш';
-
-  @override
-  String get myPrayersSubtitle => 'Ўқилган намозларни белгиланг';
-
-  @override
-  String prayerLogDone(int done, int total) {
-    return '$total тадан $done таси бажарилди';
+  String logSheetTitle(String prayer) {
+    return '$prayer қандай ўтди?';
   }
 
   @override
-  String prayerLogLateSuffix(int count) {
-    return ' · Вақтида эмас: $count';
-  }
+  String get logSheetSubtitle => 'Бу намозни қандай ўқиганингизни белгиланг';
 
   @override
-  String get notYetDue => 'Ҳали вақти келмаган';
+  String get logSheetOnTime => 'Ўз вақтида ўқидим';
 
   @override
-  String get statusOnTime => 'Ўз вақтида';
+  String get logSheetLate => 'Кечикиб ўқидим';
 
   @override
-  String get statusLate => 'Вақтида эмас';
+  String get logSheetClear => 'Белгини олиб ташлаш';
 
   @override
   String get settingsScreenTitle => 'Созламалар';
+
+  @override
+  String get prayerSettingsTitle => 'Намоз вақти';
+
+  @override
+  String get systemSettingsTitle => 'Тизим созламалари';
 
   @override
   String get cityKicker => 'Шаҳар';
@@ -729,10 +784,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get madhabHanafi => 'Ҳанафий';
 
   @override
-  String get azanAndReminders => 'Азон ва эслатмалар';
-
-  @override
-  String get nowBarSettingsRow => 'Жорий ва кейинги намоз';
+  String get azanAndReminders => 'Билдиришномалар ва эслатмалар';
 
   @override
   String get themeKicker => 'Мавзу';
@@ -745,6 +797,15 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get themeSystem => 'Тизим';
+
+  @override
+  String get tahajjudKicker => 'Таҳажжуд намози';
+
+  @override
+  String get tahajjudEnableRow => 'Таҳажжуд намозини кўрсатиш';
+
+  @override
+  String get prayerTahajjud => 'Таҳажжуд';
 
   @override
   String get prayerFajr => 'Бомдод';
@@ -858,11 +919,6 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   }
 
   @override
-  String notifAzanTitle(String prayer) {
-    return 'Азон — $prayer';
-  }
-
-  @override
   String notifPlainTitle(String prayer) {
     return '$prayer намози вақти бўлди';
   }
@@ -871,17 +927,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get notifBody => 'Намоз ўқиш вақти';
 
   @override
-  String get nowBarNotificationTitle => 'Намоз';
-
-  @override
-  String nowBarCurrentLine(String prayer) {
-    return 'Ҳозир: $prayer';
-  }
-
-  @override
-  String nowBarNextLine(String prayer, String time) {
-    return 'Кейин: $prayer, $time';
-  }
+  String get notifMarkDoneAction => 'Бажардим';
 
   @override
   String get errorTimeout =>
@@ -902,6 +948,45 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get genericLoadError => 'Намоз вақтларини юклаб бўлмади.';
+
+  @override
+  String get errorOfflineSettingsChange =>
+      'Ушбу созламаларни ўзгартириш учун интернет уланиши керак.';
+
+  @override
+  String get calendarScreenTitle => 'Намоз тақвими';
+
+  @override
+  String get legendOnTime => 'Ўз вақтида';
+
+  @override
+  String get legendQada => 'Кечикиб';
+
+  @override
+  String get legendMissed => 'Ўтказиб юборилган';
+
+  @override
+  String get notifEveningReminderTitle => 'Намозларингизни белгилашни унутманг';
+
+  @override
+  String get notifEveningReminderBody =>
+      'Иловага кириб, бугунги намозларингиз қандай ўтганини белгиланг';
+
+  @override
+  String notifPrayerEndingTitle(String prayer) {
+    return '$prayer вақти тугаяпти';
+  }
+
+  @override
+  String notifPrayerEndingBody(int minutes) {
+    return '$minutes дақиқа қолди, намоз ҳали ўқилган деб белгиланмаган';
+  }
+
+  @override
+  String get widgetMarkedLabel => 'Белгиланди';
+
+  @override
+  String get widgetNoDataLabel => 'Иловани очинг';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -921,6 +1006,16 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get nextPrayerLabel => 'Keyingi namoz';
 
   @override
+  String nextPrayerTomorrowLabel(String date) {
+    return 'Ertaga, $date';
+  }
+
+  @override
+  String yesterdayCurrentLabel(String date) {
+    return 'Kecha, $date';
+  }
+
+  @override
   String get todayLabel => 'Bugun';
 
   @override
@@ -933,13 +1028,6 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get stopButton => 'To\'xtatish';
 
   @override
-  String get azanScreenTitle => 'Azon';
-
-  @override
-  String get azanPlaceholderNote =>
-      'Hozircha barcha qorilar uchun bitta vaqtinchalik signal o\'ynaladi — haqiqiy yozuvlar keyinroq qo\'shiladi.';
-
-  @override
   String get citySelectTitle => 'Shaharni tanlash';
 
   @override
@@ -947,6 +1035,29 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get cityAutoDetect => 'Avtomatik aniqlash';
+
+  @override
+  String get cityAutoDetecting => 'Joylashuvingiz aniqlanmoqda…';
+
+  @override
+  String get cityCurrentLocation => 'Joriy joylashuv';
+
+  @override
+  String get cityLocationServiceDisabled =>
+      'Qurilma sozlamalarida geolokatsiyani yoqing';
+
+  @override
+  String get cityLocationPermissionDenied =>
+      'Geolokatsiyaga ruxsat berilmagan. Sozlamalarda ruxsat bering';
+
+  @override
+  String get cityLocationErrorGeneric => 'Joylashuvni aniqlab bo\'lmadi';
+
+  @override
+  String get cityOpenSettingsButton => 'Sozlamalarni ochish';
+
+  @override
+  String get cityOnlineResultsTitle => 'Internetdan topildi';
 
   @override
   String get cityMoscow => 'Moskva';
@@ -985,6 +1096,42 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get cityMecca => 'Makka';
 
   @override
+  String get cityMedina => 'Madina';
+
+  @override
+  String get cityMinsk => 'Minsk';
+
+  @override
+  String get cityAstana => 'Ostona';
+
+  @override
+  String get cityYerevan => 'Yerevan';
+
+  @override
+  String get cityChisinau => 'Kishinyov';
+
+  @override
+  String get cityBishkek => 'Bishkek';
+
+  @override
+  String get cityDushanbe => 'Dushanbe';
+
+  @override
+  String get cityAshgabat => 'Ashxobod';
+
+  @override
+  String get citySamarkand => 'Samarqand';
+
+  @override
+  String get cityBukhara => 'Buxoro';
+
+  @override
+  String get cityNamangan => 'Namangan';
+
+  @override
+  String get cityAndijan => 'Andijon';
+
+  @override
   String get countryRussia => 'Rossiya';
 
   @override
@@ -1007,6 +1154,24 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get countrySaudiArabia => 'Saudiya Arabistoni';
+
+  @override
+  String get countryBelarus => 'Belarus';
+
+  @override
+  String get countryArmenia => 'Armaniston';
+
+  @override
+  String get countryMoldova => 'Moldova';
+
+  @override
+  String get countryKyrgyzstan => 'Qirg\'iziston';
+
+  @override
+  String get countryTajikistan => 'Tojikiston';
+
+  @override
+  String get countryTurkmenistan => 'Turkmaniston';
 
   @override
   String get methodScreenTitle => 'Hisoblash usuli';
@@ -1039,9 +1204,6 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get allahNamesTitle => 'Allohning ismlari';
 
   @override
-  String get myPrayersTitle => 'Mening namozlarim';
-
-  @override
   String get allahNamesSubtitle => 'Asmaul Husna';
 
   @override
@@ -1067,57 +1229,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get notificationsScreenTitle => 'Bildirishnomalar';
 
   @override
-  String get azanByPrayersKicker => 'Har namoz uchun azon';
-
-  @override
-  String get soundKicker => 'Tovush';
-
-  @override
-  String azanSoundRow(String reciter) {
-    return 'Azon — $reciter';
-  }
-
-  @override
-  String get reciterAbdulbasit => 'Abdulbosit Abdussamad';
-
-  @override
-  String get reciterAknazar => 'Aqnazar Maratuli';
-
-  @override
-  String get reciterAliAhmedMulla => 'Ali Ahmad Mulla';
-
-  @override
-  String get reciterAhmedAlNufais => 'Ahmad an-Nufays';
-
-  @override
-  String get reciterBaubek => 'Baubek Berdigaliuli';
-
-  @override
-  String get reciterMustafaIsmail => 'Mustafo Ismoil';
-
-  @override
-  String get reciterMishari => 'Mishari Rashid al-Afasi';
-
-  @override
-  String get reciterMustafaOzcan => 'Mustafo O\'zjan Guneshdog\'di';
-
-  @override
-  String get reciterMansurZahrani => 'Mansur az-Zahroniy';
-
-  @override
-  String get reciterNasirQatami => 'Nosir al-Qatomiy';
-
-  @override
-  String get reciterRaadKurdi => 'Raad Muhammad al-Kurdiy';
-
-  @override
-  String get reciterSaidmuhammed => 'Saidmuhammad Nigmat';
-
-  @override
-  String get reciterNoteTakbirShort => 'takbir, qisqa versiya';
-
-  @override
-  String get reciterNoteStudioRecording => 'studiya yozuvi';
+  String get azanByPrayersKicker => 'Har namoz uchun bildirishnoma';
 
   @override
   String get quietKicker => 'Jimlik';
@@ -1126,45 +1238,30 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get dontDisturbNight => 'Kechasi bezovta qilmaslik';
 
   @override
-  String get nowBarScreenTitle => 'Now Bar';
-
-  @override
-  String get nowBarAvailability =>
-      'Faqat One UI 7 va undan yuqori Samsung qurilmalarida mavjud';
-
-  @override
-  String get nowBarShowCurrent => 'Joriy namozni ko\'rsatish';
-
-  @override
-  String get nowBarShowNext => 'Keyingi namozni ko\'rsatish';
-
-  @override
-  String get nowBarAllowPermission => 'Now Bar\'da ko\'rsatishga ruxsat berish';
-
-  @override
-  String get myPrayersSubtitle => 'O\'qilgan namozlarni belgilang';
-
-  @override
-  String prayerLogDone(int done, int total) {
-    return '$total tadan $done tasi bajarildi';
+  String logSheetTitle(String prayer) {
+    return '$prayer qanday o\'tdi?';
   }
 
   @override
-  String prayerLogLateSuffix(int count) {
-    return ' · Vaqtida emas: $count';
-  }
+  String get logSheetSubtitle => 'Bu namozni qanday o\'qiganingizni belgilang';
 
   @override
-  String get notYetDue => 'Hali vaqti kelmagan';
+  String get logSheetOnTime => 'O\'z vaqtida o\'qidim';
 
   @override
-  String get statusOnTime => 'O\'z vaqtida';
+  String get logSheetLate => 'Kechikib o\'qidim';
 
   @override
-  String get statusLate => 'Vaqtida emas';
+  String get logSheetClear => 'Belgini olib tashlash';
 
   @override
   String get settingsScreenTitle => 'Sozlamalar';
+
+  @override
+  String get prayerSettingsTitle => 'Namoz vaqti';
+
+  @override
+  String get systemSettingsTitle => 'Tizim sozlamalari';
 
   @override
   String get cityKicker => 'Shahar';
@@ -1179,10 +1276,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get madhabHanafi => 'Hanafiy';
 
   @override
-  String get azanAndReminders => 'Azon va eslatmalar';
-
-  @override
-  String get nowBarSettingsRow => 'Joriy va keyingi namoz';
+  String get azanAndReminders => 'Bildirishnomalar va eslatmalar';
 
   @override
   String get themeKicker => 'Mavzu';
@@ -1195,6 +1289,15 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get themeSystem => 'Tizim';
+
+  @override
+  String get tahajjudKicker => 'Tahajjud namozi';
+
+  @override
+  String get tahajjudEnableRow => 'Tahajjud namozini ko\'rsatish';
+
+  @override
+  String get prayerTahajjud => 'Tahajjud';
 
   @override
   String get prayerFajr => 'Bomdod';
@@ -1308,11 +1411,6 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   }
 
   @override
-  String notifAzanTitle(String prayer) {
-    return 'Azon — $prayer';
-  }
-
-  @override
   String notifPlainTitle(String prayer) {
     return '$prayer namozi vaqti bo\'ldi';
   }
@@ -1321,17 +1419,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get notifBody => 'Namoz o\'qish vaqti';
 
   @override
-  String get nowBarNotificationTitle => 'Namoz';
-
-  @override
-  String nowBarCurrentLine(String prayer) {
-    return 'Hozir: $prayer';
-  }
-
-  @override
-  String nowBarNextLine(String prayer, String time) {
-    return 'Keyin: $prayer, $time';
-  }
+  String get notifMarkDoneAction => 'Bajardim';
 
   @override
   String get errorTimeout =>
@@ -1352,4 +1440,44 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get genericLoadError => 'Namoz vaqtlarini yuklab bo\'lmadi.';
+
+  @override
+  String get errorOfflineSettingsChange =>
+      'Ushbu sozlamalarni o\'zgartirish uchun internet ulanishi kerak.';
+
+  @override
+  String get calendarScreenTitle => 'Namoz taqvimi';
+
+  @override
+  String get legendOnTime => 'O\'z vaqtida';
+
+  @override
+  String get legendQada => 'Kechikib';
+
+  @override
+  String get legendMissed => 'O\'tkazib yuborilgan';
+
+  @override
+  String get notifEveningReminderTitle =>
+      'Namozlaringizni belgilashni unutmang';
+
+  @override
+  String get notifEveningReminderBody =>
+      'Ilovaga kirib, bugungi namozlaringiz qanday o\'tganini belgilang';
+
+  @override
+  String notifPrayerEndingTitle(String prayer) {
+    return '$prayer vaqti tugayapti';
+  }
+
+  @override
+  String notifPrayerEndingBody(int minutes) {
+    return '$minutes daqiqa qoldi, namoz hali o\'qilgan deb belgilanmagan';
+  }
+
+  @override
+  String get widgetMarkedLabel => 'Belgilandi';
+
+  @override
+  String get widgetNoDataLabel => 'Ilovani oching';
 }

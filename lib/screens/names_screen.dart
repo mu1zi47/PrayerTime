@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../data/allah_names.dart';
 import '../l10n/app_localizations.dart';
 import '../models/allah_name.dart';
+import '../models/app_locale.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -34,6 +35,30 @@ class _NamesScreenState extends State<NamesScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _tabIndex);
+    // Everyone gets the accuracy disclaimer. Anyone not reading in Uzbek
+    // Cyrillic gets the language explanation on top of it, since the names
+    // exist only in that script and the screen otherwise looks like it
+    // ignored their choice.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showNotice();
+    });
+  }
+
+  Future<void> _showNotice() {
+    final t = AppLocalizations.of(context)!;
+    final readsUzbek = widget.appState.locale == AppLocale.uzCyrillic;
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _NoticeSheet(
+        icon: readsUzbek ? Icons.info_outline_rounded : Icons.translate_rounded,
+        title: readsUzbek ? t.namesDisclaimerTitle : t.namesNoticeTitle,
+        body: readsUzbek ? null : t.namesNoticeBody,
+        disclaimer: t.namesNoticeDisclaimer,
+        button: t.namesNoticeButton,
+        onDismiss: () => Navigator.of(sheetContext).pop(),
+      ),
+    );
   }
 
   @override
@@ -209,6 +234,143 @@ class _NamesScreenState extends State<NamesScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _NoticeSheet extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  /// The "why is this in Uzbek" explanation — null when the reader is
+  /// already on Uzbek Cyrillic and only the disclaimer applies.
+  final String? body;
+
+  /// The names and their commentary were transcribed by hand, so this says
+  /// plainly that mistakes are possible and points at where to report one.
+  final String disclaimer;
+
+  final String button;
+  final VoidCallback onDismiss;
+
+  const _NoticeSheet({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.disclaimer,
+    required this.button,
+    required this.onDismiss,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.divider,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: Container(
+              width: 46,
+              height: 46,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.accent100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 22, color: AppColors.accent700),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.heading(fontSize: 19),
+          ),
+          if (body != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              body!,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(fontSize: 13.5, color: AppColors.text)
+                  .copyWith(
+                    color: AppColors.text.withValues(alpha: 0.62),
+                    height: 1.45,
+                  ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 17,
+                  color: AppColors.accent700,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    disclaimer,
+                    style:
+                        AppTextStyles.body(
+                          fontSize: 12.5,
+                          color: AppColors.text,
+                        ).copyWith(
+                          color: AppColors.text.withValues(alpha: 0.62),
+                          height: 1.4,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          GestureDetector(
+            onTap: onDismiss,
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.accent,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                button,
+                style: AppTextStyles.body(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.bg,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

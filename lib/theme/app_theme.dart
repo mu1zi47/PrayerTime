@@ -6,10 +6,14 @@ import 'app_text_styles.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get light =>
-      _build(AppColors.lightPalette, Brightness.light);
+  // Built once, not per access: MaterialApp reads both on every rebuild, and
+  // ColorScheme.fromSeed below derives a whole palette each time it runs.
+  static final ThemeData light = _build(
+    AppColors.lightPalette,
+    Brightness.light,
+  );
 
-  static ThemeData get dark => _build(AppColors.darkPalette, Brightness.dark);
+  static final ThemeData dark = _build(AppColors.darkPalette, Brightness.dark);
 
   static ThemeData _build(AppPalette palette, Brightness brightness) {
     return ThemeData(

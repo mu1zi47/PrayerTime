@@ -34,18 +34,13 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-
-  # Caprasimo (headings) + Figtree (body) to match the Organic design system.
-  google_fonts: ^6.2.1
   http: ^1.6.0
   shared_preferences: ^2.5.5
   flutter_local_notifications: ^22.3.0
   timezone: ^0.11.1
   geolocator: ^14.0.2
   connectivity_plus: ^6.1.5
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -82,22 +77,15 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+  # Bundled rather than fetched through google_fonts: that package downloads
+  # the files on first launch, so the very first frames rendered in a
+  # fallback face and the app needed a network round trip before it looked
+  # right. These are the variable (wght-axis) builds, one file per family
+  # covering every weight the app asks for — see AppTextStyles.
+  fonts:
+    - family: Exo2
+      fonts:
+        - asset: assets/fonts/Exo2.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito.ttf

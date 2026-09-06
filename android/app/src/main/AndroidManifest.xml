@@ -4,13 +4,16 @@
          release builds only see this main manifest — without it here,
          every network call fails with SocketException in release builds. -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Needed for the "detect automatically" button on the city picker. -->
+    <!-- Needed for the "detect automatically" button on the city picker.
+         Coarse only: the city is all this resolves to, and asking for the
+         precise location would need a separate justification on Play. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!-- Needed to schedule/show prayer-time notifications. -->
+    <!-- Needed to schedule/show prayer-time notifications. SCHEDULE_EXACT_ALARM
+         is the one the user grants; USE_EXACT_ALARM (granted automatically) is
+         deliberately not declared — Play restricts it to alarm-clock and
+         calendar apps, and requesting it would put the listing at risk. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
@@ -90,6 +93,23 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Without these, Android 11+ hides mail and browser apps from the
+             package visibility check, and the feedback rows in Settings
+             would silently fail to open anything. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="mailto"/>
+        </intent>
+        <!-- Telegram's own scheme, so the feedback row opens the app rather
+             than a browser tab pointing at t.me. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="tg"/>
         </intent>
     </queries>
 </manifest>

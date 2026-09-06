@@ -226,5 +226,68 @@
     }
   },
   "widgetMarkedLabel": "Белгиланди",
-  "widgetNoDataLabel": "Иловани очинг"
+  "widgetNoDataLabel": "Иловани очинг",
+
+  "onboardingStepLabel": "{current}-қадам, жами {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "onboardingNext": "Кейингиси",
+
+  "onboardingBack": "Орқага",
+
+  "onboardingFinish": "Тайёр",
+
+  "onboardingLanguageTitle": "Илова тили",
+
+  "onboardingLanguageBody": "Намоз номлари, маслаҳатлар ва билдиришномалар шу тилда бўлади. Исталган вақтда созламалардан ўзгартирасиз.",
+
+  "onboardingThemeTitle": "Кўриниши",
+
+  "onboardingThemeBody": "Ёруғ, қоронғи ёки телефондагидек. Бош экрандаги виджет ҳам шу танловга эргашади.",
+
+  "onboardingCityTitle": "Шаҳрингиз",
+
+  "onboardingCityBody": "Намоз вақтлари координаталарга боғлиқ, шунинг учун шаҳар энг муҳим созлама. Уни автоматик аниқланг ёки ўзингиз танланг.",
+
+  "onboardingCityDetect": "Автоматик аниқлаш",
+
+  "onboardingCityManual": "Ўзим танлайман",
+
+  "onboardingCitySelected": "Танланган шаҳар",
+
+  "onboardingMethodTitle": "Ҳисоблаш усули",
+
+  "onboardingMethodBody": "Ташкилотлар бомдод ва хуфтон учун қуёшнинг турли бурчакларидан фойдаланади, шунинг учун вақтлар бир неча дақиқага фарқ қилади. Яшайдиган жойингизда қабул қилинганини танланг.",
+
+  "onboardingMadhabTitle": "Мазҳаб",
+
+  "onboardingMadhabBody": "Бу фақат аср вақтига таъсир қилади: ҳанафийларда у шофийларникидан кечроқ киради.",
+
+  "onboardingNotifTitle": "Билдиришномалар",
+
+  "onboardingNotifBody": "Илова ҳар бир намоз кирганини билдиради ва агар намоз ўқилди деб белгиланмаган бўлса, вақти тугашига 30 дақиқа қолганда яна эслатади.",
+
+  "notifModeSound": "Овоз билан",
+  "notifModeSilent": "Овозсиз",
+  "notifModeOff": "Ўчирилган",
+
+  "calendarNotMarked": "Белгиланмаган",
+  "calendarDayPanelKicker": "Намозларни белгиланг",
+  "namesNoticeTitle": "Ҳозирча фақат ўзбекча",
+  "namesNoticeBody": "Аллоҳ исмлари ва уларнинг шарҳи ҳозирча фақат ўзбек (кирилл) тилида мавжуд. Бошқа тилларга таржималари кейинги янгиланишларда қўшилади.",
+  "namesNoticeButton": "Тушунарли",
+
+  "feedbackKicker": "Алоқа",
+  "feedbackEmail": "Почтага ёзиш",
+  "feedbackTelegram": "Телеграмга ёзиш",
+  "feedbackCopied": "Нусхаланди",
+
+  "namesNoticeDisclaimer": "Ёзилиши ва шарҳларида хатолар бўлиши мумкин. Хатони сезсангиз, созламалардаги «Алоқа» бўлими орқали ёзинг.",
+
+  "namesDisclaimerTitle": "Эътибор беринг"
 }

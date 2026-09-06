@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../data/timezone_utils.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
 import '../models/notif_mode.dart';
@@ -84,8 +86,36 @@ void _notificationBackgroundHandler(NotificationResponse response) {
   return (parts[0], parts[1]);
 }
 
+/// One notification the schedule says should exist, before anything has
+/// been handed to the platform — see [NotificationService.scheduleForDays],
+/// which builds the whole list first and only then books it, nearest first
+/// and in small batches.
+class _PlannedNotification {
+  final int id;
+  final tz.TZDateTime when;
+  final String title;
+  final String body;
+  final NotifMode mode;
+  final String? payload;
+  final String? actionLabel;
+
+  const _PlannedNotification({
+    required this.id,
+    required this.when,
+    required this.title,
+    required this.body,
+    required this.mode,
+    required this.payload,
+    required this.actionLabel,
+  });
+}
+
 class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
+
+  /// Bumped by every [scheduleForDays] call so the batches still trickling
+  /// out from the previous one stop instead of racing the new schedule.
+  int _generation = 0;
 
   /// Set by AppState during init — lets a "Прочитал"/"Done" notification
   /// action update the already-running app (in-memory state + disk) instead
@@ -94,7 +124,7 @@ class NotificationService {
   Future<void> Function(DateTime date, String prayerKey)? onMarkDone;
 
   Future<void> init() async {
-    tz_data.initializeTimeZones();
+    ensureTimeZonesInitialized();
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwinInit = DarwinInitializationSettings(
@@ -126,9 +156,11 @@ class NotificationService {
             importance: Importance.high,
           ),
         );
-    await requestPermissions();
   }
 
+  /// Called from the first-run setup flow (see OnboardingScreen), not from
+  /// [init] — asking on the very first frame, before anything has explained
+  /// what the notifications are for, is how permission prompts get denied.
   Future<void> requestPermissions() async {
     final android = _plugin
         .resolvePlatformSpecificImplementation<
@@ -158,15 +190,10 @@ class NotificationService {
     bool includeTahajjud = false,
     Map<String, Map<String, PrayerLogStatus>> prayerLog = const {},
   }) async {
-    await cancelAll();
-
+    final generation = ++_generation;
     final t = lookupAppLocalizations(locale.localeValue);
     final location = tz.UTC;
-    // Fired off together rather than one-at-a-time: up to 50 sequential
-    // awaited platform-channel round trips (10 days × 5 prayers) was real,
-    // noticeable UI-thread work every time a single toggle (quiet hours, a
-    // per-prayer notification mode) touched the whole schedule.
-    final scheduling = <Future<void>>[];
+    final planned = <_PlannedNotification>[];
 
     // Tahajjud sorts before Fajr — it's the last third of the *same*
     // record's night, so it always falls earlier in the clock than that
@@ -182,6 +209,8 @@ class NotificationService {
       final dayLog = prayerLog[dayKey] ?? const <String, PrayerLogStatus>{};
 
       for (final (key, kind) in order) {
+        final mode = notifMode[key] ?? NotifMode.notification;
+        if (mode == NotifMode.off) continue;
         final naive = _combine(day.date, _timeFor(day, key));
         final scheduled = _toTz(naive, utcOffset, location);
         if (scheduled.isBefore(tz.TZDateTime.now(location))) continue;
@@ -190,17 +219,13 @@ class NotificationService {
         // so it gets no mark-done action — there's nowhere for that mark to
         // show up.
         final payload = key == 'tahajjud' ? null : '$dayKey|$key';
-        scheduling.add(
-          _scheduleOne(
+        planned.add(
+          _PlannedNotification(
             id: _notifId(day.date, _prayerSlot(key)),
             when: scheduled,
             title: t.notifPlainTitle(nameForPrayer(t, kind)),
             body: t.notifBody,
-            mode: _effectiveMode(
-              notifMode[key] ?? NotifMode.notification,
-              naive.hour,
-              quietHoursEnabled,
-            ),
+            mode: _effectiveMode(mode, naive.hour, quietHoursEnabled),
             payload: payload,
             actionLabel: t.notifMarkDoneAction,
           ),
@@ -214,25 +239,22 @@ class NotificationService {
       // day to end its window.
       for (final (key, kind) in _prayerOrder) {
         if (dayLog.containsKey(key)) continue;
+        // Turning a prayer's notifications off turns off its reminder too.
+        final mode = notifMode[key] ?? NotifMode.notification;
+        if (mode == NotifMode.off) continue;
         final end = _windowEnd(days, i, key);
         if (end == null) continue;
         final naive = end.subtract(kPrayerEndingReminderLead);
         final scheduled = _toTz(naive, utcOffset, location);
         if (scheduled.isBefore(tz.TZDateTime.now(location))) continue;
 
-        scheduling.add(
-          _scheduleOne(
+        planned.add(
+          _PlannedNotification(
             id: prayerEndReminderId(day.date, key),
             when: scheduled,
             title: t.notifPrayerEndingTitle(nameForPrayer(t, kind)),
-            body: t.notifPrayerEndingBody(
-              kPrayerEndingReminderLead.inMinutes,
-            ),
-            mode: _effectiveMode(
-              notifMode[key] ?? NotifMode.notification,
-              naive.hour,
-              quietHoursEnabled,
-            ),
+            body: t.notifPrayerEndingBody(kPrayerEndingReminderLead.inMinutes),
+            mode: _effectiveMode(mode, naive.hour, quietHoursEnabled),
             payload: '$dayKey|$key',
             actionLabel: t.notifMarkDoneAction,
           ),
@@ -247,8 +269,8 @@ class NotificationService {
       ).add(const Duration(minutes: 45));
       final reminderScheduled = _toTz(reminderNaive, utcOffset, location);
       if (!reminderScheduled.isBefore(tz.TZDateTime.now(location))) {
-        scheduling.add(
-          _scheduleOne(
+        planned.add(
+          _PlannedNotification(
             id: _notifId(day.date, _slotEveningReminder),
             when: reminderScheduled,
             title: t.notifEveningReminderTitle,
@@ -265,7 +287,67 @@ class NotificationService {
       }
     }
 
-    await Future.wait(scheduling);
+    // Nearest first, so the part of the schedule anyone could actually
+    // notice is in place before the rest.
+    planned.sort((a, b) => a.when.compareTo(b.when));
+
+    // No cancelAll(): ids are deterministic (see [_notifId]), so rebooking
+    // overwrites in place, and only what the new schedule *doesn't* want —
+    // a prayer just switched off, a day that has passed — needs cancelling.
+    // cancelAll() plus ~90 re-bookings on every single toggle was what made
+    // the notification settings feel like they hung.
+    final wanted = {for (final p in planned) p.id};
+    try {
+      for (final pending in await _plugin.pendingNotificationRequests()) {
+        if (generation != _generation) return;
+        if (!wanted.contains(pending.id)) {
+          await _plugin.cancel(id: pending.id);
+        }
+      }
+    } catch (_) {
+      // A platform that can't list pending notifications just keeps them;
+      // they're overwritten by id anyway on the next pass.
+    }
+
+    // Today and tomorrow go in synchronously — that's the window a toggle
+    // is really about, and it's ~20 bookings rather than ~90.
+    final now = tz.TZDateTime.now(location);
+    final horizon = now.add(_immediateHorizon);
+    final soon = planned.where((p) => p.when.isBefore(horizon));
+    for (final plan in soon) {
+      if (generation != _generation) return;
+      await _scheduleOne(plan);
+    }
+
+    // Everything further out is booked in small batches with the event loop
+    // free in between, so the UI keeps its frames while it happens.
+    final later = planned.where((p) => !p.when.isBefore(horizon)).toList();
+    unawaited(_scheduleGradually(later, generation));
+  }
+
+  /// The stretch of schedule a change is immediately about — anything later
+  /// can arrive over the next few seconds without anyone noticing.
+  static const _immediateHorizon = Duration(hours: 36);
+  static const _batchSize = 5;
+  static const _batchGap = Duration(milliseconds: 120);
+
+  Future<void> _scheduleGradually(
+    List<_PlannedNotification> plans,
+    int generation,
+  ) async {
+    for (var i = 0; i < plans.length; i += _batchSize) {
+      await Future<void>.delayed(_batchGap);
+      if (generation != _generation) return;
+      for (final plan in plans.skip(i).take(_batchSize)) {
+        if (generation != _generation) return;
+        try {
+          await _scheduleOne(plan);
+        } catch (_) {
+          // One booking failing (exact-alarm permission revoked mid-run,
+          // say) shouldn't take the rest of the schedule with it.
+        }
+      }
+    }
   }
 
   /// The id of the "window is closing" reminder for [prayerKey] on
@@ -322,15 +404,14 @@ class NotificationService {
     tz.Location location,
   ) => tz.TZDateTime.from(naive.subtract(utcOffset), location);
 
-  Future<void> _scheduleOne({
-    required int id,
-    required tz.TZDateTime when,
-    required String title,
-    required String body,
-    required NotifMode mode,
-    required String? payload,
-    required String? actionLabel,
-  }) async {
+  Future<void> _scheduleOne(_PlannedNotification plan) async {
+    final id = plan.id;
+    final when = plan.when;
+    final title = plan.title;
+    final body = plan.body;
+    final mode = plan.mode;
+    final payload = plan.payload;
+    final actionLabel = plan.actionLabel;
     // The "Прочитал"/"Done" action marks this prayer done on the prayer log
     // without opening the app — see _onResponse and
     // _notificationBackgroundHandler, which is why it's absent when there's
@@ -356,12 +437,13 @@ class NotificationService {
       actions: actions,
     );
 
-    final darwin = switch (mode) {
-      NotifMode.notification => const DarwinNotificationDetails(
-        interruptionLevel: InterruptionLevel.active,
-      ),
-      NotifMode.silent => const DarwinNotificationDetails(presentSound: false),
-    };
+    // NotifMode.off never reaches here — scheduleForDays skips those
+    // prayers outright — so it falls in with the silent presentation.
+    final darwin = mode == NotifMode.notification
+        ? const DarwinNotificationDetails(
+            interruptionLevel: InterruptionLevel.active,
+          )
+        : const DarwinNotificationDetails(presentSound: false);
 
     await _plugin.zonedSchedule(
       id: id,
@@ -422,6 +504,9 @@ class NoopNotificationService extends NotificationService {
   Future<void> init() async {}
 
   @override
+  /// Called from the first-run setup flow (see OnboardingScreen), not from
+  /// [init] — asking on the very first frame, before anything has explained
+  /// what the notifications are for, is how permission prompts get denied.
   Future<void> requestPermissions() async {}
 
   @override
@@ -436,10 +521,7 @@ class NoopNotificationService extends NotificationService {
   }) async {}
 
   @override
-  Future<void> cancelPrayerEndReminder(
-    DateTime date,
-    String prayerKey,
-  ) async {}
+  Future<void> cancelPrayerEndReminder(DateTime date, String prayerKey) async {}
 
   @override
   Future<void> cancelAll() async {}

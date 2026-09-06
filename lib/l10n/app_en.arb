@@ -226,5 +226,68 @@
     }
   },
   "widgetMarkedLabel": "Logged",
-  "widgetNoDataLabel": "Open the app"
+  "widgetNoDataLabel": "Open the app",
+
+  "onboardingStepLabel": "Step {current} of {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "onboardingNext": "Next",
+
+  "onboardingBack": "Back",
+
+  "onboardingFinish": "Done",
+
+  "onboardingLanguageTitle": "App language",
+
+  "onboardingLanguageBody": "The language for prayer names, hints and notifications. You can change it any time in settings.",
+
+  "onboardingThemeTitle": "Appearance",
+
+  "onboardingThemeBody": "Light, dark, or whatever your phone uses. The home-screen widget follows this too.",
+
+  "onboardingCityTitle": "Your city",
+
+  "onboardingCityBody": "Prayer times depend on coordinates, so the city matters more than anything else here. Detect it automatically or pick it yourself.",
+
+  "onboardingCityDetect": "Detect automatically",
+
+  "onboardingCityManual": "Choose manually",
+
+  "onboardingCitySelected": "Selected city",
+
+  "onboardingMethodTitle": "Calculation method",
+
+  "onboardingMethodBody": "Organizations use different sun angles for Fajr and Isha, so the times differ by a few minutes. Pick the one followed where you live.",
+
+  "onboardingMadhabTitle": "Madhab",
+
+  "onboardingMadhabBody": "This only affects Asr: in the Hanafi school it starts later than in the Shafi one.",
+
+  "onboardingNotifTitle": "Notifications",
+
+  "onboardingNotifBody": "The app announces each prayer, and reminds you again 30 minutes before its window closes if you haven't marked it as prayed.",
+
+  "notifModeSound": "With sound",
+  "notifModeSilent": "Silent",
+  "notifModeOff": "Off",
+
+  "calendarNotMarked": "Not marked",
+  "calendarDayPanelKicker": "Mark the prayers",
+  "namesNoticeTitle": "Uzbek only for now",
+  "namesNoticeBody": "The names of Allah and their commentary are currently available in Uzbek (Cyrillic) only. Translations into other languages are coming in a future update.",
+  "namesNoticeButton": "Got it",
+
+  "feedbackKicker": "Feedback",
+  "feedbackEmail": "Send an email",
+  "feedbackTelegram": "Message on Telegram",
+  "feedbackCopied": "Copied",
+
+  "namesNoticeDisclaimer": "Spellings and commentary may contain mistakes. If you spot one, write to us through Feedback in settings.",
+
+  "namesDisclaimerTitle": "Please note"
 }

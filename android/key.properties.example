@@ -1,0 +1,8 @@
+# Copy to android/key.properties and fill in — that file is git-ignored.
+# Create the keystore first:
+#   keytool -genkey -v -keystore ~/prayertime-upload.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+storePassword=<пароль хранилища>
+keyPassword=<пароль ключа>
+keyAlias=upload
+storeFile=/Users/<вы>/prayertime-upload.jks

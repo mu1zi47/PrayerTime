@@ -226,5 +226,68 @@
     }
   },
   "widgetMarkedLabel": "Отмечено",
-  "widgetNoDataLabel": "Откройте приложение"
+  "widgetNoDataLabel": "Откройте приложение",
+
+  "onboardingStepLabel": "Шаг {current} из {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "onboardingNext": "Далее",
+
+  "onboardingBack": "Назад",
+
+  "onboardingFinish": "Готово",
+
+  "onboardingLanguageTitle": "Язык приложения",
+
+  "onboardingLanguageBody": "Выберите язык: на нём будут названия намазов, подсказки и уведомления. Поменять можно в любой момент в настройках.",
+
+  "onboardingThemeTitle": "Оформление",
+
+  "onboardingThemeBody": "Светлое, тёмное или как на телефоне. Виджет на главном экране следует этому же выбору.",
+
+  "onboardingCityTitle": "Ваш город",
+
+  "onboardingCityBody": "Время намазов зависит от координат, поэтому город — самая важная настройка. Определите его автоматически или выберите вручную.",
+
+  "onboardingCityDetect": "Определить автоматически",
+
+  "onboardingCityManual": "Выбрать вручную",
+
+  "onboardingCitySelected": "Выбран город",
+
+  "onboardingMethodTitle": "Метод расчёта",
+
+  "onboardingMethodBody": "Организации считают фаджр и ишу по разным углам солнца, поэтому время отличается на несколько минут. Выберите метод, принятый в вашей местности.",
+
+  "onboardingMadhabTitle": "Мазхаб",
+
+  "onboardingMadhabBody": "От мазхаба зависит только время аср: у ханафитов оно наступает позже, чем у шафиитов.",
+
+  "onboardingNotifTitle": "Уведомления",
+
+  "onboardingNotifBody": "Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.",
+
+  "notifModeSound": "Со звуком",
+  "notifModeSilent": "Без звука",
+  "notifModeOff": "Выключено",
+
+  "calendarNotMarked": "Не отмечен",
+  "calendarDayPanelKicker": "Отметьте намазы",
+  "namesNoticeTitle": "Пока только на узбекском",
+  "namesNoticeBody": "Имена Аллаха и их толкования сейчас доступны только на узбекском (кириллица). Переводы на другие языки появятся в одном из следующих обновлений.",
+  "namesNoticeButton": "Понятно",
+
+  "feedbackKicker": "Обратная связь",
+  "feedbackEmail": "Написать на почту",
+  "feedbackTelegram": "Написать в Telegram",
+  "feedbackCopied": "Скопировано",
+
+  "namesNoticeDisclaimer": "Возможны неточности в написании и толкованиях. Если заметите ошибку — напишите нам через раздел «Обратная связь» в настройках.",
+
+  "namesDisclaimerTitle": "Обратите внимание"
 }

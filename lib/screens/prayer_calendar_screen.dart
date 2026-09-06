@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../data/date_labels.dart';
 import '../data/day_completion.dart';
+import '../data/next_prayer.dart';
 import '../l10n/app_localizations.dart';
+import '../models/prayer_log_status.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/log_prayer_sheet.dart';
+import '../widgets/prayer_icon.dart';
 import '../widgets/screen_back_button.dart';
 
 class PrayerCalendarScreen extends StatefulWidget {
@@ -19,12 +23,14 @@ class PrayerCalendarScreen extends StatefulWidget {
 
 class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
   late DateTime _visibleMonth;
+  late DateTime _selectedDay;
 
   @override
   void initState() {
     super.initState();
     final now = widget.appState.cityNow;
     _visibleMonth = DateTime(now.year, now.month);
+    _selectedDay = DateTime(now.year, now.month, now.day);
   }
 
   bool get _isCurrentMonth {
@@ -41,6 +47,47 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
     );
   }
 
+  static const _allPrayers = [
+    ('fajr', PrayerKind.fajr),
+    ('zuhr', PrayerKind.zuhr),
+    ('asr', PrayerKind.asr),
+    ('maghrib', PrayerKind.maghrib),
+    ('isha', PrayerKind.isha),
+  ];
+
+  /// Which prayers of [date] can be marked at all: a prayer that hasn't
+  /// happened yet can't have been prayed. A future day yields nothing (the
+  /// panel disappears entirely), today yields the ones whose time has
+  /// arrived — including the one running right now — and any past day
+  /// yields all five.
+  List<(String, PrayerKind)> _markablePrayers(DateTime date) {
+    final now = widget.appState.cityNow;
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(date.year, date.month, date.day);
+
+    if (target.isAfter(today)) return const [];
+    if (target.isBefore(today)) return _allPrayers;
+
+    final day = widget.appState.todayPrayerDay;
+    if (day == null) return const [];
+    return _allPrayers
+        .where((p) => hasPrayerTimePassed(day, p.$2, now))
+        .toList();
+  }
+
+  /// Opens the same sheet the home screen's prayer rows use, so a day
+  /// filled in here and a day marked as it happened go through one path.
+  void _editPrayer(DateTime date, String prayerKey, PrayerKind kind) {
+    final t = AppLocalizations.of(context)!;
+    showLogPrayerSheet(
+      context,
+      prayerName: nameForPrayer(t, kind),
+      current: widget.appState.prayerStatusFor(date, prayerKey),
+      onPick: (status) =>
+          widget.appState.setPrayerStatus(date, prayerKey, status),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final padding = MediaQuery.paddingOf(context);
@@ -48,6 +95,7 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
       animation: widget.appState,
       builder: (context, _) {
         final t = AppLocalizations.of(context)!;
+        final markable = _markablePrayers(_selectedDay);
         return Scaffold(
           backgroundColor: AppColors.bg,
           body: ListView(
@@ -87,8 +135,22 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              _CalendarGrid(appState: widget.appState, month: _visibleMonth),
+              _CalendarGrid(
+                appState: widget.appState,
+                month: _visibleMonth,
+                selected: _selectedDay,
+                onSelect: (date) => setState(() => _selectedDay = date),
+              ),
               const SizedBox(height: 20),
+              if (markable.isNotEmpty) ...[
+                _DayLogPanel(
+                  appState: widget.appState,
+                  date: _selectedDay,
+                  prayers: markable,
+                  onEdit: _editPrayer,
+                ),
+                const SizedBox(height: 20),
+              ],
               Wrap(
                 spacing: 16,
                 runSpacing: 8,
@@ -144,8 +206,15 @@ class _MonthNavButton extends StatelessWidget {
 class _CalendarGrid extends StatelessWidget {
   final AppState appState;
   final DateTime month;
+  final DateTime selected;
+  final ValueChanged<DateTime> onSelect;
 
-  const _CalendarGrid({required this.appState, required this.month});
+  const _CalendarGrid({
+    required this.appState,
+    required this.month,
+    required this.selected,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -208,10 +277,15 @@ class _CalendarGrid extends StatelessWidget {
                   date.year == today.year &&
                   date.month == today.month &&
                   date.day == today.day,
+              isSelected:
+                  date.year == selected.year &&
+                  date.month == selected.month &&
+                  date.day == selected.day,
               completion: classifyDay(
                 appState.prayerLogFor(date),
                 isLocked: appState.isDayLocked(date),
               ),
+              onTap: () => onSelect(date),
             );
           },
         ),
@@ -223,12 +297,16 @@ class _CalendarGrid extends StatelessWidget {
 class _DayCell extends StatelessWidget {
   final int day;
   final bool isToday;
+  final bool isSelected;
   final DayCompletion completion;
+  final VoidCallback onTap;
 
   const _DayCell({
     required this.day,
     required this.isToday,
+    required this.isSelected,
     required this.completion,
+    required this.onTap,
   });
 
   @override
@@ -246,25 +324,154 @@ class _DayCell extends StatelessWidget {
       ),
     };
 
-    return Center(
-      child: Container(
-        width: 32,
-        height: 32,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: bg,
-          shape: BoxShape.circle,
-          border: isToday && completion == DayCompletion.upcoming
-              ? Border.all(color: AppColors.accent, width: 1.6)
-              : null,
-        ),
-        child: Text(
-          '$day',
-          style: AppTextStyles.body(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: fg,
+    // The selection ring wins over today's, since today starts out selected
+    // anyway and the ring is what tells you which day the panel below is
+    // about.
+    final border = isSelected
+        ? Border.all(color: AppColors.text, width: 2)
+        : isToday && completion == DayCompletion.upcoming
+        ? Border.all(color: AppColors.accent, width: 1.6)
+        : null;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Center(
+        child: Container(
+          width: 32,
+          height: 32,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bg,
+            shape: BoxShape.circle,
+            border: border,
           ),
+          child: Text(
+            '$day',
+            style: AppTextStyles.body(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: fg,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The day the calendar has selected, laid out prayer by prayer so a missed
+/// one can be filled in after the fact — the home screen only ever reaches
+/// back as far as yesterday.
+class _DayLogPanel extends StatelessWidget {
+  final AppState appState;
+  final DateTime date;
+
+  /// Only the prayers that have actually happened — see
+  /// _PrayerCalendarScreenState._markablePrayers.
+  final List<(String, PrayerKind)> prayers;
+
+  final void Function(DateTime date, String prayerKey, PrayerKind kind) onEdit;
+
+  const _DayLogPanel({
+    required this.appState,
+    required this.date,
+    required this.prayers,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            DateLabels.fullLabel(t, date),
+            style: AppTextStyles.heading(fontSize: 17),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            t.calendarDayPanelKicker,
+            style: AppTextStyles.body(
+              fontSize: 12.5,
+              color: AppColors.text,
+            ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+          ),
+          const SizedBox(height: 10),
+          for (final (key, kind) in prayers)
+            _PrayerLogRow(
+              label: nameForPrayer(t, kind),
+              icon: iconForPrayer(kind),
+              status: appState.prayerStatusFor(date, key),
+              onTap: () => onEdit(date, key, kind),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrayerLogRow extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final PrayerLogStatus? status;
+  final VoidCallback? onTap;
+
+  const _PrayerLogRow({
+    required this.label,
+    required this.icon,
+    required this.status,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final (statusLabel, statusColor) = switch (status) {
+      PrayerLogStatus.onTime => (t.legendOnTime, AppColors.accent2),
+      PrayerLogStatus.qada => (t.legendQada, AppColors.accent),
+      null => (t.calendarNotMarked, AppColors.text.withValues(alpha: 0.4)),
+    };
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.divider)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 17, color: AppColors.accent700),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.body(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Text(
+              statusLabel,
+              style: AppTextStyles.body(fontSize: 13, color: statusColor),
+            ),
+            if (onTap != null) ...[
+              const SizedBox(width: 6),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 17,
+                color: AppColors.text.withValues(alpha: 0.35),
+              ),
+            ],
+          ],
         ),
       ),
     );

@@ -1,6 +1,6 @@
-package com.example.prayertime
+package uz.mu1zi47.prayertime
 
-import com.example.prayertime.widget.PrayerWidgetProvider
+import uz.mu1zi47.prayertime.widget.PrayerWidgetProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -25,6 +25,6 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
-        private const val WIDGET_CHANNEL = "com.example.prayertime/widget"
+        private const val WIDGET_CHANNEL = "uz.mu1zi47.prayertime/widget"
     }
 }

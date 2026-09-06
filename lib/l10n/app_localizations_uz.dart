@@ -495,6 +495,115 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get widgetNoDataLabel => 'Ilovani oching';
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return '$current-qadam, jami $total';
+  }
+
+  @override
+  String get onboardingNext => 'Keyingisi';
+
+  @override
+  String get onboardingBack => 'Orqaga';
+
+  @override
+  String get onboardingFinish => 'Tayyor';
+
+  @override
+  String get onboardingLanguageTitle => 'Ilova tili';
+
+  @override
+  String get onboardingLanguageBody =>
+      'Namoz nomlari, maslahatlar va bildirishnomalar shu tilda bo\'ladi. Istalgan vaqtda sozlamalardan o\'zgartirasiz.';
+
+  @override
+  String get onboardingThemeTitle => 'Ko\'rinishi';
+
+  @override
+  String get onboardingThemeBody =>
+      'Yorug\', qorong\'i yoki telefondagidek. Bosh ekrandagi vidjet ham shu tanlovga ergashadi.';
+
+  @override
+  String get onboardingCityTitle => 'Shahringiz';
+
+  @override
+  String get onboardingCityBody =>
+      'Namoz vaqtlari koordinatalarga bog\'liq, shuning uchun shahar eng muhim sozlama. Uni avtomatik aniqlang yoki o\'zingiz tanlang.';
+
+  @override
+  String get onboardingCityDetect => 'Avtomatik aniqlash';
+
+  @override
+  String get onboardingCityManual => 'O\'zim tanlayman';
+
+  @override
+  String get onboardingCitySelected => 'Tanlangan shahar';
+
+  @override
+  String get onboardingMethodTitle => 'Hisoblash usuli';
+
+  @override
+  String get onboardingMethodBody =>
+      'Tashkilotlar bomdod va xufton uchun quyoshning turli burchaklaridan foydalanadi, shuning uchun vaqtlar bir necha daqiqaga farq qiladi. Yashaydigan joyingizda qabul qilinganini tanlang.';
+
+  @override
+  String get onboardingMadhabTitle => 'Mazhab';
+
+  @override
+  String get onboardingMadhabBody =>
+      'Bu faqat asr vaqtiga ta\'sir qiladi: hanafiylarda u shofiylarnikidan kechroq kiradi.';
+
+  @override
+  String get onboardingNotifTitle => 'Bildirishnomalar';
+
+  @override
+  String get onboardingNotifBody =>
+      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.';
+
+  @override
+  String get notifModeSound => 'Ovoz bilan';
+
+  @override
+  String get notifModeSilent => 'Ovozsiz';
+
+  @override
+  String get notifModeOff => 'O\'chirilgan';
+
+  @override
+  String get calendarNotMarked => 'Belgilanmagan';
+
+  @override
+  String get calendarDayPanelKicker => 'Namozlarni belgilang';
+
+  @override
+  String get namesNoticeTitle => 'Hozircha faqat o\'zbekcha';
+
+  @override
+  String get namesNoticeBody =>
+      'Alloh ismlari va ularning sharhi hozircha faqat o\'zbek (kirill) tilida mavjud. Boshqa tillarga tarjimalari keyingi yangilanishlarda qo\'shiladi.';
+
+  @override
+  String get namesNoticeButton => 'Tushunarli';
+
+  @override
+  String get feedbackKicker => 'Aloqa';
+
+  @override
+  String get feedbackEmail => 'Pochtaga yozish';
+
+  @override
+  String get feedbackTelegram => 'Telegramga yozish';
+
+  @override
+  String get feedbackCopied => 'Nusxalandi';
+
+  @override
+  String get namesNoticeDisclaimer =>
+      'Yozilishi va sharhlarida xatolar bo\'lishi mumkin. Xatoni sezsangiz, sozlamalardagi «Aloqa» bo\'limi orqali yozing.';
+
+  @override
+  String get namesDisclaimerTitle => 'E\'tibor bering';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -987,6 +1096,115 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get widgetNoDataLabel => 'Иловани очинг';
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return '$current-қадам, жами $total';
+  }
+
+  @override
+  String get onboardingNext => 'Кейингиси';
+
+  @override
+  String get onboardingBack => 'Орқага';
+
+  @override
+  String get onboardingFinish => 'Тайёр';
+
+  @override
+  String get onboardingLanguageTitle => 'Илова тили';
+
+  @override
+  String get onboardingLanguageBody =>
+      'Намоз номлари, маслаҳатлар ва билдиришномалар шу тилда бўлади. Исталган вақтда созламалардан ўзгартирасиз.';
+
+  @override
+  String get onboardingThemeTitle => 'Кўриниши';
+
+  @override
+  String get onboardingThemeBody =>
+      'Ёруғ, қоронғи ёки телефондагидек. Бош экрандаги виджет ҳам шу танловга эргашади.';
+
+  @override
+  String get onboardingCityTitle => 'Шаҳрингиз';
+
+  @override
+  String get onboardingCityBody =>
+      'Намоз вақтлари координаталарга боғлиқ, шунинг учун шаҳар энг муҳим созлама. Уни автоматик аниқланг ёки ўзингиз танланг.';
+
+  @override
+  String get onboardingCityDetect => 'Автоматик аниқлаш';
+
+  @override
+  String get onboardingCityManual => 'Ўзим танлайман';
+
+  @override
+  String get onboardingCitySelected => 'Танланган шаҳар';
+
+  @override
+  String get onboardingMethodTitle => 'Ҳисоблаш усули';
+
+  @override
+  String get onboardingMethodBody =>
+      'Ташкилотлар бомдод ва хуфтон учун қуёшнинг турли бурчакларидан фойдаланади, шунинг учун вақтлар бир неча дақиқага фарқ қилади. Яшайдиган жойингизда қабул қилинганини танланг.';
+
+  @override
+  String get onboardingMadhabTitle => 'Мазҳаб';
+
+  @override
+  String get onboardingMadhabBody =>
+      'Бу фақат аср вақтига таъсир қилади: ҳанафийларда у шофийларникидан кечроқ киради.';
+
+  @override
+  String get onboardingNotifTitle => 'Билдиришномалар';
+
+  @override
+  String get onboardingNotifBody =>
+      'Илова ҳар бир намоз кирганини билдиради ва агар намоз ўқилди деб белгиланмаган бўлса, вақти тугашига 30 дақиқа қолганда яна эслатади.';
+
+  @override
+  String get notifModeSound => 'Овоз билан';
+
+  @override
+  String get notifModeSilent => 'Овозсиз';
+
+  @override
+  String get notifModeOff => 'Ўчирилган';
+
+  @override
+  String get calendarNotMarked => 'Белгиланмаган';
+
+  @override
+  String get calendarDayPanelKicker => 'Намозларни белгиланг';
+
+  @override
+  String get namesNoticeTitle => 'Ҳозирча фақат ўзбекча';
+
+  @override
+  String get namesNoticeBody =>
+      'Аллоҳ исмлари ва уларнинг шарҳи ҳозирча фақат ўзбек (кирилл) тилида мавжуд. Бошқа тилларга таржималари кейинги янгиланишларда қўшилади.';
+
+  @override
+  String get namesNoticeButton => 'Тушунарли';
+
+  @override
+  String get feedbackKicker => 'Алоқа';
+
+  @override
+  String get feedbackEmail => 'Почтага ёзиш';
+
+  @override
+  String get feedbackTelegram => 'Телеграмга ёзиш';
+
+  @override
+  String get feedbackCopied => 'Нусхаланди';
+
+  @override
+  String get namesNoticeDisclaimer =>
+      'Ёзилиши ва шарҳларида хатолар бўлиши мумкин. Хатони сезсангиз, созламалардаги «Алоқа» бўлими орқали ёзинг.';
+
+  @override
+  String get namesDisclaimerTitle => 'Эътибор беринг';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -1480,4 +1698,113 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get widgetNoDataLabel => 'Ilovani oching';
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return '$current-qadam, jami $total';
+  }
+
+  @override
+  String get onboardingNext => 'Keyingisi';
+
+  @override
+  String get onboardingBack => 'Orqaga';
+
+  @override
+  String get onboardingFinish => 'Tayyor';
+
+  @override
+  String get onboardingLanguageTitle => 'Ilova tili';
+
+  @override
+  String get onboardingLanguageBody =>
+      'Namoz nomlari, maslahatlar va bildirishnomalar shu tilda bo\'ladi. Istalgan vaqtda sozlamalardan o\'zgartirasiz.';
+
+  @override
+  String get onboardingThemeTitle => 'Ko\'rinishi';
+
+  @override
+  String get onboardingThemeBody =>
+      'Yorug\', qorong\'i yoki telefondagidek. Bosh ekrandagi vidjet ham shu tanlovga ergashadi.';
+
+  @override
+  String get onboardingCityTitle => 'Shahringiz';
+
+  @override
+  String get onboardingCityBody =>
+      'Namoz vaqtlari koordinatalarga bog\'liq, shuning uchun shahar eng muhim sozlama. Uni avtomatik aniqlang yoki o\'zingiz tanlang.';
+
+  @override
+  String get onboardingCityDetect => 'Avtomatik aniqlash';
+
+  @override
+  String get onboardingCityManual => 'O\'zim tanlayman';
+
+  @override
+  String get onboardingCitySelected => 'Tanlangan shahar';
+
+  @override
+  String get onboardingMethodTitle => 'Hisoblash usuli';
+
+  @override
+  String get onboardingMethodBody =>
+      'Tashkilotlar bomdod va xufton uchun quyoshning turli burchaklaridan foydalanadi, shuning uchun vaqtlar bir necha daqiqaga farq qiladi. Yashaydigan joyingizda qabul qilinganini tanlang.';
+
+  @override
+  String get onboardingMadhabTitle => 'Mazhab';
+
+  @override
+  String get onboardingMadhabBody =>
+      'Bu faqat asr vaqtiga ta\'sir qiladi: hanafiylarda u shofiylarnikidan kechroq kiradi.';
+
+  @override
+  String get onboardingNotifTitle => 'Bildirishnomalar';
+
+  @override
+  String get onboardingNotifBody =>
+      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.';
+
+  @override
+  String get notifModeSound => 'Ovoz bilan';
+
+  @override
+  String get notifModeSilent => 'Ovozsiz';
+
+  @override
+  String get notifModeOff => 'O\'chirilgan';
+
+  @override
+  String get calendarNotMarked => 'Belgilanmagan';
+
+  @override
+  String get calendarDayPanelKicker => 'Namozlarni belgilang';
+
+  @override
+  String get namesNoticeTitle => 'Hozircha faqat o\'zbekcha';
+
+  @override
+  String get namesNoticeBody =>
+      'Alloh ismlari va ularning sharhi hozircha faqat o\'zbek (kirill) tilida mavjud. Boshqa tillarga tarjimalari keyingi yangilanishlarda qo\'shiladi.';
+
+  @override
+  String get namesNoticeButton => 'Tushunarli';
+
+  @override
+  String get feedbackKicker => 'Aloqa';
+
+  @override
+  String get feedbackEmail => 'Pochtaga yozish';
+
+  @override
+  String get feedbackTelegram => 'Telegramga yozish';
+
+  @override
+  String get feedbackCopied => 'Nusxalandi';
+
+  @override
+  String get namesNoticeDisclaimer =>
+      'Yozilishi va sharhlarida xatolar bo\'lishi mumkin. Xatoni sezsangiz, sozlamalardagi «Aloqa» bo\'limi orqali yozing.';
+
+  @override
+  String get namesDisclaimerTitle => 'E\'tibor bering';
 }

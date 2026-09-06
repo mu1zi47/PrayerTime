@@ -58,7 +58,12 @@ void main() {
     // on a fresh install (see AppState._restore), which this test's
     // hardcoded Russian text assertions don't want varying by test-runner
     // environment.
-    SharedPreferences.setMockInitialValues({'locale': 'ru'});
+    // 'onboarding_done' skips the first-run setup flow — see
+    // OnboardingScreen; these tests are about what comes after it.
+    SharedPreferences.setMockInitialValues({
+      'locale': 'ru',
+      'onboarding_done': true,
+    });
   });
 
   testWidgets('App renders the home screen and switches tabs', (

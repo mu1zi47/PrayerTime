@@ -493,4 +493,113 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get widgetNoDataLabel => 'Откройте приложение';
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return 'Шаг $current из $total';
+  }
+
+  @override
+  String get onboardingNext => 'Далее';
+
+  @override
+  String get onboardingBack => 'Назад';
+
+  @override
+  String get onboardingFinish => 'Готово';
+
+  @override
+  String get onboardingLanguageTitle => 'Язык приложения';
+
+  @override
+  String get onboardingLanguageBody =>
+      'Выберите язык: на нём будут названия намазов, подсказки и уведомления. Поменять можно в любой момент в настройках.';
+
+  @override
+  String get onboardingThemeTitle => 'Оформление';
+
+  @override
+  String get onboardingThemeBody =>
+      'Светлое, тёмное или как на телефоне. Виджет на главном экране следует этому же выбору.';
+
+  @override
+  String get onboardingCityTitle => 'Ваш город';
+
+  @override
+  String get onboardingCityBody =>
+      'Время намазов зависит от координат, поэтому город — самая важная настройка. Определите его автоматически или выберите вручную.';
+
+  @override
+  String get onboardingCityDetect => 'Определить автоматически';
+
+  @override
+  String get onboardingCityManual => 'Выбрать вручную';
+
+  @override
+  String get onboardingCitySelected => 'Выбран город';
+
+  @override
+  String get onboardingMethodTitle => 'Метод расчёта';
+
+  @override
+  String get onboardingMethodBody =>
+      'Организации считают фаджр и ишу по разным углам солнца, поэтому время отличается на несколько минут. Выберите метод, принятый в вашей местности.';
+
+  @override
+  String get onboardingMadhabTitle => 'Мазхаб';
+
+  @override
+  String get onboardingMadhabBody =>
+      'От мазхаба зависит только время аср: у ханафитов оно наступает позже, чем у шафиитов.';
+
+  @override
+  String get onboardingNotifTitle => 'Уведомления';
+
+  @override
+  String get onboardingNotifBody =>
+      'Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.';
+
+  @override
+  String get notifModeSound => 'Со звуком';
+
+  @override
+  String get notifModeSilent => 'Без звука';
+
+  @override
+  String get notifModeOff => 'Выключено';
+
+  @override
+  String get calendarNotMarked => 'Не отмечен';
+
+  @override
+  String get calendarDayPanelKicker => 'Отметьте намазы';
+
+  @override
+  String get namesNoticeTitle => 'Пока только на узбекском';
+
+  @override
+  String get namesNoticeBody =>
+      'Имена Аллаха и их толкования сейчас доступны только на узбекском (кириллица). Переводы на другие языки появятся в одном из следующих обновлений.';
+
+  @override
+  String get namesNoticeButton => 'Понятно';
+
+  @override
+  String get feedbackKicker => 'Обратная связь';
+
+  @override
+  String get feedbackEmail => 'Написать на почту';
+
+  @override
+  String get feedbackTelegram => 'Написать в Telegram';
+
+  @override
+  String get feedbackCopied => 'Скопировано';
+
+  @override
+  String get namesNoticeDisclaimer =>
+      'Возможны неточности в написании и толкованиях. Если заметите ошибку — напишите нам через раздел «Обратная связь» в настройках.';
+
+  @override
+  String get namesDisclaimerTitle => 'Обратите внимание';
 }

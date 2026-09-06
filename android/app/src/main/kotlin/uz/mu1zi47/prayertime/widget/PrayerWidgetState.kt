@@ -1,4 +1,4 @@
-package com.example.prayertime.widget
+package uz.mu1zi47.prayertime.widget
 
 import android.content.Context
 import android.content.res.Configuration
@@ -33,11 +33,19 @@ sealed interface PrayerWidgetState {
 
     data class Ready(
         override val dark: Boolean,
-        /** Which prayer the button logs: the one whose window is open now. */
-        val currentPrayerKey: String,
-        val currentDateKey: String,
+        /**
+         * Which prayer the button logs, or null when no prayer's window is
+         * open — between sunrise and Zuhr there is nothing to mark, so the
+         * button is hidden rather than offering to log a Fajr whose time
+         * has already run out.
+         */
+        val currentPrayerKey: String?,
+        val currentDateKey: String?,
         val currentMarked: Boolean,
-        /** The prayer that's on now — the widget's headline. */
+        /**
+         * The headline: the prayer that's on now, or "Sunrise" through the
+         * stretch after Fajr's window closes.
+         */
         val currentName: String,
         /** The one after it, e.g. "Next prayer · Asr 16:57". */
         val nextLabel: String,
@@ -123,21 +131,26 @@ sealed interface PrayerWidgetState {
             // The prayer whose time has most recently arrived — Isha stays
             // "current" past midnight until the next Fajr, which falls out of
             // this naturally since the payload spans whole days either side.
-            val current = slots.lastOrNull { it.at <= now && it.isPrayer }
+            // The most recent event of any kind — a prayer, or the sunrise
+            // that ends Fajr's window. Which of the two it is decides both
+            // the headline and whether there's anything to log.
+            val lastPassed = slots.lastOrNull { it.at <= now }
             val nextPrayer = slots.firstOrNull { it.at > now && it.isPrayer }
             val nextChange = slots.firstOrNull { it.at > now }
-            if (current == null || nextPrayer == null || nextChange == null) {
+            if (lastPassed == null || nextPrayer == null || nextChange == null) {
                 return Empty(noData, dark)
             }
 
-            val marked = PrayerWidgetStore.isMarked(context, current.dateKey, current.key)
+            val openPrayer = lastPassed.takeIf { it.isPrayer }
+            val marked = openPrayer != null &&
+                PrayerWidgetStore.isMarked(context, openPrayer.dateKey, openPrayer.key)
 
             return Ready(
                 dark = dark,
-                currentPrayerKey = current.key,
-                currentDateKey = current.dateKey,
+                currentPrayerKey = openPrayer?.key,
+                currentDateKey = openPrayer?.dateKey,
                 currentMarked = marked,
-                currentName = current.name,
+                currentName = lastPassed.name,
                 nextLabel = "${label("next", "")} · ${nextPrayer.name} ${nextPrayer.time}",
                 markLabel = if (marked) label("marked", "") else label("markDone", ""),
                 untilWindowEndMillis = Duration.between(now, nextChange.at).toMillis(),

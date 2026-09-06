@@ -493,4 +493,113 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetNoDataLabel => 'Open the app';
+
+  @override
+  String onboardingStepLabel(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingFinish => 'Done';
+
+  @override
+  String get onboardingLanguageTitle => 'App language';
+
+  @override
+  String get onboardingLanguageBody =>
+      'The language for prayer names, hints and notifications. You can change it any time in settings.';
+
+  @override
+  String get onboardingThemeTitle => 'Appearance';
+
+  @override
+  String get onboardingThemeBody =>
+      'Light, dark, or whatever your phone uses. The home-screen widget follows this too.';
+
+  @override
+  String get onboardingCityTitle => 'Your city';
+
+  @override
+  String get onboardingCityBody =>
+      'Prayer times depend on coordinates, so the city matters more than anything else here. Detect it automatically or pick it yourself.';
+
+  @override
+  String get onboardingCityDetect => 'Detect automatically';
+
+  @override
+  String get onboardingCityManual => 'Choose manually';
+
+  @override
+  String get onboardingCitySelected => 'Selected city';
+
+  @override
+  String get onboardingMethodTitle => 'Calculation method';
+
+  @override
+  String get onboardingMethodBody =>
+      'Organizations use different sun angles for Fajr and Isha, so the times differ by a few minutes. Pick the one followed where you live.';
+
+  @override
+  String get onboardingMadhabTitle => 'Madhab';
+
+  @override
+  String get onboardingMadhabBody =>
+      'This only affects Asr: in the Hanafi school it starts later than in the Shafi one.';
+
+  @override
+  String get onboardingNotifTitle => 'Notifications';
+
+  @override
+  String get onboardingNotifBody =>
+      'The app announces each prayer, and reminds you again 30 minutes before its window closes if you haven\'t marked it as prayed.';
+
+  @override
+  String get notifModeSound => 'With sound';
+
+  @override
+  String get notifModeSilent => 'Silent';
+
+  @override
+  String get notifModeOff => 'Off';
+
+  @override
+  String get calendarNotMarked => 'Not marked';
+
+  @override
+  String get calendarDayPanelKicker => 'Mark the prayers';
+
+  @override
+  String get namesNoticeTitle => 'Uzbek only for now';
+
+  @override
+  String get namesNoticeBody =>
+      'The names of Allah and their commentary are currently available in Uzbek (Cyrillic) only. Translations into other languages are coming in a future update.';
+
+  @override
+  String get namesNoticeButton => 'Got it';
+
+  @override
+  String get feedbackKicker => 'Feedback';
+
+  @override
+  String get feedbackEmail => 'Send an email';
+
+  @override
+  String get feedbackTelegram => 'Message on Telegram';
+
+  @override
+  String get feedbackCopied => 'Copied';
+
+  @override
+  String get namesNoticeDisclaimer =>
+      'Spellings and commentary may contain mistakes. If you spot one, write to us through Feedback in settings.';
+
+  @override
+  String get namesDisclaimerTitle => 'Please note';
 }

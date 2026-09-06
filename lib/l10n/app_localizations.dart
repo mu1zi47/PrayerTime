@@ -1025,6 +1025,204 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Откройте приложение'**
   String get widgetNoDataLabel;
+
+  /// No description provided for @onboardingStepLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Шаг {current} из {total}'**
+  String onboardingStepLabel(int current, int total);
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In ru, this message translates to:
+  /// **'Далее'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In ru, this message translates to:
+  /// **'Назад'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingFinish.
+  ///
+  /// In ru, this message translates to:
+  /// **'Готово'**
+  String get onboardingFinish;
+
+  /// No description provided for @onboardingLanguageTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Язык приложения'**
+  String get onboardingLanguageTitle;
+
+  /// No description provided for @onboardingLanguageBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выберите язык: на нём будут названия намазов, подсказки и уведомления. Поменять можно в любой момент в настройках.'**
+  String get onboardingLanguageBody;
+
+  /// No description provided for @onboardingThemeTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оформление'**
+  String get onboardingThemeTitle;
+
+  /// No description provided for @onboardingThemeBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Светлое, тёмное или как на телефоне. Виджет на главном экране следует этому же выбору.'**
+  String get onboardingThemeBody;
+
+  /// No description provided for @onboardingCityTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ваш город'**
+  String get onboardingCityTitle;
+
+  /// No description provided for @onboardingCityBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время намазов зависит от координат, поэтому город — самая важная настройка. Определите его автоматически или выберите вручную.'**
+  String get onboardingCityBody;
+
+  /// No description provided for @onboardingCityDetect.
+  ///
+  /// In ru, this message translates to:
+  /// **'Определить автоматически'**
+  String get onboardingCityDetect;
+
+  /// No description provided for @onboardingCityManual.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать вручную'**
+  String get onboardingCityManual;
+
+  /// No description provided for @onboardingCitySelected.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбран город'**
+  String get onboardingCitySelected;
+
+  /// No description provided for @onboardingMethodTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Метод расчёта'**
+  String get onboardingMethodTitle;
+
+  /// No description provided for @onboardingMethodBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Организации считают фаджр и ишу по разным углам солнца, поэтому время отличается на несколько минут. Выберите метод, принятый в вашей местности.'**
+  String get onboardingMethodBody;
+
+  /// No description provided for @onboardingMadhabTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мазхаб'**
+  String get onboardingMadhabTitle;
+
+  /// No description provided for @onboardingMadhabBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'От мазхаба зависит только время аср: у ханафитов оно наступает позже, чем у шафиитов.'**
+  String get onboardingMadhabBody;
+
+  /// No description provided for @onboardingNotifTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления'**
+  String get onboardingNotifTitle;
+
+  /// No description provided for @onboardingNotifBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.'**
+  String get onboardingNotifBody;
+
+  /// No description provided for @notifModeSound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Со звуком'**
+  String get notifModeSound;
+
+  /// No description provided for @notifModeSilent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без звука'**
+  String get notifModeSilent;
+
+  /// No description provided for @notifModeOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключено'**
+  String get notifModeOff;
+
+  /// No description provided for @calendarNotMarked.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не отмечен'**
+  String get calendarNotMarked;
+
+  /// No description provided for @calendarDayPanelKicker.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отметьте намазы'**
+  String get calendarDayPanelKicker;
+
+  /// No description provided for @namesNoticeTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока только на узбекском'**
+  String get namesNoticeTitle;
+
+  /// No description provided for @namesNoticeBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Имена Аллаха и их толкования сейчас доступны только на узбекском (кириллица). Переводы на другие языки появятся в одном из следующих обновлений.'**
+  String get namesNoticeBody;
+
+  /// No description provided for @namesNoticeButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Понятно'**
+  String get namesNoticeButton;
+
+  /// No description provided for @feedbackKicker.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обратная связь'**
+  String get feedbackKicker;
+
+  /// No description provided for @feedbackEmail.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать на почту'**
+  String get feedbackEmail;
+
+  /// No description provided for @feedbackTelegram.
+  ///
+  /// In ru, this message translates to:
+  /// **'Написать в Telegram'**
+  String get feedbackTelegram;
+
+  /// No description provided for @feedbackCopied.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скопировано'**
+  String get feedbackCopied;
+
+  /// No description provided for @namesNoticeDisclaimer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Возможны неточности в написании и толкованиях. Если заметите ошибку — напишите нам через раздел «Обратная связь» в настройках.'**
+  String get namesNoticeDisclaimer;
+
+  /// No description provided for @namesDisclaimerTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Обратите внимание'**
+  String get namesDisclaimerTitle;
 }
 
 class _AppLocalizationsDelegate

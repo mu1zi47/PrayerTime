@@ -226,5 +226,68 @@
     }
   },
   "widgetMarkedLabel": "Belgilandi",
-  "widgetNoDataLabel": "Ilovani oching"
+  "widgetNoDataLabel": "Ilovani oching",
+
+  "onboardingStepLabel": "{current}-qadam, jami {total}",
+  "@onboardingStepLabel": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "onboardingNext": "Keyingisi",
+
+  "onboardingBack": "Orqaga",
+
+  "onboardingFinish": "Tayyor",
+
+  "onboardingLanguageTitle": "Ilova tili",
+
+  "onboardingLanguageBody": "Namoz nomlari, maslahatlar va bildirishnomalar shu tilda bo'ladi. Istalgan vaqtda sozlamalardan o'zgartirasiz.",
+
+  "onboardingThemeTitle": "Ko'rinishi",
+
+  "onboardingThemeBody": "Yorug', qorong'i yoki telefondagidek. Bosh ekrandagi vidjet ham shu tanlovga ergashadi.",
+
+  "onboardingCityTitle": "Shahringiz",
+
+  "onboardingCityBody": "Namoz vaqtlari koordinatalarga bog'liq, shuning uchun shahar eng muhim sozlama. Uni avtomatik aniqlang yoki o'zingiz tanlang.",
+
+  "onboardingCityDetect": "Avtomatik aniqlash",
+
+  "onboardingCityManual": "O'zim tanlayman",
+
+  "onboardingCitySelected": "Tanlangan shahar",
+
+  "onboardingMethodTitle": "Hisoblash usuli",
+
+  "onboardingMethodBody": "Tashkilotlar bomdod va xufton uchun quyoshning turli burchaklaridan foydalanadi, shuning uchun vaqtlar bir necha daqiqaga farq qiladi. Yashaydigan joyingizda qabul qilinganini tanlang.",
+
+  "onboardingMadhabTitle": "Mazhab",
+
+  "onboardingMadhabBody": "Bu faqat asr vaqtiga ta'sir qiladi: hanafiylarda u shofiylarnikidan kechroq kiradi.",
+
+  "onboardingNotifTitle": "Bildirishnomalar",
+
+  "onboardingNotifBody": "Ilova har bir namoz kirganini bildiradi va agar namoz o'qildi deb belgilanmagan bo'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.",
+
+  "notifModeSound": "Ovoz bilan",
+  "notifModeSilent": "Ovozsiz",
+  "notifModeOff": "O'chirilgan",
+
+  "calendarNotMarked": "Belgilanmagan",
+  "calendarDayPanelKicker": "Namozlarni belgilang",
+  "namesNoticeTitle": "Hozircha faqat o'zbekcha",
+  "namesNoticeBody": "Alloh ismlari va ularning sharhi hozircha faqat o'zbek (kirill) tilida mavjud. Boshqa tillarga tarjimalari keyingi yangilanishlarda qo'shiladi.",
+  "namesNoticeButton": "Tushunarli",
+
+  "feedbackKicker": "Aloqa",
+  "feedbackEmail": "Pochtaga yozish",
+  "feedbackTelegram": "Telegramga yozish",
+  "feedbackCopied": "Nusxalandi",
+
+  "namesNoticeDisclaimer": "Yozilishi va sharhlarida xatolar bo'lishi mumkin. Xatoni sezsangiz, sozlamalardagi «Aloqa» bo'limi orqali yozing.",
+
+  "namesDisclaimerTitle": "E'tibor bering"
 }

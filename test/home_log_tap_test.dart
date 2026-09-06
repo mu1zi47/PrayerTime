@@ -49,7 +49,12 @@ class _AlwaysOnline extends ConnectivityService {
 
 void main() {
   setUp(() {
-    SharedPreferences.setMockInitialValues({'locale': 'ru'});
+    // 'onboarding_done' skips the first-run setup flow — see
+    // OnboardingScreen; these tests are about what comes after it.
+    SharedPreferences.setMockInitialValues({
+      'locale': 'ru',
+      'onboarding_done': true,
+    });
   });
 
   testWidgets('tapping a prayer row opens the log sheet', (tester) async {
@@ -70,5 +75,29 @@ void main() {
 
     expect(find.text('Как прошёл Аср?'), findsOneWidget);
     expect(find.text('Прочитал вовремя'), findsOneWidget);
+  });
+
+  testWidgets('a past day in the strip can be marked too', (tester) async {
+    await tester.pumpWidget(
+      PrayerTimeApp(
+        appState: AppState(
+          api: _AllPrayersPassedApi(),
+          notifications: NoopNotificationService(),
+          connectivity: const _AlwaysOnline(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Five days back — well outside the "today or yesterday" window the
+    // home screen used to be limited to.
+    final past = DateTime.now().subtract(const Duration(days: 5));
+    await tester.tap(find.text('${past.day}'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('00:04'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Как прошёл Аср?'), findsOneWidget);
   });
 }

@@ -29,6 +29,7 @@ const _kLocale = 'locale';
 const _kFavoriteNames = 'favorite_allah_names';
 const _kMethod = 'method';
 const _kTahajjudEnabled = 'tahajjud_enabled';
+const _kOnboardingDone = 'onboarding_done';
 
 // The home screen's day window: enough of the past that the current-prayer
 // calculation always has yesterday on hand (see computeCurrentPrayer's
@@ -56,6 +57,7 @@ class AppState extends ChangeNotifier {
   final ConnectivityService _connectivity;
   final HomeWidgetBridge _homeWidget;
   AppLifecycleListener? _lifecycle;
+  Timer? _rescheduleDebounce;
 
   String _method = 'uzbekistan';
   String _madhab = 'hanafi';
@@ -67,6 +69,9 @@ class AppState extends ChangeNotifier {
   AppLocale _locale = AppLocale.ru;
   final Set<int> _favoriteNames = {};
   bool _tahajjudEnabled = false;
+
+  bool _onboardingDone = false;
+  bool _restored = false;
 
   final Map<String, Map<String, PrayerLogStatus>> _prayerLog = {};
 
@@ -94,6 +99,17 @@ class AppState extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   AppLocale get locale => _locale;
   bool get tahajjudEnabled => _tahajjudEnabled;
+
+  /// False until the first-run setup flow has been walked through — see
+  /// OnboardingScreen. Everything it asks for has a working default, so the
+  /// app is fully usable behind it; it's about making the choices explicit
+  /// rather than leaving someone on Tashkent's schedule by accident.
+  bool get onboardingDone => _onboardingDone;
+
+  /// Whether persisted settings have been read back yet. The entry point
+  /// waits on this so it doesn't flash the setup flow at someone who
+  /// finished it months ago.
+  bool get isRestored => _restored;
   Set<int> get favoriteNames => Set.unmodifiable(_favoriteNames);
   bool isFavoriteName(int number) => _favoriteNames.contains(number);
 
@@ -153,20 +169,12 @@ class AppState extends ChangeNotifier {
     return calendarToday;
   }
 
-  /// A day can only be marked/edited while it's the current prayer-day or
-  /// the one right before it — everything older is locked in, so the log
-  /// reflects what was actually true at the time rather than being
-  /// rewritable after the fact.
-  bool isDayEditable(DateTime date) {
-    final anchor = _prayerDayAnchor;
-    final target = DateTime(date.year, date.month, date.day);
-    final yesterday = anchor.subtract(const Duration(days: 1));
-    return _isSameDate(target, anchor) || _isSameDate(target, yesterday);
-  }
-
-  /// True once a day's edit window has fully closed (strictly older than
-  /// "yesterday", see [isDayEditable]) — for the calendar screen, which
-  /// needs to tell "not judged yet" apart from "judged and missed".
+  /// True once a day is old enough to be judged — strictly before the day
+  /// preceding the current prayer-day. The calendar uses it to tell "not
+  /// judged yet" (today, or yesterday, which someone may still be filling
+  /// in) apart from "judged and missed". It says nothing about whether a
+  /// day can still be marked: any past day can, from either the calendar or
+  /// the home screen's day strip.
   bool isDayLocked(DateTime date) {
     final target = DateTime(date.year, date.month, date.day);
     final yesterday = _prayerDayAnchor.subtract(const Duration(days: 1));
@@ -227,6 +235,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _lifecycle?.dispose();
+    _rescheduleDebounce?.cancel();
     super.dispose();
   }
 
@@ -264,6 +273,14 @@ class AppState extends ChangeNotifier {
         ? AppLocale.fromName(savedLocale)
         : AppLocale.fromSystemLocale(PlatformDispatcher.instance.locale);
     _tahajjudEnabled = prefs.getBool(_kTahajjudEnabled) ?? _tahajjudEnabled;
+    // An install that predates this flow has settings on disk already —
+    // treat that as "set up", rather than interrupting someone who has been
+    // using the app for months with a first-run wizard.
+    _onboardingDone =
+        prefs.getBool(_kOnboardingDone) ??
+        (prefs.getString(_kCityV2) != null ||
+            prefs.getString(_kCity) != null ||
+            prefs.getString(_kLocale) != null);
     _favoriteNames
       ..clear()
       ..addAll(
@@ -276,6 +293,7 @@ class AppState extends ChangeNotifier {
       final saved = prefs.getString('$_kNotifPrefix$key');
       if (saved != null) _notifMode[key] = NotifMode.fromName(saved);
     }
+    _restored = true;
     notifyListeners();
   }
 
@@ -295,6 +313,20 @@ class AppState extends ChangeNotifier {
     final now = cityNow;
     final today = DateTime(now.year, now.month, now.day);
     final signature = _cacheSignature;
+
+    // Show whatever's cached *before* going to the network, not just as a
+    // fallback when it fails: a cold start otherwise sat on a spinner for a
+    // full request (up to the 10s timeout) with a perfectly good schedule
+    // already on disk. The fetch below still runs and replaces this.
+    if (_days.isEmpty) {
+      await _useCachedDays(
+        generation,
+        signature,
+        fallbackError: null,
+        quiet: true,
+      );
+      if (generation != _requestGeneration) return;
+    }
 
     final online = await _connectivity.hasConnection();
     if (generation != _requestGeneration) return;
@@ -345,10 +377,15 @@ class AppState extends ChangeNotifier {
   /// offline mode keeps its history/current-prayer context, not just
   /// today-onward — or falls back to [fallbackError] (or the generic
   /// no-connection message) when nothing usable is cached.
+  /// [quiet] is for the warm-start pass in [loadPrayerTimes], where a fetch
+  /// is still on its way: an empty cache there means "nothing to show yet",
+  /// not "failed" — so it leaves the loading state alone instead of
+  /// surfacing an error the network may be about to disprove.
   Future<void> _useCachedDays(
     int generation,
     String signature, {
     required String? fallbackError,
+    bool quiet = false,
   }) async {
     final cached = await _cache.load(signature);
     if (generation != _requestGeneration) return;
@@ -361,7 +398,7 @@ class AppState extends ChangeNotifier {
       notifyListeners();
       _reschedule();
       _syncHomeWidget();
-    } else {
+    } else if (!quiet) {
       _isLoadingDays = false;
       _daysError = fallbackError ?? _t.errorNoConnection;
       notifyListeners();
@@ -391,7 +428,20 @@ class AppState extends ChangeNotifier {
         .catchError((_) {});
   }
 
+  /// Debounced: rebuilding the schedule cancels and re-books up to ~180
+  /// alarms across the platform channel, and a settings screen can fire
+  /// several changes in a row (three notification modes, quiet hours,
+  /// Tahajjud). Without this each tap paid for the whole rebuild.
   void _reschedule() {
+    if (_days.isEmpty) return;
+    _rescheduleDebounce?.cancel();
+    _rescheduleDebounce = Timer(
+      const Duration(milliseconds: 400),
+      _rescheduleNow,
+    );
+  }
+
+  void _rescheduleNow() {
     if (_days.isEmpty) return;
     // Fire-and-forget, best-effort — a scheduling failure shouldn't
     // surface as an app-breaking error (see [init]).
@@ -464,6 +514,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     _save((p) => p.setBool(_kTahajjudEnabled, _tahajjudEnabled));
     _reschedule();
+  }
+
+  void completeOnboarding() {
+    if (_onboardingDone) return;
+    _onboardingDone = true;
+    notifyListeners();
+    _save((p) => p.setBool(_kOnboardingDone, true));
   }
 
   void setThemeMode(ThemeMode mode) {
@@ -571,7 +628,9 @@ class AppState extends ChangeNotifier {
     // has to put that reminder back, which only a full reschedule knows how
     // to do — it's the rarer path, so it can afford the extra work.
     if (marked) {
-      _notifications.cancelPrayerEndReminder(date, prayerKey).catchError((_) {});
+      _notifications
+          .cancelPrayerEndReminder(date, prayerKey)
+          .catchError((_) {});
     } else {
       _reschedule();
     }

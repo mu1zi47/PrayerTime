@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // the "Today" button.
   int? _selectedIndex;
   Timer? _ticker;
+  AppLifecycleListener? _lifecycle;
   String? _lastScheduleKey;
   final _dayScrollController = ScrollController();
   // The todayIndex last centered on — re-centering exactly when this goes
@@ -60,11 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Keeps the next-prayer countdown fresh without any extra network
-    // calls — just recomputes from the already-fetched schedule.
-    _ticker = Timer.periodic(
-      const Duration(minutes: 1),
-      (_) => setState(() {}),
+    _startTicker();
+    // Nothing on screen can go stale while the app is hidden, so the
+    // per-minute rebuild is suspended until it comes back — and comes back
+    // with an immediate refresh, since the countdown will have moved on by
+    // more than a minute.
+    _lifecycle = AppLifecycleListener(
+      onHide: _stopTicker,
+      onShow: () {
+        if (mounted) setState(() {});
+        _startTicker();
+      },
     );
     // Listens directly rather than relying on a parent AnimatedBuilder (see
     // RootShell) — that used to rebuild this, MoreScreen and SettingsScreen
@@ -72,6 +79,20 @@ class _HomeScreenState extends State<HomeScreen> {
     // toggling a setting on a totally different screen), which is what made
     // so many unrelated actions feel janky.
     widget.appState.addListener(_onAppStateChanged);
+  }
+
+  // Keeps the next-prayer countdown fresh without any extra network calls —
+  // just recomputes from the already-fetched schedule.
+  void _startTicker() {
+    _ticker ??= Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => setState(() {}),
+    );
+  }
+
+  void _stopTicker() {
+    _ticker?.cancel();
+    _ticker = null;
   }
 
   void _onAppStateChanged() {
@@ -90,7 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _ticker?.cancel();
+    _lifecycle?.dispose();
+    _stopTicker();
     _dayScrollController.dispose();
     widget.appState.removeListener(_onAppStateChanged);
     super.dispose();
@@ -364,19 +386,22 @@ class _HomeScreenState extends State<HomeScreen> {
               for (var i = 0; i < rows.length; i++)
                 _ScheduleRow(
                   spec: rows[i],
-                  showDivider: i < rows.length - 1 &&
+                  showDivider:
+                      i < rows.length - 1 &&
                       !rows[i].current &&
                       !rows[i + 1].current,
                 ),
               if (showingToday && next != null && nextIsTomorrow) ...[
                 const SizedBox(height: 14),
                 _Kicker(
-                  t.nextPrayerTomorrowLabel(
-                    DateLabels.dateLabel(t, next.date),
-                  ),
+                  t.nextPrayerTomorrowLabel(DateLabels.dateLabel(t, next.date)),
                 ),
                 _ScheduleRow(
-                  spec: _RowSpec(kind: next.kind, time: next.time, active: true),
+                  spec: _RowSpec(
+                    kind: next.kind,
+                    time: next.time,
+                    active: true,
+                  ),
                 ),
               ],
               if (showingToday &&
@@ -411,11 +436,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Only a prayer whose time has already arrived can be marked — there's
-  // nothing to log yet for one still ahead. A day older than "today or
-  // yesterday" (AppState.isDayEditable) is locked, too — past the point
-  // where the log should still be rewritable. Returns null (disabling both
-  // the tap and the swipe, see _ScheduleRow/_SwipeToLog) in either case.
+  // Only a prayer that has actually happened can be marked. On a past day
+  // that's all of them — the day strip reaches a week back, and filling in
+  // what was missed is the point of being able to browse there at all. On
+  // today it's the ones whose time has arrived, and on a future day none:
+  // a prayer still ahead can't have been prayed.
+  //
+  // Returns null for the rest, which disables both the tap and the swipe —
+  // see _ScheduleRow/_SwipeToLog.
   //
   // Always opens the sheet — including for the still-current prayer, which
   // used to skip straight to "on time" on a plain tap. Now that logging
@@ -429,8 +457,13 @@ class _HomeScreenState extends State<HomeScreen> {
     PrayerKind kind,
     String key,
   ) {
-    if (!appState.isDayEditable(day.date)) return null;
-    if (!hasPrayerTimePassed(day, kind, appState.cityNow)) return null;
+    final now = appState.cityNow;
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(day.date.year, day.date.month, day.date.day);
+    if (target.isAfter(today)) return null;
+    if (_isSameDate(target, today) && !hasPrayerTimePassed(day, kind, now)) {
+      return null;
+    }
     return () {
       final t = AppLocalizations.of(context)!;
       showLogPrayerSheet(
@@ -467,9 +500,7 @@ class _NextPrayerPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border(
-          left: BorderSide(color: AppColors.accent, width: 5),
-        ),
+        border: Border(left: BorderSide(color: AppColors.accent, width: 5)),
       ),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Row(
@@ -499,10 +530,7 @@ class _NextPrayerPanel extends StatelessWidget {
                 Text(
                   arabicForPrayer(info.kind),
                   textDirection: TextDirection.rtl,
-                  style: AppTextStyles.body(
-                    fontSize: 12,
-                    color: _textMuted,
-                  ),
+                  style: AppTextStyles.body(fontSize: 12, color: _textMuted),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -519,9 +547,10 @@ class _NextPrayerPanel extends StatelessWidget {
           Text(
             info.time,
             style: AppTextStyles.heading(fontSize: 32, color: AppColors.text)
-                .copyWith(letterSpacing: -0.5, fontFeatures: const [
-              FontFeature.tabularFigures(),
-            ]),
+                .copyWith(
+                  letterSpacing: -0.5,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
           ),
         ],
       ),
@@ -607,10 +636,7 @@ class _ScheduleRow extends StatelessWidget {
         color: current ? AppColors.accent2 : Colors.transparent,
         borderRadius: current ? BorderRadius.circular(10) : null,
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: current ? 12 : 2,
-        vertical: 12,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: current ? 12 : 2, vertical: 12),
       child: Row(
         children: [
           Icon(iconForPrayer(spec.kind), size: 17, color: fg),
@@ -646,10 +672,10 @@ class _ScheduleRow extends StatelessWidget {
             ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
           ),
           // Shown whenever there's a status to show, not just when the row
-          // is still editable — an old, locked day (see AppState.isDayEditable)
-          // keeps showing what was logged back when it *was* still open, it
-          // just can't be changed any more (spec.onTapLog is null there, so
-          // _SwipeToLog below is skipped and this dot is the only trace).
+          // is loggable — a future day still shows whatever it somehow has
+          // on record, it just can't be changed (spec.onTapLog is null
+          // there, so _SwipeToLog below is skipped and this dot is the only
+          // trace).
           if (spec.onTapLog != null || spec.logStatus != null) ...[
             const SizedBox(width: 8),
             _StatusDot(status: spec.logStatus, onFill: current),
@@ -759,7 +785,12 @@ class _SwipeToLogState extends State<_SwipeToLog>
 
   late final AnimationController _snapBack;
   Tween<double>? _snapTween;
-  double _dragX = 0;
+
+  // A ValueNotifier rather than setState: the drag and the snap-back both
+  // run at frame rate, and setState here rebuilt the entire prayer row —
+  // icon, both labels, the time, the status dot — on every one of those
+  // frames. Only the two things that actually move listen to it now.
+  final _dragX = ValueNotifier<double>(0);
   bool _armed = false;
 
   @override
@@ -770,37 +801,35 @@ class _SwipeToLogState extends State<_SwipeToLog>
           vsync: this,
           duration: const Duration(milliseconds: 260),
         )..addListener(() {
-          setState(() => _dragX = _snapTween!.evaluate(_snapBack));
+          _dragX.value = _snapTween!.evaluate(_snapBack);
         });
   }
 
   @override
   void dispose() {
     _snapBack.dispose();
+    _dragX.dispose();
     super.dispose();
   }
 
   void _onDragUpdate(DragUpdateDetails d) {
     _snapBack.stop();
-    final next = (_dragX + d.delta.dx).clamp(-_maxDrag, 0.0);
+    final next = (_dragX.value + d.delta.dx).clamp(-_maxDrag, 0.0);
     final nowArmed = next <= -_triggerDrag;
     if (nowArmed != _armed) HapticFeedback.selectionClick();
-    setState(() {
-      _dragX = next;
-      _armed = nowArmed;
-    });
+    _armed = nowArmed;
+    _dragX.value = next;
   }
 
   void _onDragEnd(DragEndDetails d) {
     if (_armed) widget.onLog();
     _armed = false;
-    _snapTween = Tween(begin: _dragX, end: 0);
+    _snapTween = Tween(begin: _dragX.value, end: 0);
     _snapBack.forward(from: 0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final reveal = (_dragX.abs() / _triggerDrag).clamp(0.0, 1.0);
     // Mirrors _StatusDot's own color logic — the button previews whatever
     // swiping it will actually open, not a generic "mark done" checkmark
     // regardless of what's already logged.
@@ -829,31 +858,40 @@ class _SwipeToLogState extends State<_SwipeToLog>
       children: [
         Padding(
           padding: const EdgeInsets.only(right: 14),
-          child: Transform.scale(
-            scale: 0.4 + reveal * 0.6,
-            child: Opacity(
-              opacity: reveal,
-              child: Container(
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: bg,
-                  border: Border.all(color: border, width: 1.6),
+          child: ValueListenableBuilder<double>(
+            valueListenable: _dragX,
+            child: Icon(icon, color: iconColor, size: 17),
+            builder: (context, dragX, child) {
+              final reveal = (dragX.abs() / _triggerDrag).clamp(0.0, 1.0);
+              return Transform.scale(
+                scale: 0.4 + reveal * 0.6,
+                child: Opacity(
+                  opacity: reveal,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: bg,
+                      border: Border.all(color: border, width: 1.6),
+                    ),
+                    child: child,
+                  ),
                 ),
-                child: Icon(icon, color: iconColor, size: 17),
-              ),
-            ),
+              );
+            },
           ),
         ),
         GestureDetector(
           onTap: widget.onLog,
           onHorizontalDragUpdate: _onDragUpdate,
           onHorizontalDragEnd: _onDragEnd,
-          child: Transform.translate(
-            offset: Offset(_dragX, 0),
+          child: ValueListenableBuilder<double>(
+            valueListenable: _dragX,
             child: Container(color: AppColors.bg, child: widget.child),
+            builder: (context, dragX, child) =>
+                Transform.translate(offset: Offset(dragX, 0), child: child),
           ),
         ),
       ],
@@ -961,9 +999,7 @@ class _LoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.bg,
-      child: Center(
-        child: CircularProgressIndicator(color: AppColors.accent),
-      ),
+      child: Center(child: CircularProgressIndicator(color: AppColors.accent)),
     );
   }
 }
@@ -990,10 +1026,7 @@ class _ErrorView extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  color: AppColors.text,
-                ),
+                style: AppTextStyles.body(fontSize: 14, color: AppColors.text),
               ),
               const SizedBox(height: 16),
               GestureDetector(

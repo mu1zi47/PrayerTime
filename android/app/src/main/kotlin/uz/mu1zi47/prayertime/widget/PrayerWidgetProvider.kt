@@ -1,4 +1,4 @@
-package com.example.prayertime.widget
+package uz.mu1zi47.prayertime.widget
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -12,7 +12,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.view.View
 import android.widget.RemoteViews
-import com.example.prayertime.R
+import uz.mu1zi47.prayertime.R
 
 /**
  * Home-screen widget: the prayer that's on right now, the one after it, a
@@ -121,29 +121,37 @@ class PrayerWidgetProvider : AppWidgetProvider() {
                     true,
                 )
 
-                views.setViewVisibility(R.id.widget_mark_button, View.VISIBLE)
-                views.setContentDescription(R.id.widget_mark_button, state.markLabel)
-                // The icon shows what tapping *does*, not what already
-                // happened — the filled panel already says the prayer is
-                // logged, so the button offers to undo it.
-                views.setImageViewResource(
-                    R.id.widget_mark_button,
-                    if (state.currentMarked) {
-                        R.drawable.ic_widget_clear
-                    } else {
-                        R.drawable.ic_widget_check
-                    },
-                )
-                views.setInt(
-                    R.id.widget_mark_button,
-                    "setBackgroundResource",
-                    palette.button,
-                )
-                views.setInt(R.id.widget_mark_button, "setColorFilter", palette.icon)
-                views.setOnClickPendingIntent(
-                    R.id.widget_mark_button,
-                    markPendingIntent(context, state.currentDateKey, state.currentPrayerKey),
-                )
+                // No open prayer (sunrise has closed Fajr's window, Zuhr
+                // hasn't arrived) means nothing to log, so no button.
+                val dateKey = state.currentDateKey
+                val prayerKey = state.currentPrayerKey
+                if (dateKey == null || prayerKey == null) {
+                    views.setViewVisibility(R.id.widget_mark_button, View.GONE)
+                } else {
+                    views.setViewVisibility(R.id.widget_mark_button, View.VISIBLE)
+                    views.setContentDescription(R.id.widget_mark_button, state.markLabel)
+                    // The icon shows what tapping *does*, not what already
+                    // happened — the filled panel already says the prayer is
+                    // logged, so the button offers to undo it.
+                    views.setImageViewResource(
+                        R.id.widget_mark_button,
+                        if (state.currentMarked) {
+                            R.drawable.ic_widget_clear
+                        } else {
+                            R.drawable.ic_widget_check
+                        },
+                    )
+                    views.setInt(
+                        R.id.widget_mark_button,
+                        "setBackgroundResource",
+                        palette.button,
+                    )
+                    views.setInt(R.id.widget_mark_button, "setColorFilter", palette.icon)
+                    views.setOnClickPendingIntent(
+                        R.id.widget_mark_button,
+                        markPendingIntent(context, dateKey, prayerKey),
+                    )
+                }
 
                 scheduleNextChange(context, state.nextChangeEpochMillis)
             }
@@ -255,8 +263,8 @@ class PrayerWidgetProvider : AppWidgetProvider() {
     }
 
     companion object {
-        const val ACTION_REFRESH = "com.example.prayertime.widget.REFRESH"
-        private const val ACTION_MARK_DONE = "com.example.prayertime.widget.MARK_DONE"
+        const val ACTION_REFRESH = "uz.mu1zi47.prayertime.widget.REFRESH"
+        private const val ACTION_MARK_DONE = "uz.mu1zi47.prayertime.widget.MARK_DONE"
         private const val EXTRA_DATE = "date"
         private const val EXTRA_PRAYER = "prayer"
 

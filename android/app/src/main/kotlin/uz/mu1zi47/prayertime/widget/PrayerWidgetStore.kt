@@ -1,4 +1,4 @@
-package com.example.prayertime.widget
+package uz.mu1zi47.prayertime.widget
 
 import android.content.Context
 import org.json.JSONObject

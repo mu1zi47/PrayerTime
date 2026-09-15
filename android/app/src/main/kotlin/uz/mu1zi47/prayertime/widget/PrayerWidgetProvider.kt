@@ -13,6 +13,7 @@ import android.os.SystemClock
 import android.view.View
 import android.widget.RemoteViews
 import uz.mu1zi47.prayertime.R
+import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
 
 /**
  * Home-screen widget: the prayer that's on right now, the one after it, a
@@ -47,6 +48,8 @@ class PrayerWidgetProvider : AppWidgetProvider() {
                 val prayer = intent.getStringExtra(EXTRA_PRAYER) ?: return
                 PrayerWidgetStore.toggleOnTime(context, date, prayer)
                 refresh(context)
+                // The current-prayer notification shows the same mark.
+                PrayerStatusNotifier.refresh(context)
             }
             // The app just rewrote the payload or the log — what's on
             // screen may be stale. Sent as an explicit intent from inside

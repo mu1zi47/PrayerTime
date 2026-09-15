@@ -9,4 +9,7 @@
     <!-- Only ever shown before the app has written its payload once (a fresh
          install), when there is no app language on record yet. -->
     <string name="widget_no_data">Open the app</string>
+    <!-- The current-prayer notification's channel, until the app has written
+         its localized name into the payload. -->
+    <string name="now_bar_channel_name">Current prayer</string>
 </resources>

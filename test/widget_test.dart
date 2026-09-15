@@ -75,6 +75,9 @@ void main() {
           api: _InstantFakeApi(),
           notifications: NoopNotificationService(),
           connectivity: const _AlwaysOnline(),
+          // No platform here to report install times; left unset, the
+          // plugin call would never answer.
+          installTimes: () async => null,
         ),
       ),
     );

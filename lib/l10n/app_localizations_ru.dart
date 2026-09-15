@@ -495,6 +495,77 @@ class AppLocalizationsRu extends AppLocalizations {
   String get widgetNoDataLabel => 'Откройте приложение';
 
   @override
+  String get nowBarTitle => 'Now Bar';
+
+  @override
+  String get persistentNotifTitle => 'Постоянное уведомление';
+
+  @override
+  String get nowBarDescription =>
+      'Now Bar — панель Samsung внизу экрана блокировки и вверху панели уведомлений. В ней будет виден текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение.';
+
+  @override
+  String get persistentNotifDescription =>
+      'Уведомление, закреплённое в панели уведомлений: текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение. Если смахнуть его, оно появится снова — выключить его можно только здесь.';
+
+  @override
+  String get nowBarSwitchLabel => 'Показывать';
+
+  @override
+  String get nowBarOn => 'Вкл';
+
+  @override
+  String get nowBarOff => 'Выкл';
+
+  @override
+  String get nowBarNotificationsOff =>
+      'Уведомления для приложения выключены в настройках телефона, поэтому оно не появится.';
+
+  @override
+  String get nowBarOpenSettings => 'Открыть настройки телефона';
+
+  @override
+  String get nowBarUnmarkAction => 'Снять отметку';
+
+  @override
+  String get nowBarEndsIn => 'До конца';
+
+  @override
+  String get nowBarStartsIn => 'До начала';
+
+  @override
+  String get nowBarChannelName => 'Текущий намаз';
+
+  @override
+  String get nowBarDevTitle => 'Now Bar пока выключен на этом телефоне';
+
+  @override
+  String get nowBarDevBody =>
+      'Samsung пускает сторонние приложения в Now Bar только после того, как включён переключатель в меню «Для разработчиков». До этого намаз будет обычным уведомлением.';
+
+  @override
+  String get nowBarDevStepAbout =>
+      'Откройте «Настройки» → «Сведения о телефоне» → «Сведения о ПО».';
+
+  @override
+  String get nowBarDevStepBuildNumber =>
+      'Нажмите на «Номер сборки» 7 раз подряд и подтвердите PIN-кодом, если телефон попросит. Появится меню «Для разработчиков».';
+
+  @override
+  String get nowBarDevStepDeveloperOptions =>
+      'Вернитесь в «Настройки» и откройте «Для разработчиков» — в самом низу списка.';
+
+  @override
+  String get nowBarDevStepSwitch =>
+      'Найдите «Живые уведомл. для всех прилож.» и включите переключатель.';
+
+  @override
+  String get nowBarDevOpenAbout => 'Открыть «Сведения о телефоне»';
+
+  @override
+  String get nowBarDevOpenDeveloper => 'Открыть «Для разработчиков»';
+
+  @override
   String onboardingStepLabel(int current, int total) {
     return 'Шаг $current из $total';
   }
@@ -595,6 +666,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get feedbackCopied => 'Скопировано';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Версия $version';
+  }
 
   @override
   String get namesNoticeDisclaimer =>

@@ -64,6 +64,7 @@ void main() {
           api: _AllPrayersPassedApi(),
           notifications: NoopNotificationService(),
           connectivity: const _AlwaysOnline(),
+          installTimes: () async => null,
         ),
       ),
     );
@@ -84,6 +85,7 @@ void main() {
           api: _AllPrayersPassedApi(),
           notifications: NoopNotificationService(),
           connectivity: const _AlwaysOnline(),
+          installTimes: () async => null,
         ),
       ),
     );

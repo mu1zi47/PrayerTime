@@ -495,6 +495,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String get widgetNoDataLabel => 'Open the app';
 
   @override
+  String get nowBarTitle => 'Now Bar';
+
+  @override
+  String get persistentNotifTitle => 'Persistent notification';
+
+  @override
+  String get nowBarDescription =>
+      'Now Bar is the Samsung panel at the bottom of the lock screen and at the top of the notification panel. It shows the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app.';
+
+  @override
+  String get persistentNotifDescription =>
+      'A notification pinned to the notification panel: the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app. Swiping it away brings it back — it can only be turned off here.';
+
+  @override
+  String get nowBarSwitchLabel => 'Show';
+
+  @override
+  String get nowBarOn => 'On';
+
+  @override
+  String get nowBarOff => 'Off';
+
+  @override
+  String get nowBarNotificationsOff =>
+      'Notifications for this app are turned off in phone settings, so it won\'t appear.';
+
+  @override
+  String get nowBarOpenSettings => 'Open phone settings';
+
+  @override
+  String get nowBarUnmarkAction => 'Undo';
+
+  @override
+  String get nowBarEndsIn => 'Ends in';
+
+  @override
+  String get nowBarStartsIn => 'Starts in';
+
+  @override
+  String get nowBarChannelName => 'Current prayer';
+
+  @override
+  String get nowBarDevTitle => 'Now Bar is still off on this phone';
+
+  @override
+  String get nowBarDevBody =>
+      'Samsung only lets other apps into the Now Bar once a switch in Developer options is on. Until then, the prayer shows as a regular notification.';
+
+  @override
+  String get nowBarDevStepAbout =>
+      'Open Settings → About phone → Software information.';
+
+  @override
+  String get nowBarDevStepBuildNumber =>
+      'Tap Build number 7 times in a row and confirm with your PIN if asked. Developer options will appear.';
+
+  @override
+  String get nowBarDevStepDeveloperOptions =>
+      'Go back to Settings and open Developer options, at the very bottom of the list.';
+
+  @override
+  String get nowBarDevStepSwitch =>
+      'Find “Live notifications for all apps” and turn it on.';
+
+  @override
+  String get nowBarDevOpenAbout => 'Open About phone';
+
+  @override
+  String get nowBarDevOpenDeveloper => 'Open Developer options';
+
+  @override
   String onboardingStepLabel(int current, int total) {
     return 'Step $current of $total';
   }
@@ -595,6 +666,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedbackCopied => 'Copied';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Version $version';
+  }
 
   @override
   String get namesNoticeDisclaimer =>

@@ -27,7 +27,7 @@ Color get _textFaint => AppColors.text.withValues(alpha: 0.36);
 // this one doesn't flip with the theme.
 const _onAccentFill = Color(0xFF201404);
 
-// AppColors.accent2 (teal) is deliberately tuned dark in both themes too
+// AppColors.accent2 (deep gold) is deliberately tuned dark in both themes too
 // (see _ScheduleRow's "current" fill) so light text reads on it either way.
 const _onAccent2Fill = Color(0xFFF4EFE3);
 
@@ -705,7 +705,7 @@ class _StatusDot extends StatelessWidget {
   final PrayerLogStatus? status;
 
   /// True when this is the row for the prayer whose window is open right
-  /// now (drawn on top of the filled teal "current" block). _ScheduleRow
+  /// now (drawn on top of the filled deep-gold "current" block). _ScheduleRow
   /// only ever builds this widget once the prayer's time has actually
   /// arrived (see its onTapLog/logStatus gate), so a null [status] means
   /// "not marked yet" whether that's because it's still current or because

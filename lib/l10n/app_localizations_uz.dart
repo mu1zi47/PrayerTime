@@ -497,6 +497,78 @@ class AppLocalizationsUz extends AppLocalizations {
   String get widgetNoDataLabel => 'Ilovani oching';
 
   @override
+  String get nowBarTitle => 'Now Bar';
+
+  @override
+  String get persistentNotifTitle => 'Doimiy bildirishnoma';
+
+  @override
+  String get nowBarDescription =>
+      'Now Bar — Samsung telefonlarida qulf ekrani pastidagi va bildirishnomalar paneli tepasidagi panel. Unda joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi ko\'rinadi.';
+
+  @override
+  String get persistentNotifDescription =>
+      'Bildirishnomalar panelida doim turadigan bildirishnoma: joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi. Uni surib o\'chirsangiz, qayta paydo bo\'ladi — faqat shu yerda o\'chirish mumkin.';
+
+  @override
+  String get nowBarSwitchLabel => 'Ko\'rsatish';
+
+  @override
+  String get nowBarOn => 'Yoqilgan';
+
+  @override
+  String get nowBarOff => 'O\'chirilgan';
+
+  @override
+  String get nowBarNotificationsOff =>
+      'Telefon sozlamalarida ilova bildirishnomalari o\'chirilgan, shuning uchun u ko\'rinmaydi.';
+
+  @override
+  String get nowBarOpenSettings => 'Telefon sozlamalarini ochish';
+
+  @override
+  String get nowBarUnmarkAction => 'Bekor qilish';
+
+  @override
+  String get nowBarEndsIn => 'Tugashiga';
+
+  @override
+  String get nowBarStartsIn => 'Boshlanishiga';
+
+  @override
+  String get nowBarChannelName => 'Joriy namoz';
+
+  @override
+  String get nowBarDevTitle => 'Bu telefonda Now Bar hali o\'chiq';
+
+  @override
+  String get nowBarDevBody =>
+      'Samsung boshqa ilovalarni Now Bar\'ga faqat «Ishlab chiqaruvchi opsiyalari» ichidagi kalit yoqilgandan keyin chiqaradi. Unga qadar namoz oddiy bildirishnoma bo\'lib ko\'rinadi.';
+
+  @override
+  String get nowBarDevStepAbout =>
+      '«Sozlamalar» → «Telefon haqida» → «Dastur haqida ma’lumot» bo\'limini oching.';
+
+  @override
+  String get nowBarDevStepBuildNumber =>
+      '«Reliz raqami» ustiga ketma-ket 7 marta bosing va telefon so\'rasa, PIN-kodni kiriting. «Ishlab chiqaruvchi opsiyalari» paydo bo\'ladi.';
+
+  @override
+  String get nowBarDevStepDeveloperOptions =>
+      '«Sozlamalar»ga qayting va ro\'yxatning eng pastidagi «Ishlab chiqaruvchi opsiyalari» bo\'limini oching.';
+
+  @override
+  String get nowBarDevStepSwitch =>
+      '«Hamma ilv. u-n jonli bildir-lar» bandini toping va yoqing.';
+
+  @override
+  String get nowBarDevOpenAbout => '«Telefon haqida»ni ochish';
+
+  @override
+  String get nowBarDevOpenDeveloper =>
+      '«Ishlab chiqaruvchi opsiyalari»ni ochish';
+
+  @override
   String onboardingStepLabel(int current, int total) {
     return '$current-qadam, jami $total';
   }
@@ -597,6 +669,11 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get feedbackCopied => 'Nusxalandi';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Versiya $version';
+  }
 
   @override
   String get namesNoticeDisclaimer =>
@@ -1098,6 +1175,77 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get widgetNoDataLabel => 'Иловани очинг';
 
   @override
+  String get nowBarTitle => 'Now Bar';
+
+  @override
+  String get persistentNotifTitle => 'Доимий билдиришнома';
+
+  @override
+  String get nowBarDescription =>
+      'Now Bar — Samsung телефонларида қулф экрани пастидаги ва билдиришномалар панели тепасидаги панел. Унда жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси кўринади.';
+
+  @override
+  String get persistentNotifDescription =>
+      'Билдиришномалар панелида доим турадиган билдиришнома: жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси. Уни суриб ўчирсангиз, қайта пайдо бўлади — фақат шу ерда ўчириш мумкин.';
+
+  @override
+  String get nowBarSwitchLabel => 'Кўрсатиш';
+
+  @override
+  String get nowBarOn => 'Ёқилган';
+
+  @override
+  String get nowBarOff => 'Ўчирилган';
+
+  @override
+  String get nowBarNotificationsOff =>
+      'Телефон созламаларида илова билдиришномалари ўчирилган, шунинг учун у кўринмайди.';
+
+  @override
+  String get nowBarOpenSettings => 'Телефон созламаларини очиш';
+
+  @override
+  String get nowBarUnmarkAction => 'Бекор қилиш';
+
+  @override
+  String get nowBarEndsIn => 'Тугашига';
+
+  @override
+  String get nowBarStartsIn => 'Бошланишига';
+
+  @override
+  String get nowBarChannelName => 'Жорий намоз';
+
+  @override
+  String get nowBarDevTitle => 'Бу телефонда Now Bar ҳали ўчиқ';
+
+  @override
+  String get nowBarDevBody =>
+      'Samsung бошқа иловаларни Now Bar\'га фақат «Ishlab chiqaruvchi opsiyalari» ичидаги калит ёқилгандан кейин чиқаради. Унга қадар намоз оддий билдиришнома бўлиб кўринади.';
+
+  @override
+  String get nowBarDevStepAbout =>
+      '«Sozlamalar» → «Telefon haqida» → «Dastur haqida ma’lumot» бўлимини очинг.';
+
+  @override
+  String get nowBarDevStepBuildNumber =>
+      '«Reliz raqami» устига кетма-кет 7 марта босинг ва телефон сўраса, PIN-кодни киритинг. «Ishlab chiqaruvchi opsiyalari» пайдо бўлади.';
+
+  @override
+  String get nowBarDevStepDeveloperOptions =>
+      '«Sozlamalar»га қайтинг ва рўйхатнинг энг пастидаги «Ishlab chiqaruvchi opsiyalari» бўлимини очинг.';
+
+  @override
+  String get nowBarDevStepSwitch =>
+      '«Hamma ilv. u-n jonli bildir-lar» бандини топинг ва ёқинг.';
+
+  @override
+  String get nowBarDevOpenAbout => '«Telefon haqida»ни очиш';
+
+  @override
+  String get nowBarDevOpenDeveloper => '«Ishlab chiqaruvchi opsiyalari»ни очиш';
+
+  @override
   String onboardingStepLabel(int current, int total) {
     return '$current-қадам, жами $total';
   }
@@ -1198,6 +1346,11 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get feedbackCopied => 'Нусхаланди';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Версия $version';
+  }
 
   @override
   String get namesNoticeDisclaimer =>
@@ -1700,6 +1853,78 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get widgetNoDataLabel => 'Ilovani oching';
 
   @override
+  String get nowBarTitle => 'Now Bar';
+
+  @override
+  String get persistentNotifTitle => 'Doimiy bildirishnoma';
+
+  @override
+  String get nowBarDescription =>
+      'Now Bar — Samsung telefonlarida qulf ekrani pastidagi va bildirishnomalar paneli tepasidagi panel. Unda joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi ko\'rinadi.';
+
+  @override
+  String get persistentNotifDescription =>
+      'Bildirishnomalar panelida doim turadigan bildirishnoma: joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi. Uni surib o\'chirsangiz, qayta paydo bo\'ladi — faqat shu yerda o\'chirish mumkin.';
+
+  @override
+  String get nowBarSwitchLabel => 'Ko\'rsatish';
+
+  @override
+  String get nowBarOn => 'Yoqilgan';
+
+  @override
+  String get nowBarOff => 'O\'chirilgan';
+
+  @override
+  String get nowBarNotificationsOff =>
+      'Telefon sozlamalarida ilova bildirishnomalari o\'chirilgan, shuning uchun u ko\'rinmaydi.';
+
+  @override
+  String get nowBarOpenSettings => 'Telefon sozlamalarini ochish';
+
+  @override
+  String get nowBarUnmarkAction => 'Bekor qilish';
+
+  @override
+  String get nowBarEndsIn => 'Tugashiga';
+
+  @override
+  String get nowBarStartsIn => 'Boshlanishiga';
+
+  @override
+  String get nowBarChannelName => 'Joriy namoz';
+
+  @override
+  String get nowBarDevTitle => 'Bu telefonda Now Bar hali o\'chiq';
+
+  @override
+  String get nowBarDevBody =>
+      'Samsung boshqa ilovalarni Now Bar\'ga faqat «Ishlab chiqaruvchi opsiyalari» ichidagi kalit yoqilgandan keyin chiqaradi. Unga qadar namoz oddiy bildirishnoma bo\'lib ko\'rinadi.';
+
+  @override
+  String get nowBarDevStepAbout =>
+      '«Sozlamalar» → «Telefon haqida» → «Dastur haqida ma’lumot» bo\'limini oching.';
+
+  @override
+  String get nowBarDevStepBuildNumber =>
+      '«Reliz raqami» ustiga ketma-ket 7 marta bosing va telefon so\'rasa, PIN-kodni kiriting. «Ishlab chiqaruvchi opsiyalari» paydo bo\'ladi.';
+
+  @override
+  String get nowBarDevStepDeveloperOptions =>
+      '«Sozlamalar»ga qayting va ro\'yxatning eng pastidagi «Ishlab chiqaruvchi opsiyalari» bo\'limini oching.';
+
+  @override
+  String get nowBarDevStepSwitch =>
+      '«Hamma ilv. u-n jonli bildir-lar» bandini toping va yoqing.';
+
+  @override
+  String get nowBarDevOpenAbout => '«Telefon haqida»ni ochish';
+
+  @override
+  String get nowBarDevOpenDeveloper =>
+      '«Ishlab chiqaruvchi opsiyalari»ni ochish';
+
+  @override
   String onboardingStepLabel(int current, int total) {
     return '$current-qadam, jami $total';
   }
@@ -1800,6 +2025,11 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get feedbackCopied => 'Nusxalandi';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Versiya $version';
+  }
 
   @override
   String get namesNoticeDisclaimer =>

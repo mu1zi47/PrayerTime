@@ -53,6 +53,12 @@ class HomeWidgetBridge {
         'markDone': t.notifMarkDoneAction,
         'marked': t.widgetMarkedLabel,
         'noData': t.widgetNoDataLabel,
+        // The current-prayer notification / Now Bar reads this same payload
+        // (see PrayerStatusNotifier.kt).
+        'unmark': t.nowBarUnmarkAction,
+        'endsIn': t.nowBarEndsIn,
+        'startsIn': t.nowBarStartsIn,
+        'nowBarChannel': t.nowBarChannelName,
       },
       'names': {
         'fajr': nameForPrayer(t, PrayerKind.fajr),

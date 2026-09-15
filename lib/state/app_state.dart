@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleListener;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/reference_data.dart';
@@ -30,6 +31,31 @@ const _kFavoriteNames = 'favorite_allah_names';
 const _kMethod = 'method';
 const _kTahajjudEnabled = 'tahajjud_enabled';
 const _kOnboardingDone = 'onboarding_done';
+const _kOnboardingInstall = 'onboarding_install_time';
+
+/// When this copy of the app was first installed and last updated, as the
+/// platform reports them — what tells a fresh install carrying settings
+/// restored from a backup apart from one that has been set up all along
+/// (see AppState._restore).
+typedef InstallTimes = ({DateTime installed, DateTime updated});
+
+Future<InstallTimes?> _platformInstallTimes() async {
+  try {
+    // Bounded: restoring settings waits on this, and a platform that never
+    // answers would otherwise leave the app on a blank first frame.
+    final info = await PackageInfo.fromPlatform().timeout(
+      const Duration(seconds: 2),
+    );
+    final installed = info.installTime;
+    final updated = info.updateTime;
+    if (installed == null || updated == null) return null;
+    return (installed: installed, updated: updated);
+  } catch (_) {
+    // No platform to ask (tests, or a platform the plugin doesn't cover):
+    // setup falls back to going by what's on disk alone.
+    return null;
+  }
+}
 
 // The home screen's day window: enough of the past that the current-prayer
 // calculation always has yesterday on hand (see computeCurrentPrayer's
@@ -45,17 +71,24 @@ class AppState extends ChangeNotifier {
     PrayerCacheStore? cache,
     ConnectivityService? connectivity,
     HomeWidgetBridge? homeWidget,
+    Future<InstallTimes?> Function()? installTimes,
   }) : _api = api ?? PrayerTimesApi(),
        _notifications = notifications ?? NotificationService(),
        _cache = cache ?? const PrayerCacheStore(),
        _connectivity = connectivity ?? const ConnectivityService(),
-       _homeWidget = homeWidget ?? const HomeWidgetBridge();
+       _homeWidget = homeWidget ?? const HomeWidgetBridge(),
+       _installTimes = installTimes ?? _platformInstallTimes;
 
   final PrayerTimesApi _api;
   final NotificationService _notifications;
   final PrayerCacheStore _cache;
   final ConnectivityService _connectivity;
   final HomeWidgetBridge _homeWidget;
+  final Future<InstallTimes?> Function() _installTimes;
+
+  /// This install's first-install time, once read — what completing setup
+  /// records it ran on.
+  int? _installedAtMs;
   AppLifecycleListener? _lifecycle;
   Timer? _rescheduleDebounce;
 
@@ -276,11 +309,34 @@ class AppState extends ChangeNotifier {
     // An install that predates this flow has settings on disk already —
     // treat that as "set up", rather than interrupting someone who has been
     // using the app for months with a first-run wizard.
-    _onboardingDone =
+    final hasSetup =
         prefs.getBool(_kOnboardingDone) ??
         (prefs.getString(_kCityV2) != null ||
             prefs.getString(_kCity) != null ||
             prefs.getString(_kLocale) != null);
+    // Android's backup restores all of this onto a fresh install too. The
+    // prayer log and settings are worth keeping, but a new install should
+    // still start with setup — so setup records which install it ran on.
+    // Settings from a different install came from a backup; so did
+    // settings from before that was recorded, found on an install that has
+    // never been updated (an in-place update from an older version always
+    // has been).
+    final times = await _installTimes();
+    _installedAtMs = times?.installed.millisecondsSinceEpoch;
+    final setupInstall = prefs.getInt(_kOnboardingInstall);
+    final restoredOntoNewInstall =
+        hasSetup &&
+        times != null &&
+        (setupInstall != null
+            ? setupInstall != _installedAtMs
+            : times.installed == times.updated);
+    _onboardingDone = hasSetup && !restoredOntoNewInstall;
+    final installedAt = _installedAtMs;
+    if (_onboardingDone && installedAt != null && setupInstall != installedAt) {
+      // An older version's setup, carried over by an in-place update: it
+      // belongs to this install from now on.
+      await prefs.setInt(_kOnboardingInstall, installedAt);
+    }
     _favoriteNames
       ..clear()
       ..addAll(
@@ -520,7 +576,11 @@ class AppState extends ChangeNotifier {
     if (_onboardingDone) return;
     _onboardingDone = true;
     notifyListeners();
-    _save((p) => p.setBool(_kOnboardingDone, true));
+    final installedAt = _installedAtMs;
+    _save((p) async {
+      await p.setBool(_kOnboardingDone, true);
+      if (installedAt != null) await p.setInt(_kOnboardingInstall, installedAt);
+    });
   }
 
   void setThemeMode(ThemeMode mode) {

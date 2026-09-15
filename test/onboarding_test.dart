@@ -45,13 +45,16 @@ class _AlwaysOnline extends ConnectivityService {
   Future<bool> hasConnection() async => true;
 }
 
-Widget _app() => PrayerTimeApp(
+Widget _app({InstallTimes? installTimes}) => PrayerTimeApp(
   appState: AppState(
     api: _InstantFakeApi(),
     notifications: NoopNotificationService(),
     connectivity: const _AlwaysOnline(),
+    installTimes: () async => installTimes,
   ),
 );
+
+final _installed = DateTime.utc(2026, 9, 15, 21, 59, 29);
 
 void main() {
   testWidgets('a fresh install lands in setup, not the app', (tester) async {
@@ -94,6 +97,82 @@ void main() {
     SharedPreferences.setMockInitialValues({'locale': 'ru'});
 
     await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Намаз'), findsOneWidget);
+  });
+
+  testWidgets('settings restored from a backup onto a new install go '
+      'through setup again', (tester) async {
+    // A finished setup from an older version, restored by Android's backup
+    // onto an install that has never been updated.
+    SharedPreferences.setMockInitialValues({
+      'onboarding_done': true,
+      'locale': 'ru',
+    });
+
+    await tester.pumpWidget(
+      _app(installTimes: (installed: _installed, updated: _installed)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Русский'), findsOneWidget);
+    expect(find.text('Намаз'), findsNothing);
+  });
+
+  testWidgets('setup recorded on a different install runs again', (
+    tester,
+  ) async {
+    final updated = _installed.add(const Duration(days: 3));
+    SharedPreferences.setMockInitialValues({
+      'onboarding_done': true,
+      'onboarding_install_time': _installed
+          .subtract(const Duration(days: 30))
+          .millisecondsSinceEpoch,
+      'locale': 'ru',
+    });
+
+    await tester.pumpWidget(
+      _app(installTimes: (installed: _installed, updated: updated)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Намаз'), findsNothing);
+  });
+
+  testWidgets('setup done on this very install stays done', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'onboarding_done': true,
+      'onboarding_install_time': _installed.millisecondsSinceEpoch,
+      'locale': 'ru',
+    });
+
+    await tester.pumpWidget(
+      _app(installTimes: (installed: _installed, updated: _installed)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Намаз'), findsOneWidget);
+  });
+
+  testWidgets('an in-place update from an older version keeps its setup', (
+    tester,
+  ) async {
+    // Set up under a version that didn't record the install yet, then
+    // updated in place — so the install has been updated since.
+    SharedPreferences.setMockInitialValues({
+      'onboarding_done': true,
+      'locale': 'ru',
+    });
+
+    await tester.pumpWidget(
+      _app(
+        installTimes: (
+          installed: _installed,
+          updated: _installed.add(const Duration(days: 40)),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Намаз'), findsOneWidget);

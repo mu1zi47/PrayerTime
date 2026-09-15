@@ -228,6 +228,29 @@
   "widgetMarkedLabel": "Белгиланди",
   "widgetNoDataLabel": "Иловани очинг",
 
+  "nowBarTitle": "Now Bar",
+  "persistentNotifTitle": "Доимий билдиришнома",
+  "nowBarDescription": "Now Bar — Samsung телефонларида қулф экрани пастидаги ва билдиришномалар панели тепасидаги панел. Унда жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси кўринади.",
+  "persistentNotifDescription": "Билдиришномалар панелида доим турадиган билдиришнома: жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси. Уни суриб ўчирсангиз, қайта пайдо бўлади — фақат шу ерда ўчириш мумкин.",
+  "nowBarSwitchLabel": "Кўрсатиш",
+  "nowBarOn": "Ёқилган",
+  "nowBarOff": "Ўчирилган",
+  "nowBarNotificationsOff": "Телефон созламаларида илова билдиришномалари ўчирилган, шунинг учун у кўринмайди.",
+  "nowBarOpenSettings": "Телефон созламаларини очиш",
+  "nowBarUnmarkAction": "Бекор қилиш",
+  "nowBarEndsIn": "Тугашига",
+  "nowBarStartsIn": "Бошланишига",
+  "nowBarChannelName": "Жорий намоз",
+
+  "nowBarDevTitle": "Бу телефонда Now Bar ҳали ўчиқ",
+  "nowBarDevBody": "Samsung бошқа иловаларни Now Bar'га фақат «Ishlab chiqaruvchi opsiyalari» ичидаги калит ёқилгандан кейин чиқаради. Унга қадар намоз оддий билдиришнома бўлиб кўринади.",
+  "nowBarDevStepAbout": "«Sozlamalar» → «Telefon haqida» → «Dastur haqida ma’lumot» бўлимини очинг.",
+  "nowBarDevStepBuildNumber": "«Reliz raqami» устига кетма-кет 7 марта босинг ва телефон сўраса, PIN-кодни киритинг. «Ishlab chiqaruvchi opsiyalari» пайдо бўлади.",
+  "nowBarDevStepDeveloperOptions": "«Sozlamalar»га қайтинг ва рўйхатнинг энг пастидаги «Ishlab chiqaruvchi opsiyalari» бўлимини очинг.",
+  "nowBarDevStepSwitch": "«Hamma ilv. u-n jonli bildir-lar» бандини топинг ва ёқинг.",
+  "nowBarDevOpenAbout": "«Telefon haqida»ни очиш",
+  "nowBarDevOpenDeveloper": "«Ishlab chiqaruvchi opsiyalari»ни очиш",
+
   "onboardingStepLabel": "{current}-қадам, жами {total}",
   "@onboardingStepLabel": {
     "placeholders": {
@@ -286,6 +309,7 @@
   "feedbackEmail": "Почтага ёзиш",
   "feedbackTelegram": "Телеграмга ёзиш",
   "feedbackCopied": "Нусхаланди",
+  "appVersionLabel": "Версия {version}",
 
   "namesNoticeDisclaimer": "Ёзилиши ва шарҳларида хатолар бўлиши мумкин. Хатони сезсангиз, созламалардаги «Алоқа» бўлими орқали ёзинг.",
 

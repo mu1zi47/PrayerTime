@@ -62,6 +62,7 @@ void main() {
         api: _HangingApi(),
         notifications: NoopNotificationService(),
         connectivity: const _AlwaysOnline(),
+        installTimes: () async => null,
       );
       addTearDown(appState.dispose);
 

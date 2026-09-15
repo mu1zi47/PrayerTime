@@ -228,6 +228,29 @@
   "widgetMarkedLabel": "Belgilandi",
   "widgetNoDataLabel": "Ilovani oching",
 
+  "nowBarTitle": "Now Bar",
+  "persistentNotifTitle": "Doimiy bildirishnoma",
+  "nowBarDescription": "Now Bar — Samsung telefonlarida qulf ekrani pastidagi va bildirishnomalar paneli tepasidagi panel. Unda joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi ko'rinadi.",
+  "persistentNotifDescription": "Bildirishnomalar panelida doim turadigan bildirishnoma: joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi. Uni surib o'chirsangiz, qayta paydo bo'ladi — faqat shu yerda o'chirish mumkin.",
+  "nowBarSwitchLabel": "Ko'rsatish",
+  "nowBarOn": "Yoqilgan",
+  "nowBarOff": "O'chirilgan",
+  "nowBarNotificationsOff": "Telefon sozlamalarida ilova bildirishnomalari o'chirilgan, shuning uchun u ko'rinmaydi.",
+  "nowBarOpenSettings": "Telefon sozlamalarini ochish",
+  "nowBarUnmarkAction": "Bekor qilish",
+  "nowBarEndsIn": "Tugashiga",
+  "nowBarStartsIn": "Boshlanishiga",
+  "nowBarChannelName": "Joriy namoz",
+
+  "nowBarDevTitle": "Bu telefonda Now Bar hali o'chiq",
+  "nowBarDevBody": "Samsung boshqa ilovalarni Now Bar'ga faqat «Ishlab chiqaruvchi opsiyalari» ichidagi kalit yoqilgandan keyin chiqaradi. Unga qadar namoz oddiy bildirishnoma bo'lib ko'rinadi.",
+  "nowBarDevStepAbout": "«Sozlamalar» → «Telefon haqida» → «Dastur haqida ma’lumot» bo'limini oching.",
+  "nowBarDevStepBuildNumber": "«Reliz raqami» ustiga ketma-ket 7 marta bosing va telefon so'rasa, PIN-kodni kiriting. «Ishlab chiqaruvchi opsiyalari» paydo bo'ladi.",
+  "nowBarDevStepDeveloperOptions": "«Sozlamalar»ga qayting va ro'yxatning eng pastidagi «Ishlab chiqaruvchi opsiyalari» bo'limini oching.",
+  "nowBarDevStepSwitch": "«Hamma ilv. u-n jonli bildir-lar» bandini toping va yoqing.",
+  "nowBarDevOpenAbout": "«Telefon haqida»ni ochish",
+  "nowBarDevOpenDeveloper": "«Ishlab chiqaruvchi opsiyalari»ni ochish",
+
   "onboardingStepLabel": "{current}-qadam, jami {total}",
   "@onboardingStepLabel": {
     "placeholders": {
@@ -286,6 +309,7 @@
   "feedbackEmail": "Pochtaga yozish",
   "feedbackTelegram": "Telegramga yozish",
   "feedbackCopied": "Nusxalandi",
+  "appVersionLabel": "Versiya {version}",
 
   "namesNoticeDisclaimer": "Yozilishi va sharhlarida xatolar bo'lishi mumkin. Xatoni sezsangiz, sozlamalardagi «Aloqa» bo'limi orqali yozing.",
 

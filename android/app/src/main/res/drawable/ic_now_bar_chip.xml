@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The crescent at status-bar chip size: 14dp, the size Samsung Clock's own
+     chip glyphs use, so it sits inside the colored chip with room around it.
+     Same shape as ic_stat_prayer. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFAFAFF"
+        android:pathData="M11.05,3.05A9,9 0,1 0,20.95 12.95A7,7 0,0 1,11.05 3.05Z" />
+</vector>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What One UI draws in the headline's place, in the Now Bar and the live
+     notification card (`chronometerRemoteView`, see PrayerStatusNotifier's
+     Samsung extras): the live countdown on top, the next prayer under it.
+     Both lines live in this one view because the collapsed Now Bar shows
+     only this view once a chronometer is involved. Handing One UI a whole
+     card view instead (`nowbarRemoteView`) kept both lines but cost the lock
+     screen card its gold gradient.
+
+     The status-bar chip would cast this view straight to Chronometer — a
+     layout like this one crashed SystemUI over and over. It never gets that
+     far because the notification also sets `chipExpandedText`, which the
+     chip shows instead without touching this view.
+
+     The countdown is sized and set like Samsung Clock's own stopwatch, in
+     One UI's fixed-width digits so it doesn't jitter as it ticks. No colors:
+     One UI paints the card itself, light or dark, and colors the text to
+     match. Everything fills the width it's given rather than wrapping its
+     text: One UI enlarges the countdown after this view has been measured,
+     and a view only as wide as the short line under it cut it off. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Chronometer
+        android:id="@+id/now_bar_chronometer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sec-num-fixed"
+        android:maxLines="1"
+        android:tag="prayer_countdown_ongoing_activity_chronometer"
+        android:textFontWeight="400"
+        android:textSize="20dp"
+        tools:ignore="SpUsage,UnusedAttribute" />
+
+    <!-- Small and bold, like One UI's own secondary line under a card's
+         headline — well below the countdown, which One UI scales up. -->
+    <TextView
+        android:id="@+id/now_bar_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="10.5dp"
+        android:textStyle="bold"
+        tools:ignore="SpUsage" />
+</LinearLayout>

@@ -176,6 +176,17 @@ class NotificationService {
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
+  /// Just the notification permission, without the exact-alarm settings
+  /// detour [requestPermissions] takes — for turning on the Now Bar
+  /// notification, which needs nothing else.
+  Future<void> requestNotificationsPermission() async {
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
+  }
+
   /// [prayerLog] is AppState's own log, in the same shape it keeps it —
   /// a prayer already marked there gets no "window is closing" reminder,
   /// since there's nothing left to remind about (see
@@ -508,6 +519,9 @@ class NoopNotificationService extends NotificationService {
   /// [init] — asking on the very first frame, before anything has explained
   /// what the notifications are for, is how permission prompts get denied.
   Future<void> requestPermissions() async {}
+
+  @override
+  Future<void> requestNotificationsPermission() async {}
 
   @override
   Future<void> scheduleForDays({

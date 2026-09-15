@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only the button glyph follows the system here — see
+     values/now_bar_colors.xml for why. -->
+<resources>
+    <color name="now_bar_button_glyph">#FAFAFF</color>
+</resources>

@@ -49,6 +49,10 @@ sealed interface PrayerWidgetState {
         val currentName: String,
         /** The one after it, e.g. "Next prayer · Asr 16:57". */
         val nextLabel: String,
+        /** Just that next prayer's name, e.g. "Asr". */
+        val nextName: String,
+        /** And its start, e.g. "16:57". */
+        val nextTime: String,
         val markLabel: String,
         /**
          * Millis until the current prayer's window closes — what the
@@ -152,6 +156,8 @@ sealed interface PrayerWidgetState {
                 currentMarked = marked,
                 currentName = lastPassed.name,
                 nextLabel = "${label("next", "")} · ${nextPrayer.name} ${nextPrayer.time}",
+                nextName = nextPrayer.name,
+                nextTime = nextPrayer.time,
                 markLabel = if (marked) label("marked", "") else label("markDone", ""),
                 untilWindowEndMillis = Duration.between(now, nextChange.at).toMillis(),
                 nextChangeEpochMillis = nextChange.at.toInstant(offset).toEpochMilli(),

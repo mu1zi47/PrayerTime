@@ -228,6 +228,29 @@
   "widgetMarkedLabel": "Logged",
   "widgetNoDataLabel": "Open the app",
 
+  "nowBarTitle": "Now Bar",
+  "persistentNotifTitle": "Persistent notification",
+  "nowBarDescription": "Now Bar is the Samsung panel at the bottom of the lock screen and at the top of the notification panel. It shows the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app.",
+  "persistentNotifDescription": "A notification pinned to the notification panel: the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app. Swiping it away brings it back — it can only be turned off here.",
+  "nowBarSwitchLabel": "Show",
+  "nowBarOn": "On",
+  "nowBarOff": "Off",
+  "nowBarNotificationsOff": "Notifications for this app are turned off in phone settings, so it won't appear.",
+  "nowBarOpenSettings": "Open phone settings",
+  "nowBarUnmarkAction": "Undo",
+  "nowBarEndsIn": "Ends in",
+  "nowBarStartsIn": "Starts in",
+  "nowBarChannelName": "Current prayer",
+
+  "nowBarDevTitle": "Now Bar is still off on this phone",
+  "nowBarDevBody": "Samsung only lets other apps into the Now Bar once a switch in Developer options is on. Until then, the prayer shows as a regular notification.",
+  "nowBarDevStepAbout": "Open Settings → About phone → Software information.",
+  "nowBarDevStepBuildNumber": "Tap Build number 7 times in a row and confirm with your PIN if asked. Developer options will appear.",
+  "nowBarDevStepDeveloperOptions": "Go back to Settings and open Developer options, at the very bottom of the list.",
+  "nowBarDevStepSwitch": "Find “Live notifications for all apps” and turn it on.",
+  "nowBarDevOpenAbout": "Open About phone",
+  "nowBarDevOpenDeveloper": "Open Developer options",
+
   "onboardingStepLabel": "Step {current} of {total}",
   "@onboardingStepLabel": {
     "placeholders": {
@@ -286,6 +309,7 @@
   "feedbackEmail": "Send an email",
   "feedbackTelegram": "Message on Telegram",
   "feedbackCopied": "Copied",
+  "appVersionLabel": "Version {version}",
 
   "namesNoticeDisclaimer": "Spellings and commentary may contain mistakes. If you spot one, write to us through Feedback in settings.",
 

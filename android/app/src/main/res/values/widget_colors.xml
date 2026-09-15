@@ -18,8 +18,10 @@
     <color name="widget_text_muted_light">#8F16213C</color>
     <color name="widget_text_muted_dark">#8FF4EFE3</color>
 
-    <color name="widget_accent2_light">#1E6F65</color>
-    <color name="widget_accent2_dark">#7CAEA8</color>
+    <!-- The countdown: the app's deep gold, lifted in the dark theme so it
+         still reads on the navy panel. -->
+    <color name="widget_accent2_light">#8C631A</color>
+    <color name="widget_accent2_dark">#E0B152</color>
 
     <!-- "Not marked yet": a quiet outline, so the filled state reads as a
          real change rather than a color swap. -->
@@ -30,12 +32,12 @@
     <color name="widget_button_text_light">#16213C</color>
     <color name="widget_button_text_dark">#F4EFE3</color>
 
-    <!-- Logged: the whole panel goes solid teal — the same "prayed on time"
-         color the prayer rows use inside the app — with a darker circle for
-         the button on top of it. Identical in both themes, so a logged
+    <!-- Logged: the whole panel goes solid deep gold — the same "prayed on
+         time" color the prayer rows use inside the app — with a darker circle
+         for the button on top of it. Identical in both themes, so a logged
          prayer looks the same whichever one is on. -->
-    <color name="widget_marked_bg">#1E6F65</color>
-    <color name="widget_marked_button">#123F39</color>
+    <color name="widget_marked_bg">#8C631A</color>
+    <color name="widget_marked_button">#5E4210</color>
     <color name="widget_marked_text">#F4EFE3</color>
     <color name="widget_marked_text_muted">#B8F4EFE3</color>
 

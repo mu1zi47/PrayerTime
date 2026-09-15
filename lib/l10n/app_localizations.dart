@@ -1026,6 +1026,132 @@ abstract class AppLocalizations {
   /// **'Откройте приложение'**
   String get widgetNoDataLabel;
 
+  /// No description provided for @nowBarTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Now Bar'**
+  String get nowBarTitle;
+
+  /// No description provided for @persistentNotifTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Постоянное уведомление'**
+  String get persistentNotifTitle;
+
+  /// No description provided for @nowBarDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Now Bar — панель Samsung внизу экрана блокировки и вверху панели уведомлений. В ней будет виден текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение.'**
+  String get nowBarDescription;
+
+  /// No description provided for @persistentNotifDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомление, закреплённое в панели уведомлений: текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение. Если смахнуть его, оно появится снова — выключить его можно только здесь.'**
+  String get persistentNotifDescription;
+
+  /// No description provided for @nowBarSwitchLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать'**
+  String get nowBarSwitchLabel;
+
+  /// No description provided for @nowBarOn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вкл'**
+  String get nowBarOn;
+
+  /// No description provided for @nowBarOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выкл'**
+  String get nowBarOff;
+
+  /// No description provided for @nowBarNotificationsOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления для приложения выключены в настройках телефона, поэтому оно не появится.'**
+  String get nowBarNotificationsOff;
+
+  /// No description provided for @nowBarOpenSettings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть настройки телефона'**
+  String get nowBarOpenSettings;
+
+  /// No description provided for @nowBarUnmarkAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Снять отметку'**
+  String get nowBarUnmarkAction;
+
+  /// No description provided for @nowBarEndsIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'До конца'**
+  String get nowBarEndsIn;
+
+  /// No description provided for @nowBarStartsIn.
+  ///
+  /// In ru, this message translates to:
+  /// **'До начала'**
+  String get nowBarStartsIn;
+
+  /// No description provided for @nowBarChannelName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущий намаз'**
+  String get nowBarChannelName;
+
+  /// No description provided for @nowBarDevTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Now Bar пока выключен на этом телефоне'**
+  String get nowBarDevTitle;
+
+  /// No description provided for @nowBarDevBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Samsung пускает сторонние приложения в Now Bar только после того, как включён переключатель в меню «Для разработчиков». До этого намаз будет обычным уведомлением.'**
+  String get nowBarDevBody;
+
+  /// No description provided for @nowBarDevStepAbout.
+  ///
+  /// In ru, this message translates to:
+  /// **'Откройте «Настройки» → «Сведения о телефоне» → «Сведения о ПО».'**
+  String get nowBarDevStepAbout;
+
+  /// No description provided for @nowBarDevStepBuildNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нажмите на «Номер сборки» 7 раз подряд и подтвердите PIN-кодом, если телефон попросит. Появится меню «Для разработчиков».'**
+  String get nowBarDevStepBuildNumber;
+
+  /// No description provided for @nowBarDevStepDeveloperOptions.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вернитесь в «Настройки» и откройте «Для разработчиков» — в самом низу списка.'**
+  String get nowBarDevStepDeveloperOptions;
+
+  /// No description provided for @nowBarDevStepSwitch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Найдите «Живые уведомл. для всех прилож.» и включите переключатель.'**
+  String get nowBarDevStepSwitch;
+
+  /// No description provided for @nowBarDevOpenAbout.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть «Сведения о телефоне»'**
+  String get nowBarDevOpenAbout;
+
+  /// No description provided for @nowBarDevOpenDeveloper.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть «Для разработчиков»'**
+  String get nowBarDevOpenDeveloper;
+
   /// No description provided for @onboardingStepLabel.
   ///
   /// In ru, this message translates to:
@@ -1211,6 +1337,12 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Скопировано'**
   String get feedbackCopied;
+
+  /// No description provided for @appVersionLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Версия {version}'**
+  String appVersionLabel(String version);
 
   /// No description provided for @namesNoticeDisclaimer.
   ///

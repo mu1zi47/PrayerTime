@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -72,12 +73,8 @@ class SettingsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                Icons.access_time_rounded,
-                size: 18,
-                color: AppColors.accent700,
-              ),
-              const SizedBox(width: 10),
+              const _IconBadge(Icons.access_time_rounded),
+              const SizedBox(width: 12),
               Text(
                 t.prayerSettingsTitle,
                 style: AppTextStyles.body(fontSize: 15),
@@ -93,8 +90,8 @@ class SettingsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.tune_rounded, size: 18, color: AppColors.accent700),
-              const SizedBox(width: 10),
+              const _IconBadge(Icons.tune_rounded),
+              const SizedBox(width: 12),
               Text(
                 t.systemSettingsTitle,
                 style: AppTextStyles.body(fontSize: 15),
@@ -129,7 +126,63 @@ class SettingsScreen extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 28),
+        const _AppVersion(),
       ],
+    );
+  }
+}
+
+/// The installed version, at the very bottom — the first thing to ask for
+/// when someone writes in through the feedback rows above. Read from the
+/// platform (pubspec's `version` as built), so it can't drift from what the
+/// phone's own app info says.
+class _AppVersion extends StatelessWidget {
+  const _AppVersion();
+
+  static final Future<PackageInfo> _info = PackageInfo.fromPlatform();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PackageInfo>(
+      future: _info,
+      builder: (context, snapshot) {
+        final info = snapshot.data;
+        if (info == null) return const SizedBox.shrink();
+        final t = AppLocalizations.of(context)!;
+        return Center(
+          child: Text(
+            t.appVersionLabel(info.version),
+            style: AppTextStyles.body(
+              fontSize: 12.5,
+              color: AppColors.text.withValues(alpha: 0.45),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// A settings row's icon, set in the same round gold badge as the tiles on
+/// the "More" screen (see MoreScreen's _MoreTile), so the two lists of
+/// destinations read as one family.
+class _IconBadge extends StatelessWidget {
+  final IconData icon;
+
+  const _IconBadge(this.icon);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.accent100,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 17, color: AppColors.accent700),
     );
   }
 }
@@ -153,8 +206,8 @@ class _ContactRow extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.accent700),
-          const SizedBox(width: 10),
+          _IconBadge(icon),
+          const SizedBox(width: 12),
           Expanded(child: Text(label, style: AppTextStyles.body(fontSize: 15))),
           Text(
             contact,

@@ -16,6 +16,11 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Lets the current-prayer notification become an Android 16 Live
+         Update, which One UI 8 shows in the Now Bar (see
+         PrayerStatusNotifier). A normal install-time permission; the user
+         can still switch promotion off per app in system settings. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
         android:label="Prayer times"
         android:name="${applicationName}"
@@ -47,6 +52,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Tells One UI this app posts Samsung "ongoing activity" (Live
+             Notification) extras, which is what puts the current-prayer
+             notification into the Now Bar — see PrayerStatusNotifier. -->
+        <meta-data
+            android:name="com.samsung.android.support.ongoing_activity"
+            android:value="true" />
 
         <!-- Reschedules pending prayer-time alarms after a reboot or app
              update, since AlarmManager entries don't survive those. -->
@@ -82,6 +94,23 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/prayer_widget_info" />
+        </receiver>
+
+        <!-- The always-on current-prayer notification / Now Bar entry (see
+             PrayerStatusNotifier): its "prayed" button, its re-post after a
+             swipe, its prayer-boundary alarm, and bringing it back after a
+             reboot, an app update or a clock change. Unexported — system
+             broadcasts still arrive, and nothing else can drive it. -->
+        <receiver
+            android:name=".nowbar.PrayerStatusReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:

@@ -100,6 +100,14 @@ class _FloatingTabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The selected tab uses the same two gold tones as the icon badges on
+    // the "More" screen (accent100/accent700), arranged so the pill is
+    // always the deep one and the icon and label the light one. The ramps run
+    // in opposite directions in the two themes (see AppPalette), hence the
+    // swap.
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final fill = dark ? AppColors.accent100 : AppColors.accent700;
+    final onFill = dark ? AppColors.accent700 : AppColors.accent100;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -111,7 +119,7 @@ class _FloatingTabButton extends StatelessWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent : Colors.transparent,
+          color: selected ? fill : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
@@ -121,7 +129,7 @@ class _FloatingTabButton extends StatelessWidget {
               spec.icon,
               size: 20,
               color: selected
-                  ? AppColors.bg
+                  ? onFill
                   : AppColors.text.withValues(alpha: 0.55),
             ),
             AnimatedSize(
@@ -134,7 +142,7 @@ class _FloatingTabButton extends StatelessWidget {
                         spec.label,
                         style: AppTextStyles.body(
                           fontSize: 13,
-                          color: AppColors.bg,
+                          color: onFill,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

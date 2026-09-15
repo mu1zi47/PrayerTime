@@ -75,18 +75,23 @@ class AppPalette {
   Color get divider => text.withValues(alpha: 0.16);
 }
 
-// A deep-navy / gold / teal identity — the same ramp *shape* as the app's
-// original warm-terracotta palette (each step keeps its original saturation
-// and lightness), just rotated to a new set of hues, so every screen that
+// A deep-navy / gold identity — the same ramp *shape* as the app's original
+// warm-terracotta palette (each step keeps its original saturation and
+// lightness), just rotated to a new set of hues, so every screen that
 // already leans on a specific shade (accent700 for readable label text,
 // neutral300 for a subtle border, etc.) keeps the same relative contrast it
 // always had.
+//
+// accent2 is a second, deeper gold rather than a hue of its own: it marks
+// the one "done / now" state (a prayer logged on time, the prayer that's on
+// right now), so it's kept dark enough in both themes to carry light text
+// and to read apart from accent's brighter gold (a late, "qada" mark).
 const _light = AppPalette(
   bg: Color(0xFFF2F4F8),
   surface: Color(0xFFFFFFFF),
   text: Color(0xFF16213C),
   accent: Color(0xFFB27509),
-  accent2: Color(0xFF1E6F65),
+  accent2: Color(0xFF8C631A),
   neutral100: Color(0xFFEDF0F9),
   neutral200: Color(0xFFDBE0EE),
   neutral300: Color(0xFFC4CBDC),
@@ -105,15 +110,15 @@ const _light = AppPalette(
   accent700: Color(0xFF8C631A),
   accent800: Color(0xFF644612),
   accent900: Color(0xFF402F10),
-  accent2_100: Color(0xFFD7F4F0),
-  accent2_200: Color(0xFFC0EDE7),
-  accent2_300: Color(0xFFB2DBD6),
-  accent2_400: Color(0xFF92BFB9),
-  accent2_500: Color(0xFF73A09A),
-  accent2_600: Color(0xFF57817C),
-  accent2_700: Color(0xFF3F635F),
-  accent2_800: Color(0xFF2B4744),
-  accent2_900: Color(0xFF1B2E2C),
+  accent2_100: Color(0xFFF6E9CF),
+  accent2_200: Color(0xFFEFDCB5),
+  accent2_300: Color(0xFFE3C891),
+  accent2_400: Color(0xFFCFAA69),
+  accent2_500: Color(0xFFB38A45),
+  accent2_600: Color(0xFF9A722A),
+  accent2_700: Color(0xFF7E5A18),
+  accent2_800: Color(0xFF5F4311),
+  accent2_900: Color(0xFF3F2D0C),
 );
 
 // Mirrors `_light`'s internal logic (the NNN scales run from "closest to
@@ -125,7 +130,7 @@ const _dark = AppPalette(
   surface: Color(0xFF17223C),
   text: Color(0xFFF4EFE3),
   accent: Color(0xFFE7B248),
-  accent2: Color(0xFF1E6F65),
+  accent2: Color(0xFF8A6A2C),
   neutral100: Color(0xFF161A21),
   neutral200: Color(0xFF20242C),
   neutral300: Color(0xFF292E3A),
@@ -144,15 +149,15 @@ const _dark = AppPalette(
   accent700: Color(0xFFE0B152),
   accent800: Color(0xFFF0C97C),
   accent900: Color(0xFFFBEBCC),
-  accent2_100: Color(0xFF162422),
-  accent2_200: Color(0xFF1D322F),
-  accent2_300: Color(0xFF25433F),
-  accent2_400: Color(0xFF325A55),
-  accent2_500: Color(0xFF40726C),
-  accent2_600: Color(0xFF528F87),
-  accent2_700: Color(0xFF7CAEA8),
-  accent2_800: Color(0xFFA6CDC8),
-  accent2_900: Color(0xFFD3EBE8),
+  accent2_100: Color(0xFF2B2313),
+  accent2_200: Color(0xFF382D17),
+  accent2_300: Color(0xFF47391C),
+  accent2_400: Color(0xFF5E4B24),
+  accent2_500: Color(0xFF7A612E),
+  accent2_600: Color(0xFF9C7C3A),
+  accent2_700: Color(0xFFC29C4E),
+  accent2_800: Color(0xFFDDBA70),
+  accent2_900: Color(0xFFF2DAA6),
 );
 
 class AppColors {

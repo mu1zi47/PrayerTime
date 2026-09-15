@@ -19,6 +19,13 @@ class NotifModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _modes.indexOf(value);
+    // The selected mode uses the same two gold tones as the selected tab,
+    // the switches and the icon badges (accent100/accent700): the capsule
+    // the deep one, its icon the light one. The ramps run in opposite
+    // directions in the two themes (see AppPalette), hence the swap.
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final deep = dark ? AppColors.accent100 : AppColors.accent700;
+    final soft = dark ? AppColors.accent700 : AppColors.accent100;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -37,7 +44,7 @@ class NotifModeSelector extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.accent,
+                color: deep,
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
             ),
@@ -56,7 +63,7 @@ class NotifModeSelector extends StatelessWidget {
                       mode.icon,
                       size: 16,
                       color: mode == value
-                          ? AppColors.bg
+                          ? soft
                           : AppColors.text.withValues(alpha: 0.5),
                     ),
                   ),

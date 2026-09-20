@@ -193,6 +193,9 @@
   "genericLoadError": "Namoz vaqtlarini yuklab bo'lmadi.",
   "errorOfflineSettingsChange": "Ushbu sozlamalarni o'zgartirish uchun internet ulanishi kerak.",
 
+  "monthlyTimesTitle": "Namoz vaqtlari",
+  "monthlyTimesButton": "Oylik jadval",
+
   "calendarScreenTitle": "Namoz taqvimi",
   "legendOnTime": "O'z vaqtida",
   "legendQada": "Kechikib",

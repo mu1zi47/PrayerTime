@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart' show ThemeMode;
@@ -92,6 +93,10 @@ class AppState extends ChangeNotifier {
   AppLifecycleListener? _lifecycle;
   Timer? _rescheduleDebounce;
 
+  /// Completes once the notification plugin has been initialized — see
+  /// [init] and [_rescheduleNow].
+  Future<void> _notificationsReady = Future.value();
+
   String _method = 'uzbekistan';
   String _madhab = 'hanafi';
   City _selectedCity = ReferenceData.cities.firstWhere(
@@ -143,14 +148,22 @@ class AppState extends ChangeNotifier {
   /// waits on this so it doesn't flash the setup flow at someone who
   /// finished it months ago.
   bool get isRestored => _restored;
-  Set<int> get favoriteNames => Set.unmodifiable(_favoriteNames);
+  late final Set<int> favoriteNames = UnmodifiableSetView(_favoriteNames);
   bool isFavoriteName(int number) => _favoriteNames.contains(number);
 
-  Map<String, PrayerLogStatus> prayerLogFor(DateTime date) =>
-      Map.unmodifiable(_prayerLog[_dateKey(date)] ?? const {});
+  // Views rather than copies: the calendar asks for a log per day cell and
+  // the settings screens for the notification modes on every rebuild, and
+  // `Map.unmodifiable` allocated a fresh map each time. A view is read-only
+  // all the same, and everything reading one rebuilds on notifyListeners
+  // anyway.
+  Map<String, PrayerLogStatus> prayerLogFor(DateTime date) {
+    final day = _prayerLog[_dateKey(date)];
+    return day == null ? const {} : UnmodifiableMapView(day);
+  }
+
   PrayerLogStatus? prayerStatusFor(DateTime date, String prayerKey) =>
       _prayerLog[_dateKey(date)]?[prayerKey];
-  Map<String, NotifMode> get notifMode => Map.unmodifiable(_notifMode);
+  late final Map<String, NotifMode> notifMode = UnmodifiableMapView(_notifMode);
   NotificationService get notifications => _notifications;
 
   List<PrayerDay> get days => _days;
@@ -164,6 +177,25 @@ class AppState extends ChangeNotifier {
   int get todayIndex {
     if (_days.isEmpty) return 0;
     final today = DateTime(cityNow.year, cityNow.month, cityNow.day);
+    // Memoized: a single home-screen build asks for this several times over
+    // (directly, and again through todayPrayerDay), and each answer walked
+    // the whole window. Only a new schedule or a new calendar day can
+    // change it.
+    if (identical(_todayIndexDays, _days) && _todayIndexDate == today) {
+      return _todayIndexCache;
+    }
+    final resolved = _resolveTodayIndex(today);
+    _todayIndexDays = _days;
+    _todayIndexDate = today;
+    _todayIndexCache = resolved;
+    return resolved;
+  }
+
+  List<PrayerDay>? _todayIndexDays;
+  DateTime? _todayIndexDate;
+  int _todayIndexCache = 0;
+
+  int _resolveTodayIndex(DateTime today) {
     final exact = _days.indexWhere((d) => _isSameDate(d.date, today));
     if (exact != -1) return exact;
     var closest = 0;
@@ -187,6 +219,16 @@ class AppState extends ChangeNotifier {
   /// same boundary `computeCurrentPrayer` uses for "current prayer").
   DateTime get _prayerDayAnchor {
     final now = cityNow;
+    // Memoized with the instant it can next change, since the calendar asks
+    // isDayLocked once per day cell and each answer used to walk the whole
+    // day window: the anchor holds until today's Fajr while it still points
+    // at yesterday, and until midnight once it has moved on.
+    if (identical(_anchorDays, _days) &&
+        _anchorValidUntil != null &&
+        now.isBefore(_anchorValidUntil!)) {
+      return _anchorValue!;
+    }
+
     final calendarToday = DateTime(now.year, now.month, now.day);
     PrayerDay? todayRecord;
     for (final d in _days) {
@@ -195,19 +237,40 @@ class AppState extends ChangeNotifier {
         break;
       }
     }
-    if (todayRecord != null &&
-        now.isBefore(_utcCombine(todayRecord.date, todayRecord.fajr))) {
-      return calendarToday.subtract(const Duration(days: 1));
+    final DateTime anchor;
+    final DateTime validUntil;
+    final fajr = todayRecord == null
+        ? null
+        : _utcCombine(todayRecord.date, todayRecord.fajr);
+    if (fajr != null && now.isBefore(fajr)) {
+      anchor = calendarToday.subtract(const Duration(days: 1));
+      validUntil = fajr;
+    } else {
+      anchor = calendarToday;
+      // In the same frame of reference as [cityNow] and [_utcCombine] — the
+      // city's wall clock carried on a UTC-flagged DateTime — so the
+      // comparison above holds wherever the device itself is.
+      validUntil = DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+      ).add(const Duration(days: 1));
     }
-    return calendarToday;
+    _anchorDays = _days;
+    _anchorValue = anchor;
+    _anchorValidUntil = validUntil;
+    return anchor;
   }
+
+  List<PrayerDay>? _anchorDays;
+  DateTime? _anchorValue;
+  DateTime? _anchorValidUntil;
 
   /// True once a day is old enough to be judged — strictly before the day
   /// preceding the current prayer-day. The calendar uses it to tell "not
   /// judged yet" (today, or yesterday, which someone may still be filling
   /// in) apart from "judged and missed". It says nothing about whether a
-  /// day can still be marked: any past day can, from either the calendar or
-  /// the home screen's day strip.
+  /// day can still be marked: any past day can, from the calendar.
   bool isDayLocked(DateTime date) {
     final target = DateTime(date.year, date.month, date.day);
     final yesterday = _prayerDayAnchor.subtract(const Duration(days: 1));
@@ -245,6 +308,45 @@ class AppState extends ChangeNotifier {
 
   DateTime get cityNow => DateTime.now().toUtc().add(_selectedCity.utcOffset);
 
+  // Whole months fetched for the monthly prayer-times screen, keyed by
+  // `<cacheSignature>|<year>-<month>` so a city/method/madhab change doesn't
+  // serve another city's schedule. Backed by the same store the day window
+  // uses, so it survives a restart too (see PrayerCacheStore.saveMonth).
+  final Map<String, List<PrayerDay>> _monthCache = {};
+
+  /// Every day of [year]/[month], for the monthly prayer-times screen — that
+  /// reaches a month either side of today, well past the ±7-day window
+  /// [days] keeps.
+  ///
+  /// Memory, then disk, then the network: a month's times don't change for
+  /// the settings they were fetched under, so paging back and forth costs
+  /// nothing, reopening the screen on a later run costs nothing, and being
+  /// offline only matters for a month never opened before.
+  Future<List<PrayerDay>> monthDays(int year, int month) async {
+    final key = '$_cacheSignature|$year-$month';
+    final cached = _monthCache[key];
+    if (cached != null) return cached;
+
+    final stored = await _cache.loadMonth(key);
+    if (stored != null && stored.isNotEmpty) {
+      _monthCache[key] = stored;
+      return stored;
+    }
+
+    final result = await _api.fetchMonth(
+      city: _selectedCity,
+      methodCode: _methodCode,
+      school: _school,
+      tune: _methodTune,
+      year: year,
+      month: month,
+    );
+    final days = result.days..sort((a, b) => a.date.compareTo(b.date));
+    _monthCache[key] = days;
+    unawaited(_cache.saveMonth(key: key, days: days));
+    return days;
+  }
+
   Future<void> init() async {
     await _restore();
     // The home-screen widget writes the prayer log straight to disk, behind
@@ -257,11 +359,16 @@ class AppState extends ChangeNotifier {
     // state (and notifies listeners) rather than only the disk copy.
     _notifications.onMarkDone = (date, prayerKey) async =>
         setPrayerStatus(date, prayerKey, PrayerLogStatus.onTime);
-    try {
-      await _notifications.init().timeout(const Duration(seconds: 5));
-    } catch (_) {
-      // Ignored — see doc comment above.
-    }
+    // Started, not awaited: initializing the plugin talks to the platform
+    // (channel setup, restored-notification callbacks) and used to hold the
+    // schedule — cached or fetched — behind it for as long as that took, on
+    // the one path where the app is showing a spinner. Only scheduling
+    // actually needs the plugin, and that waits on this below.
+    _notificationsReady = _notifications
+        .init()
+        .timeout(const Duration(seconds: 5))
+        // Ignored — see doc comment above.
+        .catchError((_) {});
     await loadPrayerTimes();
   }
 
@@ -497,7 +604,13 @@ class AppState extends ChangeNotifier {
     );
   }
 
-  void _rescheduleNow() {
+  Future<void> _rescheduleNow() async {
+    if (_days.isEmpty) return;
+    // The plugin is initialized in parallel with the first load (see
+    // [init]); on the very first run this is what makes sure the alarms are
+    // booked against a ready plugin. Once it has completed, awaiting it is
+    // free.
+    await _notificationsReady;
     if (_days.isEmpty) return;
     // Fire-and-forget, best-effort — a scheduling failure shouldn't
     // surface as an app-breaking error (see [init]).

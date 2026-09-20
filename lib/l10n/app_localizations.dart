@@ -966,6 +966,18 @@ abstract class AppLocalizations {
   /// **'Чтобы изменить эти настройки, нужно подключение к интернету.'**
   String get errorOfflineSettingsChange;
 
+  /// No description provided for @monthlyTimesTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Времена намазов'**
+  String get monthlyTimesTitle;
+
+  /// No description provided for @monthlyTimesButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Расписание на месяц'**
+  String get monthlyTimesButton;
+
   /// No description provided for @calendarScreenTitle.
   ///
   /// In ru, this message translates to:

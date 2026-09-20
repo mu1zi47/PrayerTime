@@ -16,6 +16,7 @@ import '../theme/status_colors.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/prayer_icon.dart';
 import 'city_screen.dart';
+import 'monthly_times_screen.dart';
 
 bool _isSameDate(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
@@ -33,22 +34,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Width of one _RulerTick (36) plus the 6px gap this screen's own
-  // separator puts after it.
-  static const _dayTickExtent = 42.0;
-
-  // null = "follow today" (the common case); set only once the user taps a
-  // specific day in the strip, and cleared again by _onAppStateChanged or
-  // the "Today" button.
-  int? _selectedIndex;
   Timer? _ticker;
   AppLifecycleListener? _lifecycle;
-  String? _lastScheduleKey;
-  final _dayScrollController = ScrollController();
-  // The todayIndex last centered on — re-centering exactly when this goes
-  // stale (initial load, a new schedule, or midnight quietly moving "today"
-  // one slot over while the app stays open) rather than on every rebuild.
-  int? _lastCenteredTodayIndex;
 
   @override
   void initState() {
@@ -87,49 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _ticker = null;
   }
 
-  void _onAppStateChanged() {
-    // Selecting a new city/method/madhab reloads the schedule — the
-    // previously selected day index may no longer make sense against it, so
-    // this mirrors what remounting via a ValueKey used to do.
-    final key =
-        '${widget.appState.selectedCityId}|${widget.appState.method}|${widget.appState.madhab}';
-    if (_lastScheduleKey != null && _lastScheduleKey != key) {
-      _selectedIndex = null;
-      _lastCenteredTodayIndex = null;
-    }
-    _lastScheduleKey = key;
-    setState(() {});
-  }
+  void _onAppStateChanged() => setState(() {});
 
   @override
   void dispose() {
     _lifecycle?.dispose();
     _stopTicker();
-    _dayScrollController.dispose();
     widget.appState.removeListener(_onAppStateChanged);
     super.dispose();
-  }
-
-  // The day strip now spans _pastDays..._futureDays around today (see
-  // AppState), so "today" is rarely index 0 — without this it'd load
-  // scrolled to the past end, with today off-screen to the right.
-  void _centerOnToday(int todayIndex, double viewportWidth) {
-    if (!_dayScrollController.hasClients) return;
-    final target = todayIndex * _dayTickExtent - viewportWidth / 2 + 18;
-    _dayScrollController.jumpTo(
-      target.clamp(0.0, _dayScrollController.position.maxScrollExtent),
-    );
-  }
-
-  void _goToToday(int todayIndex, double viewportWidth) {
-    setState(() => _selectedIndex = null);
-    if (!_dayScrollController.hasClients) return;
-    final target = todayIndex * _dayTickExtent - viewportWidth / 2 + 18;
-    _dayScrollController.animateTo(
-      target.clamp(0.0, _dayScrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
   }
 
   @override
@@ -152,20 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final todayIndex = appState.todayIndex;
-    final dayStripWidth = MediaQuery.sizeOf(context).width - 36;
-    if (_selectedIndex == null && _lastCenteredTodayIndex != todayIndex) {
-      _lastCenteredTodayIndex = todayIndex;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _centerOnToday(todayIndex, dayStripWidth),
-      );
-    }
-
-    final selectedIndex =
-        (_selectedIndex != null && _selectedIndex! < days.length)
-        ? _selectedIndex!
-        : todayIndex;
-    final selectedDay = days[selectedIndex];
-    final showingToday = selectedIndex == todayIndex;
+    final selectedDay = days[todayIndex];
     final next = computeNextPrayer(
       days,
       appState.cityNow,
@@ -178,17 +117,13 @@ class _HomeScreenState extends State<HomeScreen> {
       includeTahajjud: appState.tahajjudEnabled,
       todayIndex: todayIndex,
     );
-    final todayDate = days[todayIndex].date;
-    // Which prayer (if any) is highlighted on *whichever day is currently
-    // browsed* — not just today. Across midnight, `current`/`next` can
-    // belong to yesterday or tomorrow's own record (see
-    // computeCurrentPrayer/computeNextPrayer's cross-midnight handling); by
-    // matching on the actual date those carry rather than gating on
-    // `showingToday`, browsing to that specific day shows the highlight on
-    // its own row — e.g. at 00:01, paging back one day shows Isha as
-    // current there; at 23:59, paging forward one day shows Fajr as next
-    // there. The separate "Вчера"/"Завтра" callouts below are untouched by
-    // this — they still only ever show on today's own page.
+    final todayDate = selectedDay.date;
+    // Which prayer (if any) is highlighted on today's own rows. Across
+    // midnight, `current`/`next` can belong to yesterday or tomorrow's own
+    // record (see computeCurrentPrayer/computeNextPrayer's cross-midnight
+    // handling), so these match on the actual date those carry — at 00:01
+    // nothing below is marked current, and the Isha callout further down
+    // covers it instead.
     final currentKindOnSelectedDay =
         current != null && _isSameDate(current.date, selectedDay.date)
         ? current.kind
@@ -330,19 +265,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       ).copyWith(letterSpacing: 0.8),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      selectedDay.dateLabel(t),
-                      style: AppTextStyles.heading(
-                        fontSize: 24,
-                        color: AppColors.text,
+                    // Scales down rather than clipping: the month button
+                    // beside it carries a long label, and on the narrowest
+                    // phones a slightly smaller date beats a cut one.
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        selectedDay.dateLabel(t),
+                        maxLines: 1,
+                        style: AppTextStyles.heading(
+                          fontSize: 24,
+                          color: AppColors.text,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              _TodayLink(
-                isToday: showingToday,
-                onTap: () => _goToToday(todayIndex, dayStripWidth),
+              _MonthLink(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => MonthlyTimesScreen(appState: appState),
+                  ),
+                ),
               ),
             ],
           ),
@@ -352,26 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // tied to selectedDay.
           if (next != null)
             _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 46,
-            child: ListView.separated(
-              controller: _dayScrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: days.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
-              itemBuilder: (context, i) {
-                final d = days[i];
-                return _RulerTick(
-                  dayNumber: d.dayNumber,
-                  selected: i == selectedIndex,
-                  isToday: i == todayIndex,
-                  onTap: () => setState(() => _selectedIndex = i),
-                );
-              },
-            ),
-          ),
-          Divider(color: AppColors.divider, height: 21),
+          Divider(color: AppColors.divider, height: 41),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -383,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       !rows[i].current &&
                       !rows[i + 1].current,
                 ),
-              if (showingToday && next != null && nextIsTomorrow) ...[
+              if (next != null && nextIsTomorrow) ...[
                 const SizedBox(height: 14),
                 _Kicker(
                   t.nextPrayerTomorrowLabel(DateLabels.dateLabel(t, next.date)),
@@ -396,9 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ],
-              if (showingToday &&
-                  current != null &&
-                  current.isFromPreviousDay) ...[
+              if (current != null && current.isFromPreviousDay) ...[
                 const SizedBox(height: 14),
                 _Kicker(
                   t.yesterdayCurrentLabel(
@@ -428,11 +353,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Only a prayer that has actually happened can be marked. On a past day
-  // that's all of them — the day strip reaches a week back, and filling in
-  // what was missed is the point of being able to browse there at all. On
-  // today it's the ones whose time has arrived, and on a future day none:
-  // a prayer still ahead can't have been prayed.
+  // Only a prayer that has actually happened can be marked: on today
+  // that's the ones whose time has arrived, and on the past day the
+  // yesterday-Isha callout passes in, all of them. Filling in the rest of
+  // the past is the calendar screen's job.
   //
   // Returns null for the rest, which disables both the tap and the swipe —
   // see _ScheduleRow/_SwipeToLog.
@@ -895,90 +819,42 @@ class _SwipeToLogState extends State<_SwipeToLog>
   }
 }
 
-class _TodayLink extends StatelessWidget {
-  final bool isToday;
+/// Where the day strip's "Today" button used to sit — now the way into the
+/// month-at-a-time table of prayer times (see [MonthlyTimesScreen]), since
+/// this screen itself only ever shows today.
+class _MonthLink extends StatelessWidget {
   final VoidCallback onTap;
 
-  const _TodayLink({required this.isToday, required this.onTap});
+  const _MonthLink({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     return GestureDetector(
-      onTap: isToday ? null : onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!isToday) ...[
-            Icon(Icons.replay_rounded, size: 14, color: AppColors.accent),
-            const SizedBox(width: 4),
-          ],
-          Text(
-            t.todayLabel,
-            style: AppTextStyles.body(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w800,
-              color: isToday ? _textFaint : AppColors.accent,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One tick of the day strip, drawn as a small mark bottom-aligned against
-/// the row's baseline (see the enclosing Row/divider in HomeScreen) rather
-/// than a standalone pill — the run of ticks reads as a single ruler rather
-/// than a series of separate buttons.
-class _RulerTick extends StatelessWidget {
-  final String dayNumber;
-  final bool selected;
-  final bool isToday;
-  final VoidCallback? onTap;
-
-  const _RulerTick({
-    required this.dayNumber,
-    this.selected = false,
-    this.isToday = false,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final fg = selected
-        ? AppColors.accent
-        : isToday
-        ? AppColors.text.withValues(alpha: 0.85)
-        : _textFaint;
-    return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 36,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              dayNumber,
-              style: AppTextStyles.heading(
-                fontSize: selected ? 17 : 14,
-                color: fg,
-              ),
+            Icon(
+              Icons.calendar_month_rounded,
+              size: 14,
+              color: AppColors.accent,
             ),
-            const SizedBox(height: 6),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: selected ? 20 : (isToday ? 8 : 3),
-              height: 3,
-              decoration: BoxDecoration(
-                color: selected
-                    ? AppColors.accent
-                    : isToday
-                    ? AppColors.accent.withValues(alpha: 0.6)
-                    : AppColors.divider,
-                borderRadius: BorderRadius.circular(2),
+            const SizedBox(width: 6),
+            Text(
+              t.monthlyTimesButton,
+              maxLines: 1,
+              style: AppTextStyles.body(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w800,
+                color: AppColors.accent,
               ),
             ),
           ],

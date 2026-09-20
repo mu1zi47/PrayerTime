@@ -460,6 +460,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'An internet connection is required to change these settings.';
 
   @override
+  String get monthlyTimesTitle => 'Prayer times';
+
+  @override
+  String get monthlyTimesButton => 'Monthly schedule';
+
+  @override
   String get calendarScreenTitle => 'Prayer calendar';
 
   @override

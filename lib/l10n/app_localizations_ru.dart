@@ -460,6 +460,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Чтобы изменить эти настройки, нужно подключение к интернету.';
 
   @override
+  String get monthlyTimesTitle => 'Времена намазов';
+
+  @override
+  String get monthlyTimesButton => 'Расписание на месяц';
+
+  @override
   String get calendarScreenTitle => 'Календарь намазов';
 
   @override

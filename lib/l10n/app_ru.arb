@@ -206,6 +206,9 @@
   "genericLoadError": "Не удалось загрузить времена намаза.",
   "errorOfflineSettingsChange": "Чтобы изменить эти настройки, нужно подключение к интернету.",
 
+  "monthlyTimesTitle": "Времена намазов",
+  "monthlyTimesButton": "Расписание на месяц",
+
   "calendarScreenTitle": "Календарь намазов",
   "legendOnTime": "Вовремя",
   "legendQada": "С опозданием",

@@ -461,6 +461,12 @@ class AppLocalizationsUz extends AppLocalizations {
       'Ushbu sozlamalarni o\'zgartirish uchun internet ulanishi kerak.';
 
   @override
+  String get monthlyTimesTitle => 'Namoz vaqtlari';
+
+  @override
+  String get monthlyTimesButton => 'Oylik jadval';
+
+  @override
   String get calendarScreenTitle => 'Namoz taqvimi';
 
   @override
@@ -1156,6 +1162,12 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
       'Ушбу созламаларни ўзгартириш учун интернет уланиши керак.';
 
   @override
+  String get monthlyTimesTitle => 'Намоз вақтлари';
+
+  @override
+  String get monthlyTimesButton => 'Ойлик жадвал';
+
+  @override
   String get calendarScreenTitle => 'Намоз тақвими';
 
   @override
@@ -1847,6 +1859,12 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   @override
   String get errorOfflineSettingsChange =>
       'Ushbu sozlamalarni o\'zgartirish uchun internet ulanishi kerak.';
+
+  @override
+  String get monthlyTimesTitle => 'Namoz vaqtlari';
+
+  @override
+  String get monthlyTimesButton => 'Oylik jadval';
 
   @override
   String get calendarScreenTitle => 'Namoz taqvimi';

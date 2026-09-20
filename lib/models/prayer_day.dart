@@ -62,8 +62,6 @@ class PrayerDay {
     return w[0].toUpperCase() + w.substring(1);
   }
 
-  String get dayNumber => '${date.day}';
-
   String dateLabel(AppLocalizations t) => DateLabels.dateLabel(t, date);
 
   String fullLabel(AppLocalizations t) => DateLabels.fullLabel(t, date);

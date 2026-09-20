@@ -51,6 +51,55 @@ class PrayerCacheStore {
     }
   }
 
+  /// Whole months kept for the monthly prayer-times screen, keyed by
+  /// `<signature>|<year>-<month>` (see [AppState.monthDays]).
+  ///
+  /// A month's times never change for a given city/method/madhab, so a
+  /// stored month is served as-is: reopening the screen — or opening it with
+  /// no connection at all — costs nothing after the first fetch. Only the
+  /// handful of months the screen can reach is kept, oldest write dropped
+  /// first.
+  static const _kMonths = 'prayer_month_cache';
+  static const _maxStoredMonths = 4;
+
+  Future<List<PrayerDay>?> loadMonth(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_kMonths);
+    if (raw == null) return null;
+    try {
+      final stored = jsonDecode(raw) as Map<String, dynamic>;
+      final days = stored[key] as List?;
+      if (days == null) return null;
+      return days.map((e) => _fromJson(e as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveMonth({
+    required String key,
+    required List<PrayerDay> days,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    var stored = <String, dynamic>{};
+    final raw = prefs.getString(_kMonths);
+    if (raw != null) {
+      try {
+        stored = Map<String, dynamic>.from(jsonDecode(raw) as Map);
+      } catch (_) {
+        // Ignored — an unreadable blob is simply replaced.
+      }
+    }
+    // Re-inserted rather than updated in place, so the JSON map's own order
+    // is oldest-write-first and the trim below drops the stalest entry.
+    stored.remove(key);
+    stored[key] = days.map(_toJson).toList();
+    while (stored.length > _maxStoredMonths) {
+      stored.remove(stored.keys.first);
+    }
+    await prefs.setString(_kMonths, jsonEncode(stored));
+  }
+
   static Map<String, dynamic> _toJson(PrayerDay d) => {
     'date': d.date.toIso8601String(),
     'fajr': d.fajr,

@@ -63,7 +63,7 @@ class PrayerTimesApi {
     final collected = <PrayerDay>[];
 
     Future<void> fetchAndTrackTimeZone(int y, int m) async {
-      final result = await _fetchMonth(
+      final result = await fetchMonth(
         city: city,
         methodCode: methodCode,
         school: school,
@@ -96,7 +96,10 @@ class PrayerTimesApi {
     return PrayerFetchResult(days: windowDays, timeZone: timeZone);
   }
 
-  Future<PrayerFetchResult> _fetchMonth({
+  /// Fetches one whole calendar month of days — used by the monthly
+  /// prayer-times screen, which reaches a month either side of today and so
+  /// beyond the window [fetchDaysWindow] keeps around.
+  Future<PrayerFetchResult> fetchMonth({
     required City city,
     required int methodCode,
     required int school,

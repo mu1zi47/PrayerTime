@@ -206,6 +206,9 @@
   "genericLoadError": "Couldn't load prayer times.",
   "errorOfflineSettingsChange": "An internet connection is required to change these settings.",
 
+  "monthlyTimesTitle": "Prayer times",
+  "monthlyTimesButton": "Monthly schedule",
+
   "calendarScreenTitle": "Prayer calendar",
   "legendOnTime": "On time",
   "legendQada": "Late",

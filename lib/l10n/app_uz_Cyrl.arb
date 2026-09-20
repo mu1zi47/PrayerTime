@@ -206,6 +206,9 @@
   "genericLoadError": "Намоз вақтларини юклаб бўлмади.",
   "errorOfflineSettingsChange": "Ушбу созламаларни ўзгартириш учун интернет уланиши керак.",
 
+  "monthlyTimesTitle": "Намоз вақтлари",
+  "monthlyTimesButton": "Ойлик жадвал",
+
   "calendarScreenTitle": "Намоз тақвими",
   "legendOnTime": "Ўз вақтида",
   "legendQada": "Кечикиб",

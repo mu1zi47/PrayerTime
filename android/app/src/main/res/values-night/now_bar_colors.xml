@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Only the button glyph follows the system here — see
+<!-- Only what's drawn on One UI's own card follows the system here — see
      values/now_bar_colors.xml for why. -->
 <resources>
     <color name="now_bar_button_glyph">#FAFAFF</color>
+    <color name="now_bar_expanded_card">#3A3A3D</color>
+    <color name="now_bar_expanded_text">#FAFAFF</color>
+    <color name="now_bar_expanded_text_muted">#8CFAFAFF</color>
+    <color name="now_bar_expanded_button_bg">#1FFAFAFF</color>
+    <color name="prayer_schedule_text">#E6E6EB</color>
 </resources>

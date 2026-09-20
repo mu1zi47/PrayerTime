@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -80,6 +82,11 @@ class _NowBarSheetState extends State<_NowBarSheet> {
     _busy = false;
   }
 
+  Future<void> _toggleSchedule(bool show) async {
+    setState(() => _status = _status.copyWith(showSchedule: show));
+    await _bridge.setShowSchedule(show);
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
@@ -131,25 +138,34 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.heading(fontSize: 18),
               ),
-              const SizedBox(height: 14),
-              Text(
-                _status.isNowBar
-                    ? t.nowBarDescription
-                    : t.persistentNotifDescription,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: muted,
-                ).copyWith(height: 1.4),
-              ),
               const SizedBox(height: 10),
               SettingsRow(
                 trailing: AppSwitch(value: _status.enabled, onChanged: _toggle),
-                child: Text(
-                  t.nowBarSwitchLabel,
-                  style: AppTextStyles.body(fontSize: 15),
+                child: _LabelWithInfo(
+                  label: _status.isNowBar
+                      ? t.nowBarSwitchLabel
+                      : t.persistentNotifSwitchLabel,
+                  info: _status.isNowBar
+                      ? t.nowBarDescription
+                      : t.persistentNotifDescription,
                 ),
               ),
+              // The Now Bar's expanded card, or the plain notification's
+              // expanded form everywhere else.
+              if (_status.enabled) ...[
+                SettingsRow(
+                  trailing: AppSwitch(
+                    value: _status.showSchedule,
+                    onChanged: _toggleSchedule,
+                  ),
+                  child: _LabelWithInfo(
+                    label: t.nowBarScheduleLabel,
+                    info: _status.isNowBar
+                        ? t.nowBarScheduleDescription
+                        : t.nowBarScheduleDescriptionPlain,
+                  ),
+                ),
+              ],
               if (showDeveloperSwitch) ...[
                 const SizedBox(height: 16),
                 NowBarDeveloperSwitchCard(status: _status),
@@ -183,6 +199,233 @@ class _NowBarSheetState extends State<_NowBarSheet> {
   }
 }
 
+/// A switch's name with an info button beside it. Tapping the button pops
+/// a small bubble over it, pointing at it, with what the switch does — so
+/// the explanations don't crowd the sheet itself. It goes away on any tap,
+/// or by itself after a few seconds.
+class _LabelWithInfo extends StatefulWidget {
+  final String label;
+  final String info;
+
+  const _LabelWithInfo({required this.label, required this.info});
+
+  @override
+  State<_LabelWithInfo> createState() => _LabelWithInfoState();
+}
+
+class _LabelWithInfoState extends State<_LabelWithInfo> {
+  final _iconKey = GlobalKey();
+  OverlayEntry? _bubble;
+  Timer? _autoHide;
+
+  @override
+  void dispose() {
+    _hide();
+    super.dispose();
+  }
+
+  void _hide() {
+    _autoHide?.cancel();
+    _autoHide = null;
+    _bubble?.remove();
+    _bubble = null;
+  }
+
+  void _show() {
+    _hide();
+    final box = _iconKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final anchor = box.localToGlobal(Offset.zero) & box.size;
+    final entry = OverlayEntry(
+      builder: (_) =>
+          _InfoBubble(anchor: anchor, text: widget.info, onDismiss: _hide),
+    );
+    Overlay.of(context).insert(entry);
+    _bubble = entry;
+    _autoHide = Timer(const Duration(seconds: 5), _hide);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    return Row(
+      children: [
+        Flexible(
+          child: Text(widget.label, style: AppTextStyles.body(fontSize: 15)),
+        ),
+        Semantics(
+          button: true,
+          label: t.infoButtonLabel,
+          hint: widget.info,
+          child: InkResponse(
+            key: _iconKey,
+            onTap: () => _bubble == null ? _show() : _hide(),
+            radius: 18,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(
+                Icons.info_outline_rounded,
+                size: 19,
+                color: AppColors.text.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The bubble [_LabelWithInfo] shows: in the app's icon colors (soft gold,
+/// deep gold text — see IconBadge), above the icon with a small arrow pointing at it — or
+/// below, when there's no room above.
+class _InfoBubble extends StatelessWidget {
+  final Rect anchor;
+  final String text;
+  final VoidCallback onDismiss;
+
+  const _InfoBubble({
+    required this.anchor,
+    required this.text,
+    required this.onDismiss,
+  });
+
+  static const _gap = 4.0;
+  static const _arrowWidth = 14.0;
+  static const _arrowHeight = 7.0;
+  static const _margin = 16.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.sizeOf(context);
+    final padding = MediaQuery.paddingOf(context);
+    final color = AppColors.accent100;
+    // Room enough above for a few lines of text; otherwise it opens below.
+    final above = anchor.top - padding.top > 140;
+    final arrowTop = above
+        ? anchor.top - _gap - _arrowHeight
+        : anchor.bottom + _gap;
+
+    return Stack(
+      children: [
+        // Any tap elsewhere closes it, and still goes through. A tap on
+        // the icon is left to the icon, which closes it itself.
+        Positioned.fill(
+          child: Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerDown: (event) {
+              if (!anchor.contains(event.position)) onDismiss();
+            },
+          ),
+        ),
+        Positioned(
+          left: anchor.center.dx - _arrowWidth / 2,
+          top: arrowTop,
+          child: CustomPaint(
+            size: const Size(_arrowWidth, _arrowHeight),
+            painter: _ArrowPainter(color: color, pointsDown: above),
+          ),
+        ),
+        CustomSingleChildLayout(
+          delegate: _BubbleLayout(
+            anchorX: anchor.center.dx,
+            // Overlaps the arrow by a pixel so the two read as one shape.
+            edgeY: above ? arrowTop + 1 : arrowTop + _arrowHeight - 1,
+            above: above,
+            margin: _margin,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: screen.width - _margin * 2),
+            // Material gives the text its default style: straight in the
+            // overlay it had none, and Flutter underlined it in yellow.
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  text,
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.accent700,
+                  ).copyWith(height: 1.35),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Places the bubble against [edgeY] (its bottom when [above], its top
+/// otherwise), centered on [anchorX] as far as the screen edges allow.
+class _BubbleLayout extends SingleChildLayoutDelegate {
+  final double anchorX;
+  final double edgeY;
+  final bool above;
+  final double margin;
+
+  const _BubbleLayout({
+    required this.anchorX,
+    required this.edgeY,
+    required this.above,
+    required this.margin,
+  });
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
+      constraints.loosen();
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    final maxLeft = size.width - margin - childSize.width;
+    final left = (anchorX - childSize.width / 2).clamp(
+      margin,
+      maxLeft < margin ? margin : maxLeft,
+    );
+    final top = above ? edgeY - childSize.height : edgeY;
+    return Offset(left, top);
+  }
+
+  @override
+  bool shouldRelayout(_BubbleLayout old) =>
+      old.anchorX != anchorX || old.edgeY != edgeY || old.above != above;
+}
+
+class _ArrowPainter extends CustomPainter {
+  final Color color;
+  final bool pointsDown;
+
+  const _ArrowPainter({required this.color, required this.pointsDown});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = pointsDown
+        ? (Path()
+            ..moveTo(0, 0)
+            ..lineTo(size.width, 0)
+            ..lineTo(size.width / 2, size.height))
+        : (Path()
+            ..moveTo(0, size.height)
+            ..lineTo(size.width, size.height)
+            ..lineTo(size.width / 2, 0));
+    canvas.drawPath(path..close(), Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_ArrowPainter old) =>
+      old.color != color || old.pointsDown != pointsDown;
+}
+
 /// The step-by-step way to One UI's "Live notifications for all apps"
 /// developer switch, for a phone that has a Now Bar but keeps this app out
 /// of it until that switch is on. Starts from unlocking developer options
@@ -210,11 +453,10 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
       color: AppColors.text.withValues(alpha: 0.8),
     ).copyWith(height: 1.4);
 
-    // The same two gold tones as the app's icon badges and selected tab,
-    // arranged so the badge and button are always the deep one.
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final deep = dark ? AppColors.accent100 : AppColors.accent700;
-    final soft = dark ? AppColors.accent700 : AppColors.accent100;
+    // The app's icon colors (see IconBadge) for the step numbers and the
+    // button: soft gold behind, deep gold on top, in either theme.
+    final badgeBg = AppColors.accent100;
+    final badgeFg = AppColors.accent700;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -266,7 +508,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 1),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: deep,
+                      color: badgeBg,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
@@ -274,7 +516,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                       style: AppTextStyles.body(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: soft,
+                        color: badgeFg,
                       ),
                     ),
                   ),
@@ -293,7 +535,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: deep,
+                color: badgeBg,
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
@@ -302,7 +544,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                 style: AppTextStyles.body(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: soft,
+                  color: badgeFg,
                 ),
               ),
             ),

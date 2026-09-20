@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The panel in the widget picker's preview (prayer_widget_preview.xml):
+     the same shape as the real one, in the system's theme, since the app's
+     own theme setting isn't known there. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="46dp" />
+    <solid android:color="@color/widget_bg" />
+</shape>

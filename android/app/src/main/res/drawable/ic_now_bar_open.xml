@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Now Bar's placeholder button between sunrise and Zuhr, when there's
+     no prayer to log: fully transparent on purpose. One UI prints the
+     countdown at full size only on a card that has a button, so one is
+     there, but nothing is drawn — One UI tints the glyph SRC_IN and gives
+     the button no background of its own, so it takes up its place and
+     shows nothing. Tapping it opens the app, like tapping the card. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,0h24v24h-24z" />
+</vector>

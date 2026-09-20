@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import 'icon_badge.dart';
 
 class ChoiceSheetOption {
   final String label;
@@ -105,43 +106,49 @@ class _ChoiceOption extends StatelessWidget {
     required this.onTap,
   });
 
+  /// In the app's icon colors (see [IconBadge]): the chosen option filled
+  /// soft gold with deep gold text, the rest plain surface — and each
+  /// option's icon, if any, in a badge (inverted on the chosen one, which
+  /// is already soft gold).
   @override
   Widget build(BuildContext context) {
+    final fg = selected ? AppColors.accent700 : AppColors.text;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: option.icon != null ? 10 : 15,
+        ),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColors.accent.withValues(alpha: 0.14)
-              : AppColors.surface,
+          color: selected ? AppColors.accent100 : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: selected ? AppColors.accent : Colors.transparent,
-            width: 1.6,
-          ),
         ),
         child: Row(
           children: [
             if (option.icon != null) ...[
-              Icon(
-                option.icon,
-                size: 20,
-                color: selected
-                    ? AppColors.accent
-                    : AppColors.text.withValues(alpha: 0.5),
+              IconBadge(
+                option.icon!,
+                size: 32,
+                iconSize: 16,
+                background: selected ? AppColors.accent700 : null,
+                foreground: selected ? AppColors.accent100 : null,
               ),
               const SizedBox(width: 12),
             ],
             Expanded(
               child: Text(
                 option.label,
-                style: AppTextStyles.body(fontSize: 15, fontWeight: FontWeight.w700),
+                style: AppTextStyles.body(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: fg,
+                ),
               ),
             ),
             if (selected)
-              Icon(Icons.check_rounded, size: 18, color: AppColors.accent),
+              Icon(Icons.check_rounded, size: 19, color: AppColors.accent700),
           ],
         ),
       ),

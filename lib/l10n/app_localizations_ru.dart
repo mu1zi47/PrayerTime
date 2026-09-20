@@ -489,7 +489,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get widgetMarkedLabel => 'Отмечено';
+  String get widgetMarkedLabel => 'Прочитано';
 
   @override
   String get widgetNoDataLabel => 'Откройте приложение';
@@ -501,15 +501,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get persistentNotifTitle => 'Постоянное уведомление';
 
   @override
-  String get nowBarDescription =>
-      'Now Bar — панель Samsung внизу экрана блокировки и вверху панели уведомлений. В ней будет виден текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение.';
+  String get nowBarDescription => 'Текущий намаз будет показываться в Now Bar.';
 
   @override
   String get persistentNotifDescription =>
-      'Уведомление, закреплённое в панели уведомлений: текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение. Если смахнуть его, оно появится снова — выключить его можно только здесь.';
+      'Текущий намаз будет показываться в уведомлениях.';
 
   @override
-  String get nowBarSwitchLabel => 'Показывать';
+  String get nowBarSwitchLabel => 'Показывать в Now Bar';
+
+  @override
+  String get persistentNotifSwitchLabel => 'Показывать уведомление';
+
+  @override
+  String get infoButtonLabel => 'Подробнее';
 
   @override
   String get nowBarOn => 'Вкл';
@@ -525,7 +530,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nowBarOpenSettings => 'Открыть настройки телефона';
 
   @override
-  String get nowBarUnmarkAction => 'Снять отметку';
+  String get nowBarOpenAction => 'Открыть';
 
   @override
   String get nowBarEndsIn => 'До конца';
@@ -535,6 +540,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get nowBarChannelName => 'Текущий намаз';
+
+  @override
+  String get nowBarScheduleLabel => 'Показывать все намазы';
+
+  @override
+  String get nowBarScheduleDescription =>
+      'Все намазы будут показываться в Now Bar.';
+
+  @override
+  String get nowBarScheduleDescriptionPlain =>
+      'Все намазы будут показываться в уведомлениях.';
 
   @override
   String get nowBarDevTitle => 'Now Bar пока выключен на этом телефоне';

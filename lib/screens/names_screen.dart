@@ -356,8 +356,9 @@ class _NoticeSheet extends StatelessWidget {
             child: Container(
               height: 48,
               alignment: Alignment.center,
+              // The app's icon colors (see IconBadge).
               decoration: BoxDecoration(
-                color: AppColors.accent,
+                color: AppColors.accent100,
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
@@ -365,7 +366,7 @@ class _NoticeSheet extends StatelessWidget {
                 style: AppTextStyles.body(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.bg,
+                  color: AppColors.accent700,
                 ),
               ),
             ),

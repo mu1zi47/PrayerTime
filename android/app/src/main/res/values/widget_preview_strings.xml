@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sample content for the widget picker's preview
+     (prayer_widget_preview.xml) — made-up times, only to show what the
+     widget looks like. The picker follows the system language, since the
+     app's own isn't known there. -->
+<resources>
+    <string name="widget_preview_current">Asr</string>
+    <string name="widget_preview_next">Next prayer · Maghrib 18:32</string>
+</resources>

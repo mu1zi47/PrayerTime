@@ -16,10 +16,25 @@
     <color name="now_bar_chip_light">#C69739</color>
     <color name="now_bar_chip_dark">#C69739</color>
 
+    <!-- The expanded card (now_bar_expanded.xml). Its fill, text and button
+         colors follow the system theme (values-night), taken from One UI's
+         own card colors (`ongoing_activity_card_item_background_color` for
+         the fill), so in the shade it looks like One UI's card. Only the
+         gold glow and the current prayer's highlight are fixed. -->
+    <color name="now_bar_expanded_card">#FCFCFF</color>
+    <color name="now_bar_expanded_text">#252528</color>
+    <color name="now_bar_expanded_text_muted">#8C252528</color>
+    <color name="now_bar_expanded_button_bg">#12252528</color>
+    <color name="now_bar_expanded_glow">#4DC69739</color>
+    <color name="now_bar_expanded_highlight">#33C69739</color>
+
     <!-- The Now Bar's button glyphs. One UI draws these icons as they are,
          on a card it paints itself, so unlike the colors above they follow
          the card (the system theme) rather than the app — the same pair,
          and the same values-night split, Samsung Clock uses for its
          stopwatch buttons. A white glyph simply vanished on the light card. -->
     <color name="now_bar_button_glyph">#252528</color>
+    <!-- The plain notification's schedule rows (prayer_schedule_row.xml),
+         near the system's own notification text in each theme. -->
+    <color name="prayer_schedule_text">#1F1F23</color>
 </resources>

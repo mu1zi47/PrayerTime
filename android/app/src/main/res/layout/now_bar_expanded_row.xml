@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One slot of today's schedule in the expanded Now Bar card
+     (now_bar_expanded.xml). PrayerStatusNotifier fills it in and styles it:
+     the current slot gets a highlight behind it and bold text, the ones
+     already past are dimmed, and a logged prayer shows a check. Every color
+     is set here, not in code, so it follows the phone's theme. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/now_bar_row"
+    android:layout_width="match_parent"
+    android:layout_height="34dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    tools:ignore="SpUsage">
+
+    <TextView
+        android:id="@+id/now_bar_row_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/now_bar_expanded_text"
+        android:textSize="15dp" />
+
+    <ImageView
+        android:id="@+id/now_bar_row_check"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_now_bar_check"
+        android:tint="@color/now_bar_expanded_text"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/now_bar_row_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sec-num-fixed"
+        android:maxLines="1"
+        android:textColor="@color/now_bar_expanded_text"
+        android:textSize="15dp" />
+</LinearLayout>

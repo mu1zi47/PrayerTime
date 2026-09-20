@@ -55,7 +55,7 @@ class HomeWidgetBridge {
         'noData': t.widgetNoDataLabel,
         // The current-prayer notification / Now Bar reads this same payload
         // (see PrayerStatusNotifier.kt).
-        'unmark': t.nowBarUnmarkAction,
+        'open': t.nowBarOpenAction,
         'endsIn': t.nowBarEndsIn,
         'startsIn': t.nowBarStartsIn,
         'nowBarChannel': t.nowBarChannelName,

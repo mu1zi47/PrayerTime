@@ -8,4 +8,6 @@
     <color name="widget_text_muted">@color/widget_text_muted_dark</color>
     <color name="widget_accent2">@color/widget_accent2_dark</color>
     <color name="widget_button_text">@color/widget_button_text_dark</color>
+    <color name="widget_button_bg">@color/widget_button_bg_dark</color>
+    <color name="widget_button_stroke">@color/widget_button_stroke_dark</color>
 </resources>

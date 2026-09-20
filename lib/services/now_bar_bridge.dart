@@ -7,6 +7,10 @@ class NowBarStatus {
   /// Whether the user wants the notification at all (on by default).
   final bool enabled;
 
+  /// Whether the expanded Now Bar shows all of today's prayers (off by
+  /// default) rather than only the current one.
+  final bool showSchedule;
+
   /// A Samsung phone on One UI 8+, where the notification lands in the Now
   /// Bar. Everywhere else it's a plain persistent notification, and the
   /// settings call it that.
@@ -32,6 +36,7 @@ class NowBarStatus {
 
   const NowBarStatus({
     required this.enabled,
+    required this.showSchedule,
     required this.isNowBar,
     required this.notificationsAllowed,
     required this.promotionAllowed,
@@ -45,8 +50,9 @@ class NowBarStatus {
   bool get needsDeveloperSwitch =>
       isNowBar && !(liveForAllApps ?? promotionAllowed);
 
-  NowBarStatus copyWith({bool? enabled}) => NowBarStatus(
+  NowBarStatus copyWith({bool? enabled, bool? showSchedule}) => NowBarStatus(
     enabled: enabled ?? this.enabled,
+    showSchedule: showSchedule ?? this.showSchedule,
     isNowBar: isNowBar,
     notificationsAllowed: notificationsAllowed,
     promotionAllowed: promotionAllowed,
@@ -79,6 +85,7 @@ class NowBarBridge {
       final liveForAllApps = raw['liveForAllApps'];
       return NowBarStatus(
         enabled: raw['enabled'] == true,
+        showSchedule: raw['showSchedule'] == true,
         isNowBar: raw['isNowBar'] == true,
         notificationsAllowed: raw['notificationsAllowed'] == true,
         promotionAllowed: raw['promotionAllowed'] == true,
@@ -91,6 +98,8 @@ class NowBarBridge {
   }
 
   Future<void> setEnabled(bool enabled) => _invoke('setEnabled', enabled);
+
+  Future<void> setShowSchedule(bool show) => _invoke('setShowSchedule', show);
 
   Future<void> openNotificationSettings() =>
       _invoke('openNotificationSettings');

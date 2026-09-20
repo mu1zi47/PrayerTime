@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Marks the row of the prayer that's on now in the expanded card: a
+     light wash of the app's gold. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="16dp" />
+    <solid android:color="@color/now_bar_expanded_highlight" />
+</shape>

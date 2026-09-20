@@ -66,7 +66,25 @@ sealed interface PrayerWidgetState {
          * content actually goes stale. See PrayerWidgetProvider's alarm.
          */
         val nextChangeEpochMillis: Long,
+        /**
+         * The whole day the current slot belongs to, sunrise included, in
+         * order — what the expanded Now Bar lists. Past midnight that's still
+         * the day whose Isha is on.
+         */
+        val today: List<DayEntry>,
     ) : PrayerWidgetState
+
+    data class DayEntry(
+        val key: String,
+        val name: String,
+        val time: String,
+        /** The slot that's on now — a prayer, or sunrise until Zuhr. */
+        val current: Boolean,
+        /** Already started (the current one included). */
+        val passed: Boolean,
+        /** Logged in the prayer log; always false for sunrise. */
+        val marked: Boolean,
+    )
 
     private data class Slot(
         val at: LocalDateTime,
@@ -149,6 +167,18 @@ sealed interface PrayerWidgetState {
             val marked = openPrayer != null &&
                 PrayerWidgetStore.isMarked(context, openPrayer.dateKey, openPrayer.key)
 
+            val today = slots.filter { it.dateKey == lastPassed.dateKey }.map {
+                DayEntry(
+                    key = it.key,
+                    name = it.name,
+                    time = it.time,
+                    current = it === lastPassed,
+                    passed = it.at <= now,
+                    marked = it.isPrayer &&
+                        PrayerWidgetStore.isMarked(context, it.dateKey, it.key),
+                )
+            }
+
             return Ready(
                 dark = dark,
                 currentPrayerKey = openPrayer?.key,
@@ -161,6 +191,7 @@ sealed interface PrayerWidgetState {
                 markLabel = if (marked) label("marked", "") else label("markDone", ""),
                 untilWindowEndMillis = Duration.between(now, nextChange.at).toMillis(),
                 nextChangeEpochMillis = nextChange.at.toInstant(offset).toEpochMilli(),
+                today = today,
             )
         }
     }

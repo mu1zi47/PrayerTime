@@ -9,6 +9,7 @@ import '../models/prayer_day.dart';
 import '../services/geocoding_service.dart';
 import '../services/location_service.dart';
 import '../state/app_state.dart';
+import '../widgets/icon_badge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
@@ -204,33 +205,43 @@ class _CityScreenState extends State<CityScreen> {
                       vertical: 11,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.accent2_100,
+                      color: AppColors.accent100,
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Row(
                       children: [
+                        // The badge is filled the other way round, since
+                        // the button itself is already soft gold.
                         if (_locating)
-                          SizedBox(
-                            width: 18,
-                            height: 18,
+                          Container(
+                            width: 30,
+                            height: 30,
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: AppColors.accent700,
+                              shape: BoxShape.circle,
+                            ),
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.accent2_800,
+                              color: AppColors.accent100,
                             ),
                           )
                         else
-                          Icon(
+                          IconBadge(
                             Icons.my_location_rounded,
-                            size: 18,
-                            color: AppColors.accent2_800,
+                            size: 30,
+                            iconSize: 16,
+                            background: AppColors.accent700,
+                            foreground: AppColors.accent100,
                           ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _locating ? t.cityAutoDetecting : t.cityAutoDetect,
                             style: AppTextStyles.body(
                               fontSize: 15,
-                              color: AppColors.accent2_800,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.accent700,
                             ),
                           ),
                         ),
@@ -495,19 +506,14 @@ class _CityRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.bg,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.location_on_rounded,
-                size: 15,
-                color: selected ? AppColors.accent : AppColors.text,
-              ),
+            // The chosen city's badge is filled the other way round, so it
+            // stands out from the rest of the list.
+            IconBadge(
+              Icons.location_on_rounded,
+              size: 32,
+              iconSize: 16,
+              background: selected ? AppColors.accent700 : null,
+              foreground: selected ? AppColors.accent100 : null,
             ),
             const SizedBox(width: 12),
             Expanded(

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The expanded card's own background: One UI's card color in the
+     system's theme (values-night), with a soft gold glow from the icon's
+     corner the way One UI lights its own cards.
+
+     Opaque on purpose. The same view is shown on the lock screen, where One
+     UI paints the card under it white even in the dark theme — and the
+     text, which follows the theme, went white on white. With a fill of its
+     own the card reads the same everywhere. The radius is One UI's
+     `ongoing_activity_card_bg_radius`, so One UI's card doesn't show at
+     the corners. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="36dp" />
+            <solid android:color="@color/now_bar_expanded_card" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="36dp" />
+            <gradient
+                android:centerX="0.12"
+                android:centerY="0.12"
+                android:endColor="#00C69739"
+                android:gradientRadius="220dp"
+                android:startColor="@color/now_bar_expanded_glow"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>

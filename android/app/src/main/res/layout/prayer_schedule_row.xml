@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One slot in the plain notification's schedule (prayer_schedule_big.xml).
+     Styled in code like the Now Bar's rows: the current one highlighted and
+     bold, past ones dimmed, logged prayers checked. The text color is this
+     app's own day/night pair rather than a theme attribute: the system
+     resolves those against this app's theme, not its notification's, and
+     came out dark on a dark notification. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/schedule_row"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
+
+    <TextView
+        android:id="@+id/schedule_row_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification"
+        android:textColor="@color/prayer_schedule_text" />
+
+    <ImageView
+        android:id="@+id/schedule_row_check"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginEnd="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_schedule_check"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/schedule_row_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification"
+        android:textColor="@color/prayer_schedule_text" />
+</LinearLayout>

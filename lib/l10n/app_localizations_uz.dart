@@ -491,7 +491,7 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get widgetMarkedLabel => 'Belgilandi';
+  String get widgetMarkedLabel => 'Bajarildi';
 
   @override
   String get widgetNoDataLabel => 'Ilovani oching';
@@ -503,15 +503,20 @@ class AppLocalizationsUz extends AppLocalizations {
   String get persistentNotifTitle => 'Doimiy bildirishnoma';
 
   @override
-  String get nowBarDescription =>
-      'Now Bar — Samsung telefonlarida qulf ekrani pastidagi va bildirishnomalar paneli tepasidagi panel. Unda joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi ko\'rinadi.';
+  String get nowBarDescription => 'Joriy namoz Now Bar\'da ko\'rsatiladi.';
 
   @override
   String get persistentNotifDescription =>
-      'Bildirishnomalar panelida doim turadigan bildirishnoma: joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi. Uni surib o\'chirsangiz, qayta paydo bo\'ladi — faqat shu yerda o\'chirish mumkin.';
+      'Joriy namoz bildirishnomalarda ko\'rsatiladi.';
 
   @override
-  String get nowBarSwitchLabel => 'Ko\'rsatish';
+  String get nowBarSwitchLabel => 'Now Bar\'da ko\'rsatish';
+
+  @override
+  String get persistentNotifSwitchLabel => 'Bildirishnomani ko\'rsatish';
+
+  @override
+  String get infoButtonLabel => 'Batafsil';
 
   @override
   String get nowBarOn => 'Yoqilgan';
@@ -527,7 +532,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nowBarOpenSettings => 'Telefon sozlamalarini ochish';
 
   @override
-  String get nowBarUnmarkAction => 'Bekor qilish';
+  String get nowBarOpenAction => 'Ochish';
 
   @override
   String get nowBarEndsIn => 'Tugashiga';
@@ -537,6 +542,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get nowBarChannelName => 'Joriy namoz';
+
+  @override
+  String get nowBarScheduleLabel => 'Barcha namozlarni ko\'rsatish';
+
+  @override
+  String get nowBarScheduleDescription =>
+      'Barcha namozlar Now Bar\'da ko\'rsatiladi.';
+
+  @override
+  String get nowBarScheduleDescriptionPlain =>
+      'Barcha namozlar bildirishnomalarda ko\'rsatiladi.';
 
   @override
   String get nowBarDevTitle => 'Bu telefonda Now Bar hali o\'chiq';
@@ -1169,7 +1185,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   }
 
   @override
-  String get widgetMarkedLabel => 'Белгиланди';
+  String get widgetMarkedLabel => 'Бажарилди';
 
   @override
   String get widgetNoDataLabel => 'Иловани очинг';
@@ -1181,15 +1197,20 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get persistentNotifTitle => 'Доимий билдиришнома';
 
   @override
-  String get nowBarDescription =>
-      'Now Bar — Samsung телефонларида қулф экрани пастидаги ва билдиришномалар панели тепасидаги панел. Унда жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси кўринади.';
+  String get nowBarDescription => 'Жорий намоз Now Bar\'да кўрсатилади.';
 
   @override
   String get persistentNotifDescription =>
-      'Билдиришномалар панелида доим турадиган билдиришнома: жорий намоз, унинг тугашига қолган вақт, кейинги намоз ва иловани очмасдан намозни белгилаш тугмаси. Уни суриб ўчирсангиз, қайта пайдо бўлади — фақат шу ерда ўчириш мумкин.';
+      'Жорий намоз билдиришномаларда кўрсатилади.';
 
   @override
-  String get nowBarSwitchLabel => 'Кўрсатиш';
+  String get nowBarSwitchLabel => 'Now Bar\'да кўрсатиш';
+
+  @override
+  String get persistentNotifSwitchLabel => 'Билдиришномани кўрсатиш';
+
+  @override
+  String get infoButtonLabel => 'Батафсил';
 
   @override
   String get nowBarOn => 'Ёқилган';
@@ -1205,7 +1226,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get nowBarOpenSettings => 'Телефон созламаларини очиш';
 
   @override
-  String get nowBarUnmarkAction => 'Бекор қилиш';
+  String get nowBarOpenAction => 'Очиш';
 
   @override
   String get nowBarEndsIn => 'Тугашига';
@@ -1215,6 +1236,17 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get nowBarChannelName => 'Жорий намоз';
+
+  @override
+  String get nowBarScheduleLabel => 'Барча намозларни кўрсатиш';
+
+  @override
+  String get nowBarScheduleDescription =>
+      'Барча намозлар Now Bar\'да кўрсатилади.';
+
+  @override
+  String get nowBarScheduleDescriptionPlain =>
+      'Барча намозлар билдиришномаларда кўрсатилади.';
 
   @override
   String get nowBarDevTitle => 'Бу телефонда Now Bar ҳали ўчиқ';
@@ -1847,7 +1879,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   }
 
   @override
-  String get widgetMarkedLabel => 'Belgilandi';
+  String get widgetMarkedLabel => 'Bajarildi';
 
   @override
   String get widgetNoDataLabel => 'Ilovani oching';
@@ -1859,15 +1891,20 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get persistentNotifTitle => 'Doimiy bildirishnoma';
 
   @override
-  String get nowBarDescription =>
-      'Now Bar — Samsung telefonlarida qulf ekrani pastidagi va bildirishnomalar paneli tepasidagi panel. Unda joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi ko\'rinadi.';
+  String get nowBarDescription => 'Joriy namoz Now Bar\'da ko\'rsatiladi.';
 
   @override
   String get persistentNotifDescription =>
-      'Bildirishnomalar panelida doim turadigan bildirishnoma: joriy namoz, uning tugashiga qolgan vaqt, keyingi namoz va ilovani ochmasdan namozni belgilash tugmasi. Uni surib o\'chirsangiz, qayta paydo bo\'ladi — faqat shu yerda o\'chirish mumkin.';
+      'Joriy namoz bildirishnomalarda ko\'rsatiladi.';
 
   @override
-  String get nowBarSwitchLabel => 'Ko\'rsatish';
+  String get nowBarSwitchLabel => 'Now Bar\'da ko\'rsatish';
+
+  @override
+  String get persistentNotifSwitchLabel => 'Bildirishnomani ko\'rsatish';
+
+  @override
+  String get infoButtonLabel => 'Batafsil';
 
   @override
   String get nowBarOn => 'Yoqilgan';
@@ -1883,7 +1920,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get nowBarOpenSettings => 'Telefon sozlamalarini ochish';
 
   @override
-  String get nowBarUnmarkAction => 'Bekor qilish';
+  String get nowBarOpenAction => 'Ochish';
 
   @override
   String get nowBarEndsIn => 'Tugashiga';
@@ -1893,6 +1930,17 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get nowBarChannelName => 'Joriy namoz';
+
+  @override
+  String get nowBarScheduleLabel => 'Barcha namozlarni ko\'rsatish';
+
+  @override
+  String get nowBarScheduleDescription =>
+      'Barcha namozlar Now Bar\'da ko\'rsatiladi.';
+
+  @override
+  String get nowBarScheduleDescriptionPlain =>
+      'Barcha namozlar bildirishnomalarda ko\'rsatiladi.';
 
   @override
   String get nowBarDevTitle => 'Bu telefonda Now Bar hali o\'chiq';

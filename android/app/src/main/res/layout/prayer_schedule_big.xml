@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The expanded body of the plain persistent notification — the one shown
+     wherever there's no Now Bar (see PrayerStatusNotifier). Android draws
+     the header (icon, app name, countdown) and the mark button around it
+     (DecoratedCustomViewStyle); this is the current prayer and today's
+     schedule under it, the same list as the Now Bar's expanded card.
+
+     The title takes the system's notification text style; the rows use
+     this app's day/night text color (see prayer_schedule_row.xml), and past
+     slots are dimmed with alpha rather than a color. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/schedule_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" />
+
+    <LinearLayout
+        android:id="@+id/schedule_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical" />
+</LinearLayout>

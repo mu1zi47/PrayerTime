@@ -11,7 +11,7 @@
     android:minResizeWidth="180dp"
     android:minWidth="250dp"
     android:previewImage="@mipmap/ic_launcher"
-    android:previewLayout="@layout/prayer_widget"
+    android:previewLayout="@layout/prayer_widget_preview"
     android:resizeMode="horizontal|vertical"
     android:targetCellHeight="1"
     android:targetCellWidth="4"

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The current prayer's row in the plain notification: a wash of the app's
+     gold, light enough to read on light and dark notifications alike. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="10dp" />
+    <solid android:color="@color/now_bar_expanded_highlight" />
+</shape>

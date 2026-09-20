@@ -32,18 +32,20 @@
     <color name="widget_button_text_light">#16213C</color>
     <color name="widget_button_text_dark">#F4EFE3</color>
 
-    <!-- Logged: the whole panel goes solid deep gold — the same "prayed on
-         time" color the prayer rows use inside the app — with a darker circle
-         for the button on top of it. Identical in both themes, so a logged
-         prayer looks the same whichever one is on. -->
-    <color name="widget_marked_bg">#8C631A</color>
-    <color name="widget_marked_button">#5E4210</color>
-    <color name="widget_marked_text">#F4EFE3</color>
-    <color name="widget_marked_text_muted">#B8F4EFE3</color>
+    <!-- Logged: the whole panel goes solid bright gold — the same "prayed on
+         time" color the app marks it with (StatusColors.onTime) — with dark
+         ink and a deeper gold circle for the button. Identical in both
+         themes, so a logged prayer looks the same whichever one is on. -->
+    <color name="widget_marked_bg">#E0B152</color>
+    <color name="widget_marked_button">#C69739</color>
+    <color name="widget_marked_text">#201404</color>
+    <color name="widget_marked_text_muted">#B3201404</color>
 
     <color name="widget_bg">@color/widget_bg_light</color>
     <color name="widget_text">@color/widget_text_light</color>
     <color name="widget_text_muted">@color/widget_text_muted_light</color>
     <color name="widget_accent2">@color/widget_accent2_light</color>
     <color name="widget_button_text">@color/widget_button_text_light</color>
+    <color name="widget_button_bg">@color/widget_button_bg_light</color>
+    <color name="widget_button_stroke">@color/widget_button_stroke_light</color>
 </resources>

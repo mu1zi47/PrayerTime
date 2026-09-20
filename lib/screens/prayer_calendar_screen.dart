@@ -6,6 +6,8 @@ import '../data/next_prayer.dart';
 import '../l10n/app_localizations.dart';
 import '../models/prayer_log_status.dart';
 import '../state/app_state.dart';
+import '../theme/status_colors.dart';
+import '../widgets/icon_badge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/log_prayer_sheet.dart';
@@ -155,8 +157,11 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                 spacing: 16,
                 runSpacing: 8,
                 children: [
-                  _LegendItem(color: AppColors.accent2, label: t.legendOnTime),
-                  _LegendItem(color: AppColors.accent, label: t.legendQada),
+                  _LegendItem(
+                    color: StatusColors.onTime,
+                    label: t.legendOnTime,
+                  ),
+                  _LegendItem(color: StatusColors.qada, label: t.legendQada),
                   _LegendItem(
                     color: AppColors.neutral300,
                     label: t.legendMissed,
@@ -312,8 +317,8 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = switch (completion) {
-      DayCompletion.onTime => (AppColors.accent2, AppColors.bg),
-      DayCompletion.qada => (AppColors.accent, AppColors.bg),
+      DayCompletion.onTime => (StatusColors.onTime, StatusColors.onOnTime),
+      DayCompletion.qada => (StatusColors.qada, StatusColors.onQada),
       DayCompletion.missed => (
         AppColors.neutral300,
         AppColors.text.withValues(alpha: 0.4),
@@ -435,8 +440,8 @@ class _PrayerLogRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     final (statusLabel, statusColor) = switch (status) {
-      PrayerLogStatus.onTime => (t.legendOnTime, AppColors.accent2),
-      PrayerLogStatus.qada => (t.legendQada, AppColors.accent),
+      PrayerLogStatus.onTime => (t.legendOnTime, StatusColors.onTime),
+      PrayerLogStatus.qada => (t.legendQada, StatusColors.qada),
       null => (t.calendarNotMarked, AppColors.text.withValues(alpha: 0.4)),
     };
     return InkWell(
@@ -448,8 +453,8 @@ class _PrayerLogRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 17, color: AppColors.accent700),
-            const SizedBox(width: 10),
+            IconBadge(icon, size: 32, iconSize: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 label,

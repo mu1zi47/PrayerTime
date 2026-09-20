@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/notif_mode.dart';
 import '../state/app_state.dart';
+import '../widgets/icon_badge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_switch.dart';
@@ -99,21 +100,12 @@ class _NotificationsSheet extends StatelessWidget {
                                 ),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      width: 32,
-                                      height: 32,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.bg,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        iconForPrayer(kind),
-                                        size: 16,
-                                        color: AppColors.accent700,
-                                      ),
+                                    IconBadge(
+                                      iconForPrayer(kind),
+                                      size: 32,
+                                      iconSize: 16,
                                     ),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 12),
                                     Text(
                                       nameForPrayer(t, kind),
                                       style: AppTextStyles.body(fontSize: 15),

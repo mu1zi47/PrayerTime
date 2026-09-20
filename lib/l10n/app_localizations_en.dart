@@ -489,7 +489,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get widgetMarkedLabel => 'Logged';
+  String get widgetMarkedLabel => 'Prayed';
 
   @override
   String get widgetNoDataLabel => 'Open the app';
@@ -502,14 +502,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nowBarDescription =>
-      'Now Bar is the Samsung panel at the bottom of the lock screen and at the top of the notification panel. It shows the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app.';
+      'The current prayer will show in the Now Bar.';
 
   @override
   String get persistentNotifDescription =>
-      'A notification pinned to the notification panel: the current prayer, how long until it ends, the next prayer, and a button to log the prayer without opening the app. Swiping it away brings it back — it can only be turned off here.';
+      'The current prayer will show in your notifications.';
 
   @override
-  String get nowBarSwitchLabel => 'Show';
+  String get nowBarSwitchLabel => 'Show in the Now Bar';
+
+  @override
+  String get persistentNotifSwitchLabel => 'Show the notification';
+
+  @override
+  String get infoButtonLabel => 'More info';
 
   @override
   String get nowBarOn => 'On';
@@ -525,7 +531,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nowBarOpenSettings => 'Open phone settings';
 
   @override
-  String get nowBarUnmarkAction => 'Undo';
+  String get nowBarOpenAction => 'Open';
 
   @override
   String get nowBarEndsIn => 'Ends in';
@@ -535,6 +541,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nowBarChannelName => 'Current prayer';
+
+  @override
+  String get nowBarScheduleLabel => 'Show all prayers';
+
+  @override
+  String get nowBarScheduleDescription =>
+      'All prayers will show in the Now Bar.';
+
+  @override
+  String get nowBarScheduleDescriptionPlain =>
+      'All prayers will show in your notifications.';
 
   @override
   String get nowBarDevTitle => 'Now Bar is still off on this phone';

@@ -7,12 +7,17 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -52,6 +57,17 @@ object PrayerStatusNotifier {
     private const val ENABLED_KEY = "flutter.now_bar_enabled"
 
     private const val SAMSUNG_NOW_BAR_FEATURE = "com.samsung.feature.nowbar"
+
+    /** Whether the expanded Now Bar lists the whole day; off by default. */
+    private const val SCHEDULE_KEY = "flutter.now_bar_schedule"
+
+    fun showsSchedule(context: Context): Boolean =
+        prefs(context).getBoolean(SCHEDULE_KEY, false)
+
+    fun setShowSchedule(context: Context, show: Boolean) {
+        prefs(context).edit().putBoolean(SCHEDULE_KEY, show).commit()
+        refresh(context)
+    }
 
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(ENABLED_KEY, true)
@@ -131,11 +147,7 @@ object PrayerStatusNotifier {
         labels: JSONObject?,
     ): android.app.Notification {
         val prayerOpen = state.currentPrayerKey != null
-        val title = if (state.currentMarked) {
-            "${state.currentName} · ${labels.label("marked", "")}"
-        } else {
-            state.currentName
-        }
+        val title = headline(state)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_prayer)
@@ -164,31 +176,34 @@ object PrayerStatusNotifier {
             .setOnlyAlertOnce(true)
             .setSilent(true)
             .setLocalOnly(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            // Kept out of the lock screen's notification list, the way One
+            // UI keeps the media player out of it: there, the Now Bar
+            // already shows it, and One UI doesn't apply this to the Now Bar
+            // or the chip. Unlocked, the shade shows it as usual.
+            .setVisibility(
+                if (isNowBarDevice(context)) {
+                    NotificationCompat.VISIBILITY_SECRET
+                } else {
+                    NotificationCompat.VISIBILITY_PUBLIC
+                },
+            )
             .setRequestPromotedOngoing(true)
             .addExtras(samsungExtras(context, state, labels))
             .setDeleteIntent(broadcast(context, PrayerStatusReceiver.ACTION_DISMISSED))
 
-        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let {
-            builder.setContentIntent(
-                PendingIntent.getActivity(
-                    context,
-                    0,
-                    it,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                ),
-            )
-        }
+        openAppIntent(context)?.let(builder::setContentIntent)
 
         val dateKey = state.currentDateKey
         val prayerKey = state.currentPrayerKey
         if (dateKey != null && prayerKey != null) {
-            // Like the widget's button, it toggles: once logged, it offers to
-            // undo rather than disappearing. One UI shows it as an icon-only
-            // button (see samsungExtras), so the icon carries the meaning and
-            // the label stays for accessibility and the plain notification.
+            // Like the widget's button, it toggles: once logged, it shows
+            // as done ("Marked", a filled check) rather than disappearing;
+            // tapping it again clears the mark. One UI shows it as an
+            // icon-only button (see samsungExtras), so the icon carries the
+            // meaning and the label stays for accessibility and the plain
+            // notification.
             val actionLabel = if (state.currentMarked) {
-                labels.label("unmark", "")
+                labels.label("marked", "")
             } else {
                 labels.label("markDone", "")
             }
@@ -198,7 +213,7 @@ object PrayerStatusNotifier {
             // One UI silently drops an icon-only button with no icon.
             val icon = IconCompat.createWithResource(
                 context,
-                if (state.currentMarked) R.drawable.ic_now_bar_undo else R.drawable.ic_now_bar_check,
+                if (state.currentMarked) R.drawable.ic_now_bar_checked else R.drawable.ic_now_bar_check,
             )
             builder.addAction(
                 NotificationCompat.Action.Builder(
@@ -207,9 +222,64 @@ object PrayerStatusNotifier {
                     markPendingIntent(context, dateKey, prayerKey),
                 ).build(),
             )
+        } else if (isNowBarDevice(context)) {
+            // Between sunrise and Zuhr there's nothing to log, but One UI
+            // prints the countdown at its full size only on a card that has
+            // a button — without one it drops to a small bold line, adrift
+            // in a card laid out for more. So there's a button, with an
+            // invisible icon (see ic_now_bar_open): it only opens the app,
+            // which is what tapping the card does anyway.
+            openAppIntent(context)?.let {
+                builder.addAction(
+                    NotificationCompat.Action.Builder(
+                        IconCompat.createWithResource(context, R.drawable.ic_now_bar_open),
+                        labels.label("open", ""),
+                        it,
+                    ).build(),
+                )
+            }
+        }
+
+        // Wherever there's no Now Bar, the whole day goes in the
+        // notification's own expanded form instead; collapsed, it stays the
+        // standard one-line notification. On Android 16 that custom view
+        // keeps it from being promoted to a Live Update (no status-bar chip)
+        // — the trade the user makes by leaving this switch on.
+        if (showsSchedule(context) && !isNowBarDevice(context)) {
+            builder
+                .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomBigContentView(scheduleBigView(context, state, title))
         }
 
         return builder.build()
+    }
+
+    /** The plain notification's expanded body: see prayer_schedule_big.xml. */
+    private fun scheduleBigView(
+        context: Context,
+        state: PrayerWidgetState.Ready,
+        title: String,
+    ) = RemoteViews(context.packageName, R.layout.prayer_schedule_big).apply {
+        setTextViewText(R.id.schedule_title, title)
+        removeAllViews(R.id.schedule_list)
+        for (entry in state.today) {
+            val row = RemoteViews(context.packageName, R.layout.prayer_schedule_row)
+            row.setTextViewText(R.id.schedule_row_name, entry.name.bold(entry.current))
+            row.setTextViewText(R.id.schedule_row_time, entry.time.bold(entry.current))
+            if (entry.current) {
+                row.setInt(
+                    R.id.schedule_row,
+                    "setBackgroundResource",
+                    R.drawable.prayer_schedule_row_current,
+                )
+            } else if (entry.passed) {
+                row.setFloat(R.id.schedule_row, "setAlpha", PAST_ALPHA)
+            }
+            if (entry.marked) {
+                row.setViewVisibility(R.id.schedule_row_check, View.VISIBLE)
+            }
+            addView(R.id.schedule_list, row)
+        }
     }
 
     /**
@@ -220,7 +290,9 @@ object PrayerStatusNotifier {
      * the second line kept in the collapsed bar the way LiveBridge's is:
      *  - the countdown ("1:23:45") on top, the next prayer ("Fajr · 04:45")
      *    under it, and the mark button;
-     *  - the countdown alone in the status-bar chip.
+     *  - the current prayer's name in the status-bar chip;
+     *  - optionally, a custom expanded card with today's whole schedule
+     *    (see [expandedView]).
      * Ignored everywhere but One UI.
      */
     private fun samsungExtras(
@@ -240,21 +312,16 @@ object PrayerStatusNotifier {
             setChronometer(R.id.now_bar_chronometer, countdownBase, null, true)
             setTextViewText(R.id.now_bar_next, "${state.nextName} · ${state.nextTime}")
         }
-        // The status-bar chip gets the countdown alone, in a view of its own:
-        // One UI's chip takes this ahead of anything else it could show.
-        val chipCountdown = RemoteViews(context.packageName, R.layout.now_bar_chip_chronometer).apply {
-            setChronometerCountDown(R.id.now_bar_chip_chronometer, true)
-            setChronometer(R.id.now_bar_chip_chronometer, countdownBase, null, true)
-        }
         return Bundle().apply {
             putInt("$SAMSUNG_KEY.style", SAMSUNG_STYLE_NOTIFICATION_AND_NOW_BAR)
             putString("$SAMSUNG_KEY.primaryInfo", state.currentName)
             putString("$SAMSUNG_KEY.nowbarPrimaryInfo", state.currentName)
-            putParcelable("$SAMSUNG_KEY.chipExpandedView", chipCountdown)
-            // Not optional, even though the chip shows the view above instead:
-            // without either, the chip would cast the two-line countdown view
+            // The chip shows just the prayer's name, as text. Not optional:
+            // without it the chip would cast the two-line countdown view
             // straight to Chronometer — SystemUI crashed on that again and
-            // again. With this text on hand, that path is never taken.
+            // again. And no `chipExpandedView` of our own: One UI frames an
+            // app-built chip in translucent grey (ignoring chipBgColor), and
+            // the lock screen card's gradient turns grey along with it.
             putCharSequence("$SAMSUNG_KEY.chipExpandedText", state.currentName)
             putParcelable(
                 "$SAMSUNG_KEY.chipIcon",
@@ -265,6 +332,14 @@ object PrayerStatusNotifier {
             putInt("$SAMSUNG_KEY.actionPrimarySet", 1)
             putBoolean("android.showSmallIcon", true)
             putParcelable("$SAMSUNG_KEY.chronometerRemoteView", countdown)
+            // The expanded card: the whole day, when the user wants it. Left
+            // out, One UI builds its own card from the extras above.
+            if (showsSchedule(context)) {
+                putParcelable(
+                    "$SAMSUNG_KEY.expandedRemoteView",
+                    expandedView(context, state, labels, countdownBase),
+                )
+            }
             putCharSequence("$SAMSUNG_KEY.chronometerRemoteViewTag", CHRONOMETER_TAG)
             putInt("$SAMSUNG_KEY.chronometerRemoteViewPosition", SAMSUNG_POSITION_PRIMARY)
             putInt("$SAMSUNG_KEY.nowbarChronometerPosition", SAMSUNG_POSITION_PRIMARY)
@@ -275,6 +350,115 @@ object PrayerStatusNotifier {
             )
         }
     }
+
+    /**
+     * The expanded card with today's whole schedule (now_bar_expanded.xml).
+     * One UI puts it in place of its own expanded card, buttons included, so
+     * it carries its own mark button and tap-to-open.
+     */
+    private fun expandedView(
+        context: Context,
+        state: PrayerWidgetState.Ready,
+        labels: JSONObject?,
+        countdownBase: Long,
+    ): RemoteViews {
+        val prayerOpen = state.currentPrayerKey != null
+
+        return RemoteViews(context.packageName, R.layout.now_bar_expanded).apply {
+            openAppIntent(context)?.let { setOnClickPendingIntent(R.id.now_bar_exp_root, it) }
+
+            setTextViewText(R.id.now_bar_exp_title, headline(state))
+            setTextViewText(
+                R.id.now_bar_exp_countdown_label,
+                if (prayerOpen) labels.label("endsIn", "") else labels.label("startsIn", ""),
+            )
+            setChronometerCountDown(R.id.now_bar_exp_countdown, true)
+            setChronometer(R.id.now_bar_exp_countdown, countdownBase, null, true)
+
+            val dateKey = state.currentDateKey
+            val prayerKey = state.currentPrayerKey
+            if (dateKey != null && prayerKey != null) {
+                // A toggle: the same check either way, filled gold once the
+                // prayer is logged.
+                if (state.currentMarked) {
+                    setInt(
+                        R.id.now_bar_exp_button,
+                        "setBackgroundResource",
+                        R.drawable.now_bar_expanded_button_selected,
+                    )
+                    setInt(
+                        R.id.now_bar_exp_button,
+                        "setColorFilter",
+                        context.getColor(android.R.color.white),
+                    )
+                }
+                setContentDescription(
+                    R.id.now_bar_exp_button,
+                    if (state.currentMarked) labels.label("marked", "") else labels.label("markDone", ""),
+                )
+                setOnClickPendingIntent(
+                    R.id.now_bar_exp_button,
+                    markPendingIntent(context, dateKey, prayerKey),
+                )
+                setViewVisibility(R.id.now_bar_exp_button, View.VISIBLE)
+            } else {
+                setViewVisibility(R.id.now_bar_exp_button, View.GONE)
+            }
+
+            removeAllViews(R.id.now_bar_exp_list)
+            for (entry in state.today) {
+                val row = RemoteViews(context.packageName, R.layout.now_bar_expanded_row)
+                row.setTextViewText(R.id.now_bar_row_name, entry.name.bold(entry.current))
+                row.setTextViewText(R.id.now_bar_row_time, entry.time.bold(entry.current))
+                // Colors stay in the layout: resolved there, by SystemUI,
+                // they follow the phone's light or dark theme. Picked here
+                // they'd follow this process's, which isn't always the same —
+                // dark text on the dark card. Past slots are dimmed instead.
+                if (entry.current) {
+                    row.setInt(
+                        R.id.now_bar_row,
+                        "setBackgroundResource",
+                        R.drawable.now_bar_expanded_row_current,
+                    )
+                } else if (entry.passed) {
+                    row.setFloat(R.id.now_bar_row, "setAlpha", PAST_ALPHA)
+                }
+                if (entry.marked) {
+                    row.setViewVisibility(R.id.now_bar_row_check, View.VISIBLE)
+                }
+                addView(R.id.now_bar_exp_list, row)
+            }
+        }
+    }
+
+    /**
+     * The name the countdown belongs to: the open prayer, whose end it
+     * counts to ("Ends in"), or — between sunrise and Zuhr, when it counts
+     * to Zuhr's start ("Starts in") — Zuhr. "Sunrise · Starts in 4:04:29"
+     * read as if sunrise were still hours away. Whether it's logged is the
+     * mark button's to show, not the name's.
+     */
+    private fun headline(state: PrayerWidgetState.Ready): String =
+        if (state.currentPrayerKey == null) state.nextName else state.currentName
+
+    private fun String.bold(bold: Boolean): CharSequence =
+        if (!bold) {
+            this
+        } else {
+            SpannableString(this).apply {
+                setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+
+    private fun openAppIntent(context: Context): PendingIntent? =
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let {
+            PendingIntent.getActivity(
+                context,
+                0,
+                it,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+        }
 
     /** Color resources for one of the app's two themes. */
     private data class Look(val icon: Int, val chip: Int)
@@ -308,6 +492,9 @@ object PrayerStatusNotifier {
         Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
         0,
     ) == 1
+
+    /** How far the expanded lists dim the slots already past. */
+    private const val PAST_ALPHA = 0.5f
 
     private const val SAMSUNG_ALL_APPS_SWITCH = "enable_notification_nowbar_test"
 

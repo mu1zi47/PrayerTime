@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The expanded Now Bar card (`expandedRemoteView`, see
+     PrayerStatusNotifier's Samsung extras), in one piece: the current prayer
+     with its countdown and mark button on top, and today's whole schedule
+     under it with the current slot picked out. One UI swaps its own
+     expanded card for this view entirely — its icon, texts and buttons
+     included — so everything the card needs is here.
+
+     The rows are added in code (now_bar_expanded_row.xml), one per slot.
+     Sizes are in dp: One UI scales notification content on its own, and sp
+     on top of that let a large font push the list off the card. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/now_bar_exp_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/now_bar_expanded_bg"
+    android:orientation="vertical"
+    android:paddingStart="18dp"
+    android:paddingTop="18dp"
+    android:paddingEnd="18dp"
+    android:paddingBottom="14dp"
+    tools:ignore="SpUsage">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/now_bar_expanded_icon_circle"
+            android:importantForAccessibility="no"
+            android:padding="11dp"
+            android:src="@drawable/ic_now_bar_chip" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/now_bar_exp_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/now_bar_expanded_text"
+                android:textSize="19dp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/now_bar_exp_countdown_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/now_bar_expanded_text_muted"
+                    android:textSize="13dp" />
+
+                <Chronometer
+                    android:id="@+id/now_bar_exp_countdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="sec-num-fixed"
+                    android:maxLines="1"
+                    android:textColor="@color/now_bar_expanded_text"
+                    android:textSize="13dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/now_bar_exp_button"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/now_bar_expanded_circle"
+            android:padding="11dp"
+            android:src="@drawable/ic_now_bar_check" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/now_bar_exp_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical" />
+</LinearLayout>

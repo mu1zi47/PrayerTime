@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- The "logged" skin for the whole panel, the way One UI's alarm widget
      turns solid-colored when an alarm is on and falls back to a plain light
-     panel when none is. Same in both themes: this deep gold reads on either. -->
+     panel when none is. Same in both themes: this bright gold reads on either. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <corners android:radius="46dp" />

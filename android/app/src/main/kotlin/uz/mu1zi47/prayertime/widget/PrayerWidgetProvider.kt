@@ -133,13 +133,13 @@ class PrayerWidgetProvider : AppWidgetProvider() {
                 } else {
                     views.setViewVisibility(R.id.widget_mark_button, View.VISIBLE)
                     views.setContentDescription(R.id.widget_mark_button, state.markLabel)
-                    // The icon shows what tapping *does*, not what already
-                    // happened — the filled panel already says the prayer is
-                    // logged, so the button offers to undo it.
+                    // A toggle, like the Now Bar's: a check to log the prayer,
+                    // a double check ("prayed") once it is. Tapping it again
+                    // still clears the mark.
                     views.setImageViewResource(
                         R.id.widget_mark_button,
                         if (state.currentMarked) {
-                            R.drawable.ic_widget_clear
+                            R.drawable.ic_widget_checked
                         } else {
                             R.drawable.ic_widget_check
                         },

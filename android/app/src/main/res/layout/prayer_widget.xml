@@ -27,7 +27,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="20dp">
 
-        <!-- A check to log the prayer, a cross to undo it once logged (see
+        <!-- A check to log the prayer, a double check once it is logged (see
              PrayerWidgetProvider, which swaps both the icon and the colors).
              The localized wording rides along as the content description, so
              TalkBack still announces what tapping does. -->

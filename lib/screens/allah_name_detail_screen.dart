@@ -113,8 +113,10 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                         horizontal: 44,
                         vertical: 32,
                       ),
+                      // The app's icon colors (see IconBadge): soft gold,
+                      // deep gold text.
                       decoration: BoxDecoration(
-                        color: AppColors.accent,
+                        color: AppColors.accent100,
                         borderRadius: BorderRadius.circular(AppRadius.lg),
                       ),
                       child: Column(
@@ -124,14 +126,14 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                             height: 40,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: AppColors.bg.withValues(alpha: 0.18),
+                              color: AppColors.accent200,
                               shape: BoxShape.circle,
                             ),
                             child: Text(
                               '${name.number}',
                               style: AppTextStyles.body(
                                 fontSize: 13,
-                                color: AppColors.bg,
+                                color: AppColors.accent700,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -143,7 +145,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                             textAlign: TextAlign.center,
                             style: AppTextStyles.heading(
                               fontSize: 40,
-                              color: AppColors.bg,
+                              color: AppColors.accent700,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -152,7 +154,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                             textAlign: TextAlign.center,
                             style: AppTextStyles.heading(
                               fontSize: 22,
-                              color: AppColors.bg,
+                              color: AppColors.accent700,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -162,9 +164,9 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                             style:
                                 AppTextStyles.body(
                                   fontSize: 14,
-                                  color: AppColors.bg,
+                                  color: AppColors.accent700,
                                 ).copyWith(
-                                  color: AppColors.bg.withValues(alpha: 0.85),
+                                  color: AppColors.accent700.withValues(alpha: 0.85),
                                 ),
                           ),
                         ],
@@ -245,14 +247,16 @@ class _NavArrowButton extends StatelessWidget {
         width: 34,
         height: 34,
         alignment: Alignment.center,
+        // An inverted icon badge (see IconBadge), since the card it sits
+        // on is already soft gold; faded out at either end of the list.
         decoration: BoxDecoration(
-          color: AppColors.bg.withValues(alpha: enabled ? 0.24 : 0.1),
+          color: AppColors.accent700.withValues(alpha: enabled ? 1 : 0.25),
           shape: BoxShape.circle,
         ),
         child: Icon(
           icon,
           size: 22,
-          color: AppColors.bg.withValues(alpha: enabled ? 1 : 0.4),
+          color: AppColors.accent100.withValues(alpha: enabled ? 1 : 0.6),
         ),
       ),
     );

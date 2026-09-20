@@ -12,6 +12,8 @@ import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/log_prayer_sheet.dart';
+import '../theme/status_colors.dart';
+import '../widgets/icon_badge.dart';
 import '../widgets/prayer_icon.dart';
 import 'city_screen.dart';
 
@@ -20,16 +22,6 @@ bool _isSameDate(DateTime a, DateTime b) =>
 
 Color get _textMuted => AppColors.text.withValues(alpha: 0.56);
 Color get _textFaint => AppColors.text.withValues(alpha: 0.36);
-
-// AppColors.accent (gold) is bright/medium in *both* themes, so the icon or
-// label drawn on top of a filled-accent shape (the retry button, a "qada"
-// log mark) always wants dark text — unlike everywhere else on this screen,
-// this one doesn't flip with the theme.
-const _onAccentFill = Color(0xFF201404);
-
-// AppColors.accent2 (deep gold) is deliberately tuned dark in both themes too
-// (see _ScheduleRow's "current" fill) so light text reads on it either way.
-const _onAccent2Fill = Color(0xFFF4EFE3);
 
 class HomeScreen extends StatefulWidget {
   final AppState appState;
@@ -603,7 +595,8 @@ class _RowSpec {
 
 /// One line of the schedule "table". No per-row card/background in the
 /// common case — [_RowSpec.current] is the only thing that gets a filled
-/// block (today's one true highlight, in [AppColors.accent2]); [_RowSpec.active]
+/// block (today's one true highlight, in the app's icon colors: soft gold
+/// behind, deep gold text, like an [IconBadge]); [_RowSpec.active]
 /// (next up) is marked with nothing more than [AppColors.accent] on its own
 /// text, so the two states stay visually distinct instead of piling up
 /// chrome. There's no always-visible log button any more — see
@@ -621,25 +614,32 @@ class _ScheduleRow extends StatelessWidget {
     final current = spec.current;
     final active = spec.active;
     final fg = current
-        ? _onAccent2Fill
+        ? AppColors.accent700
         : active
         ? AppColors.accent
         : _textMuted;
     final nameColor = current
-        ? _onAccent2Fill
+        ? AppColors.accent700
         : active
         ? AppColors.text
         : AppColors.text.withValues(alpha: 0.8);
 
     final row = Container(
       decoration: BoxDecoration(
-        color: current ? AppColors.accent2 : Colors.transparent,
-        borderRadius: current ? BorderRadius.circular(10) : null,
+        color: current ? AppColors.accent100 : Colors.transparent,
+        borderRadius: current ? BorderRadius.circular(12) : null,
       ),
-      padding: EdgeInsets.symmetric(horizontal: current ? 12 : 2, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: current ? 10 : 0, vertical: 9),
       child: Row(
         children: [
-          Icon(iconForPrayer(spec.kind), size: 17, color: fg),
+          // On the current row's soft gold the badge steps one shade up, or
+          // it would disappear into the row.
+          IconBadge(
+            iconForPrayer(spec.kind),
+            size: 32,
+            iconSize: 16,
+            background: current ? AppColors.accent200 : null,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -657,7 +657,7 @@ class _ScheduleRow extends StatelessWidget {
                   style: AppTextStyles.body(
                     fontSize: 10.5,
                     color: current
-                        ? _onAccent2Fill.withValues(alpha: 0.75)
+                        ? AppColors.accent700.withValues(alpha: 0.7)
                         : _textFaint,
                   ),
                 ),
@@ -705,7 +705,7 @@ class _StatusDot extends StatelessWidget {
   final PrayerLogStatus? status;
 
   /// True when this is the row for the prayer whose window is open right
-  /// now (drawn on top of the filled deep-gold "current" block). _ScheduleRow
+  /// now (drawn on top of the soft-gold "current" block). _ScheduleRow
   /// only ever builds this widget once the prayer's time has actually
   /// arrived (see its onTapLog/logStatus gate), so a null [status] means
   /// "not marked yet" whether that's because it's still current or because
@@ -720,7 +720,7 @@ class _StatusDot extends StatelessWidget {
   Widget build(BuildContext context) {
     if (status == null) {
       final ringColor = onFill
-          ? _onAccent2Fill.withValues(alpha: 0.7)
+          ? AppColors.accent700.withValues(alpha: 0.7)
           : AppColors.text.withValues(alpha: 0.35);
       return Container(
         width: 8,
@@ -731,11 +731,7 @@ class _StatusDot extends StatelessWidget {
         ),
       );
     }
-    final color = onFill
-        ? _onAccent2Fill
-        : status == PrayerLogStatus.onTime
-        ? AppColors.accent2
-        : AppColors.accent;
+    final color = StatusColors.of(status!);
     return Container(
       width: 8,
       height: 8,
@@ -835,16 +831,16 @@ class _SwipeToLogState extends State<_SwipeToLog>
     // regardless of what's already logged.
     final (bg, border, icon, iconColor) = switch (widget.status) {
       PrayerLogStatus.onTime => (
-        AppColors.accent2,
+        StatusColors.onTime,
         Colors.transparent,
         Icons.check_rounded,
-        _onAccent2Fill,
+        StatusColors.onOnTime,
       ),
       PrayerLogStatus.qada => (
-        AppColors.accent,
+        StatusColors.qada,
         Colors.transparent,
         Icons.history_toggle_off_rounded,
-        _onAccentFill,
+        StatusColors.onQada,
       ),
       null => (
         AppColors.surface,
@@ -1037,14 +1033,14 @@ class _ErrorView extends StatelessWidget {
                     vertical: 11,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.accent,
+                    color: AppColors.accent100,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     t.retryButton,
                     style: AppTextStyles.body(
                       fontSize: 14,
-                      color: _onAccentFill,
+                      color: AppColors.accent700,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/prayer_log_status.dart';
+import '../theme/status_colors.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -86,7 +87,7 @@ class _LogPrayerSheet extends StatelessWidget {
           _LogOption(
             icon: Icons.check_circle_rounded,
             label: t.logSheetOnTime,
-            color: AppColors.accent2,
+            color: StatusColors.onTime,
             selected: current == PrayerLogStatus.onTime,
             onTap: () => onPick(PrayerLogStatus.onTime),
           ),
@@ -94,7 +95,7 @@ class _LogPrayerSheet extends StatelessWidget {
           _LogOption(
             icon: Icons.history_toggle_off_rounded,
             label: t.logSheetLate,
-            color: AppColors.accent,
+            color: StatusColors.qada,
             selected: current == PrayerLogStatus.qada,
             onTap: () => onPick(PrayerLogStatus.qada),
           ),

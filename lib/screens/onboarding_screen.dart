@@ -10,6 +10,7 @@ import '../models/notif_mode.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../widgets/icon_badge.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/notif_mode_selector.dart';
 import '../widgets/prayer_icon.dart';
@@ -571,22 +572,25 @@ class _OptionTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          padding: EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: icon != null ? 10 : 15,
+          ),
           decoration: BoxDecoration(
             color: selected ? AppColors.accent100 : AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(
-              color: selected ? AppColors.accent : Colors.transparent,
-              width: 1.6,
-            ),
           ),
           child: Row(
             children: [
+              // Styled like the settings pickers (ChoiceSheet): the icon in
+              // a badge, inverted on the chosen option.
               if (icon != null) ...[
-                Icon(
-                  icon,
-                  size: 19,
-                  color: selected ? AppColors.accent700 : AppColors.text,
+                IconBadge(
+                  icon!,
+                  size: 32,
+                  iconSize: 16,
+                  background: selected ? AppColors.accent700 : null,
+                  foreground: selected ? AppColors.accent100 : null,
                 ),
                 const SizedBox(width: 12),
               ],
@@ -596,6 +600,7 @@ class _OptionTile extends StatelessWidget {
                   style: AppTextStyles.body(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
+                    color: selected ? AppColors.accent700 : AppColors.text,
                   ),
                 ),
               ),
@@ -625,8 +630,9 @@ class _PrimaryButton extends StatelessWidget {
       child: Container(
         height: 52,
         alignment: Alignment.center,
+        // The app's icon colors (see IconBadge): soft gold, deep gold text.
         decoration: BoxDecoration(
-          color: AppColors.accent,
+          color: AppColors.accent100,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
@@ -634,7 +640,7 @@ class _PrimaryButton extends StatelessWidget {
           style: AppTextStyles.body(
             fontSize: 15,
             fontWeight: FontWeight.w800,
-            color: AppColors.bg,
+            color: AppColors.accent700,
           ),
         ),
       ),

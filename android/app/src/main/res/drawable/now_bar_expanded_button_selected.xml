@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The expanded card's mark button once the prayer is logged: filled with
+     the app's gold, the check on it in white — "selected", rather than
+     turning into an undo button. Tapping it again still clears the mark. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/now_bar_icon_light" />
+</shape>

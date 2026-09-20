@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../state/app_state.dart';
+import '../widgets/icon_badge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
@@ -73,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const _IconBadge(Icons.access_time_rounded),
+              const IconBadge(Icons.access_time_rounded),
               const SizedBox(width: 12),
               Text(
                 t.prayerSettingsTitle,
@@ -90,7 +91,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const _IconBadge(Icons.tune_rounded),
+              const IconBadge(Icons.tune_rounded),
               const SizedBox(width: 12),
               Text(
                 t.systemSettingsTitle,
@@ -164,29 +165,6 @@ class _AppVersion extends StatelessWidget {
   }
 }
 
-/// A settings row's icon, set in the same round gold badge as the tiles on
-/// the "More" screen (see MoreScreen's _MoreTile), so the two lists of
-/// destinations read as one family.
-class _IconBadge extends StatelessWidget {
-  final IconData icon;
-
-  const _IconBadge(this.icon);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 34,
-      height: 34,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.accent100,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, size: 17, color: AppColors.accent700),
-    );
-  }
-}
-
 class _ContactRow extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -206,7 +184,7 @@ class _ContactRow extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          _IconBadge(icon),
+          IconBadge(icon),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: AppTextStyles.body(fontSize: 15))),
           Text(

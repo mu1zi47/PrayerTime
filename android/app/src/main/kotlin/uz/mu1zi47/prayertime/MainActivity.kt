@@ -38,6 +38,7 @@ class MainActivity : FlutterActivity() {
                     "status" -> result.success(
                         mapOf(
                             "enabled" to PrayerStatusNotifier.isEnabled(context),
+                            "showSchedule" to PrayerStatusNotifier.showsSchedule(context),
                             "isNowBar" to PrayerStatusNotifier.isNowBarDevice(context),
                             "notificationsAllowed" to
                                 PrayerStatusNotifier.notificationsAllowed(context),
@@ -50,6 +51,10 @@ class MainActivity : FlutterActivity() {
                     )
                     "setEnabled" -> {
                         PrayerStatusNotifier.setEnabled(context, call.arguments == true)
+                        result.success(null)
+                    }
+                    "setShowSchedule" -> {
+                        PrayerStatusNotifier.setShowSchedule(context, call.arguments == true)
                         result.success(null)
                     }
                     "openNotificationSettings" -> {

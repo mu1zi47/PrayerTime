@@ -1017,7 +1017,7 @@ abstract class AppLocalizations {
   /// No description provided for @widgetMarkedLabel.
   ///
   /// In ru, this message translates to:
-  /// **'Отмечено'**
+  /// **'Прочитано'**
   String get widgetMarkedLabel;
 
   /// No description provided for @widgetNoDataLabel.
@@ -1041,20 +1041,32 @@ abstract class AppLocalizations {
   /// No description provided for @nowBarDescription.
   ///
   /// In ru, this message translates to:
-  /// **'Now Bar — панель Samsung внизу экрана блокировки и вверху панели уведомлений. В ней будет виден текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение.'**
+  /// **'Текущий намаз будет показываться в Now Bar.'**
   String get nowBarDescription;
 
   /// No description provided for @persistentNotifDescription.
   ///
   /// In ru, this message translates to:
-  /// **'Уведомление, закреплённое в панели уведомлений: текущий намаз, сколько осталось до его окончания, следующий намаз и кнопка, чтобы отметить намаз, не открывая приложение. Если смахнуть его, оно появится снова — выключить его можно только здесь.'**
+  /// **'Текущий намаз будет показываться в уведомлениях.'**
   String get persistentNotifDescription;
 
   /// No description provided for @nowBarSwitchLabel.
   ///
   /// In ru, this message translates to:
-  /// **'Показывать'**
+  /// **'Показывать в Now Bar'**
   String get nowBarSwitchLabel;
+
+  /// No description provided for @persistentNotifSwitchLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать уведомление'**
+  String get persistentNotifSwitchLabel;
+
+  /// No description provided for @infoButtonLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подробнее'**
+  String get infoButtonLabel;
 
   /// No description provided for @nowBarOn.
   ///
@@ -1080,11 +1092,11 @@ abstract class AppLocalizations {
   /// **'Открыть настройки телефона'**
   String get nowBarOpenSettings;
 
-  /// No description provided for @nowBarUnmarkAction.
+  /// No description provided for @nowBarOpenAction.
   ///
   /// In ru, this message translates to:
-  /// **'Снять отметку'**
-  String get nowBarUnmarkAction;
+  /// **'Открыть'**
+  String get nowBarOpenAction;
 
   /// No description provided for @nowBarEndsIn.
   ///
@@ -1103,6 +1115,24 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Текущий намаз'**
   String get nowBarChannelName;
+
+  /// No description provided for @nowBarScheduleLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать все намазы'**
+  String get nowBarScheduleLabel;
+
+  /// No description provided for @nowBarScheduleDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все намазы будут показываться в Now Bar.'**
+  String get nowBarScheduleDescription;
+
+  /// No description provided for @nowBarScheduleDescriptionPlain.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все намазы будут показываться в уведомлениях.'**
+  String get nowBarScheduleDescriptionPlain;
 
   /// No description provided for @nowBarDevTitle.
   ///

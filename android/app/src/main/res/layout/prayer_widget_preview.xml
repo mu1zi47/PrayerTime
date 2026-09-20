@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the widget picker shows before the widget is placed
+     (previewLayout in prayer_widget_info.xml): the real widget's layout
+     (prayer_widget.xml) filled with sample content — a prayer, the next one
+     and a countdown — in the system's light or dark theme. A static text
+     stands in for the countdown: a Chronometer there only ever read 00:00.
+     Keep it in step with prayer_widget.xml. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/widget_bg_preview"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="20dp">
+
+        <ImageView
+            android:importantForAccessibility="no"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/widget_button_preview"
+            android:padding="20dp"
+            android:src="@drawable/ic_widget_check"
+            android:tint="@color/widget_text_muted" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="@string/widget_preview_current"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:textColor="@color/widget_text"
+                android:textSize="22sp" />
+
+            <TextView
+                android:text="@string/widget_preview_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/widget_text_muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:text="1:24:07"
+            tools:ignore="HardcodedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/widget_accent2"
+            android:textSize="18sp" />
+    </LinearLayout>
+</FrameLayout>

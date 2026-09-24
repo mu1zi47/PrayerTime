@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the widget picker shows for the 2x1 widget (previewLayout in
+     prayer_next_widget_info.xml): prayer_next_widget.xml with a sample
+     countdown, static because a Chronometer there only ever reads 00:00.
+     Keep it in step with prayer_next_widget.xml. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/widget_bg_preview"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/widget_preview_countdown"
+            android:textColor="@color/widget_accent2"
+            android:textSize="36sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/widget_preview_next_short"
+            android:textColor="@color/widget_text_muted"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

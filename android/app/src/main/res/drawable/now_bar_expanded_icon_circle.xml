@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The gold disc behind the crescent — the same as the collapsed bar's. -->
+<!-- The disc behind the crescent: gold on the light card, white on the
+     dark theme's gold one (see now_bar_colors.xml). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="@color/now_bar_icon_light" />
+    <solid android:color="@color/now_bar_expanded_icon_bg" />
 </shape>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The 2x1 widget: the countdown to the next prayer, with the prayer it
+     counts to named underneath.
+
+     Built to sit beside One UI's own small clock widget: the same stadium
+     pill (widget_bg_*, 46dp corners) and the same 92dp panel height the 4x1
+     widget uses, centered in whatever cell the launcher hands over — One UI
+     renders third-party widget content at ~0.83 scale, so 92dp here lands on
+     the ~76dp the stock small widgets measure on screen.
+
+     Colors are placeholders for the picker — PrayerNextWidgetProvider
+     repaints them for the theme picked in the app. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/next_widget_root"
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/widget_bg_light"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <Chronometer
+            android:id="@+id/next_widget_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/widget_accent2"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/next_widget_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/widget_text_muted"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

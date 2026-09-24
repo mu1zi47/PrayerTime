@@ -2,4 +2,12 @@
 <resources>
     <string name="widget_preview_current">Asr</string>
     <string name="widget_preview_next">Keyingi namoz · Shom 18:32</string>
+    <string name="widget_preview_fajr">Bomdod</string>
+    <string name="widget_preview_sunrise">Quyosh</string>
+    <string name="widget_preview_zuhr">Peshin</string>
+    <string name="widget_preview_asr">Asr</string>
+    <string name="widget_preview_maghrib">Shom</string>
+    <string name="widget_preview_isha">Xufton</string>
+    <string name="widget_preview_next_short">Shom · 18:32</string>
+    <string name="widget_preview_countdown">1:04:12</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Marks the prayer that's on now in the day widget: a light wash of the
+     app's gold, the same way the expanded Now Bar marks its own row. One
+     shade for both themes — it's translucent, so it sits on either panel. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="12dp" />
+    <solid android:color="#33E0B152" />
+</shape>

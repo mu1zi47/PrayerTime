@@ -2,4 +2,12 @@
 <resources>
     <string name="widget_preview_current">Аср</string>
     <string name="widget_preview_next">Следующий намаз · Магриб 18:32</string>
+    <string name="widget_preview_fajr">Фаджр</string>
+    <string name="widget_preview_sunrise">Восход</string>
+    <string name="widget_preview_zuhr">Зухр</string>
+    <string name="widget_preview_asr">Аср</string>
+    <string name="widget_preview_maghrib">Магриб</string>
+    <string name="widget_preview_isha">Иша</string>
+    <string name="widget_preview_next_short">Магриб · 18:32</string>
+    <string name="widget_preview_countdown">1:04:12</string>
 </resources>

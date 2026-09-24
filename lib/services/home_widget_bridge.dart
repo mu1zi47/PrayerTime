@@ -17,9 +17,10 @@ import 'prayer_log_store.dart';
 /// engine running.
 const kWidgetPayloadPrefsKey = 'widget_payload';
 
-/// Feeds the Android home-screen widget.
+/// Feeds the Android home-screen widgets (all three of them) and the
+/// current-prayer notification.
 ///
-/// The widget can't call into Dart — it's drawn by the launcher, usually
+/// A widget can't call into Dart — it's drawn by the launcher, usually
 /// with this app's process long dead — so everything it needs is written out
 /// in one self-contained blob: the schedule, the city's UTC offset (so the
 /// widget keeps the *selected city's* clock, like the app), and every string

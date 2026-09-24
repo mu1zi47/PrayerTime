@@ -4,7 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings
 import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
-import uz.mu1zi47.prayertime.widget.PrayerWidgetProvider
+import uz.mu1zi47.prayertime.widget.PrayerWidgets
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        // Lets the app tell the home-screen widget that what it reads from
+        // Lets the app tell the home-screen widgets that what they read from
         // shared_preferences has changed — see HomeWidgetBridge on the Dart
         // side. The widget reads that storage itself; this is only the "now
         // redraw" nudge. The current-prayer notification reads the same data,
@@ -21,7 +21,7 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "refreshWidget" -> {
-                        PrayerWidgetProvider.refresh(applicationContext)
+                        PrayerWidgets.refreshAll(applicationContext)
                         PrayerStatusNotifier.refresh(applicationContext)
                         result.success(null)
                     }

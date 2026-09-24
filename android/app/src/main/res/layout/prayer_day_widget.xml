@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The 4x2 widget: the 4x1 widget's own header — mark button, the prayer
+     that's on now, its countdown — sitting at the top of a card that carries
+     on downward with the whole day under it. No "next prayer" line here: the
+     list below already says what comes next, and the row that's on now is
+     picked out in it.
+
+     The rows are added in code (prayer_day_widget_row.xml), one per slot, and
+     every color here is a placeholder for the widget picker —
+     PrayerWidgetViews repaints them for the theme picked in the app. Only
+     classes tagged @RemoteView can appear in a widget layout, hence no plain
+     <View>. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/day_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_panel_light"
+    android:orientation="vertical"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- The same button, at the same size, as the 4x1 widget's: a check
+             to log the prayer, a double check once it is logged. -->
+        <ImageView
+            android:id="@+id/day_widget_mark_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/widget_button_light"
+            android:padding="20dp"
+            android:src="@drawable/ic_widget_check" />
+
+        <TextView
+            android:id="@+id/day_widget_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/widget_text"
+            android:textSize="22sp" />
+
+        <Chronometer
+            android:id="@+id/day_widget_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:textColor="@color/widget_accent2"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/day_widget_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="6dp" />
+</LinearLayout>

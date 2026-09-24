@@ -386,10 +386,13 @@ object PrayerStatusNotifier {
                         "setBackgroundResource",
                         R.drawable.now_bar_expanded_button_selected,
                     )
-                    setInt(
+                    // A drawable rather than a color filter: SystemUI draws
+                    // this card in the *phone's* theme, and a color resolved
+                    // here would follow this process's — see the row colors
+                    // below for the same reason.
+                    setImageViewResource(
                         R.id.now_bar_exp_button,
-                        "setColorFilter",
-                        context.getColor(android.R.color.white),
+                        R.drawable.ic_now_bar_check_selected,
                     )
                 }
                 setContentDescription(

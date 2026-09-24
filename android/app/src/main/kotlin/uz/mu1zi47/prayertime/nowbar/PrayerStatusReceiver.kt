@@ -3,7 +3,7 @@ package uz.mu1zi47.prayertime.nowbar
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import uz.mu1zi47.prayertime.widget.PrayerWidgetProvider
+import uz.mu1zi47.prayertime.widget.PrayerWidgets
 import uz.mu1zi47.prayertime.widget.PrayerWidgetStore
 
 /**
@@ -22,7 +22,7 @@ class PrayerStatusReceiver : BroadcastReceiver() {
                 val prayer = intent.getStringExtra(EXTRA_PRAYER) ?: return
                 PrayerWidgetStore.toggleOnTime(context, date, prayer)
                 PrayerStatusNotifier.refresh(context)
-                PrayerWidgetProvider.refresh(context)
+                PrayerWidgets.refreshAll(context)
             }
 
             // The user swiped it away. Android 14+ lets ongoing notifications

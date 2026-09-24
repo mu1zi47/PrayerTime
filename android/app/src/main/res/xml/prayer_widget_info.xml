@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 4x1 by default: the layout is a single row of content, so a taller cell
-     would just leave empty space under it. minHeight follows the platform's
-     70 * cells - 30 sizing rule. Still resizable both ways for anyone who
-     wants it roomier — the content stays vertically centered. -->
+<!-- Placed at 4x1: the current prayer, the next one and the "prayed"
+     button. min/minHeight follow the platform's 70 * cells - 30 sizing rule.
+     The resize range covers every shape the widget can take — down to 2x1,
+     where it becomes the countdown alone, and up to 4x2, where it becomes
+     the whole day (see BasePrayerWidgetProvider). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_description"
     android:initialLayout="@layout/prayer_widget"
     android:minHeight="40dp"
     android:minResizeHeight="40dp"
-    android:minResizeWidth="180dp"
+    android:minResizeWidth="110dp"
     android:minWidth="250dp"
     android:previewImage="@mipmap/ic_launcher"
     android:previewLayout="@layout/prayer_widget_preview"

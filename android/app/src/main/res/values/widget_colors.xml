@@ -32,14 +32,12 @@
     <color name="widget_button_text_light">#16213C</color>
     <color name="widget_button_text_dark">#F4EFE3</color>
 
-    <!-- Logged: the whole panel goes solid bright gold — the same "prayed on
-         time" color the app marks it with (StatusColors.onTime) — with dark
-         ink and a deeper gold circle for the button. Identical in both
-         themes, so a logged prayer looks the same whichever one is on. -->
+    <!-- Logged: the mark button fills with the app's own "prayed on time"
+         gold (StatusColors.onTime) and its check goes dark, exactly like the
+         app's own button; the panel around it doesn't change. Identical in
+         both themes, so a logged prayer looks the same whichever one is on. -->
     <color name="widget_marked_bg">#E0B152</color>
-    <color name="widget_marked_button">#C69739</color>
     <color name="widget_marked_text">#201404</color>
-    <color name="widget_marked_text_muted">#B3201404</color>
 
     <color name="widget_bg">@color/widget_bg_light</color>
     <color name="widget_text">@color/widget_text_light</color>

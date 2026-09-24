@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The card behind the 4x2 widget. Same fill as the 4x1 pill
+     (widget_bg_light), with the corner radius One UI's own clock widget
+     draws: measured at 27.4dp on screen, which is 36dp here because One UI
+     renders third-party widget content at ~0.83 scale (the same reason the
+     4x1 panel is declared 92dp to land on the stock 76dp one). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="36dp" />
+    <solid android:color="@color/widget_bg_light" />
+</shape>

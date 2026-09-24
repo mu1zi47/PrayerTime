@@ -28,6 +28,13 @@
     <color name="now_bar_expanded_glow">#4DC69739</color>
     <color name="now_bar_expanded_highlight">#33C69739</color>
 
+    <!-- The disc behind the crescent, and the mark button once the prayer
+         is logged. Gold on the light card; in the dark theme the card is
+         itself gold (see values-night), so both flip to white there. -->
+    <color name="now_bar_expanded_icon_bg">@color/now_bar_icon_light</color>
+    <color name="now_bar_expanded_button_selected_bg">@color/now_bar_icon_light</color>
+    <color name="now_bar_expanded_button_selected_glyph">#FFFFFF</color>
+
     <!-- The Now Bar's button glyphs. One UI draws these icons as they are,
          on a card it paints itself, so unlike the colors above they follow
          the card (the system theme) rather than the app — the same pair,

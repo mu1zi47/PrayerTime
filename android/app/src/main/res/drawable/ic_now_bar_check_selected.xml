@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same check as ic_now_bar_check, in the color that reads on the
+     filled ("logged") button — see now_bar_expanded_button_selected. Kept as
+     its own drawable rather than a color filter set in code: the card is
+     drawn by SystemUI, in the phone's theme, and a color resolved in this
+     process follows this app's instead. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/now_bar_expanded_button_selected_glyph"
+        android:pathData="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z" />
+</vector>

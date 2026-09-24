@@ -67,6 +67,15 @@ sealed interface PrayerWidgetState {
          */
         val nextChangeEpochMillis: Long,
         /**
+         * Millis until the next *prayer* starts, and the same moment as an
+         * epoch millisecond. Distinct from the two above, which count to the
+         * end of the current window — that can be sunrise, which is no
+         * prayer. What the countdown-only widget shows (see
+         * PrayerNextWidgetProvider).
+         */
+        val untilNextPrayerMillis: Long,
+        val nextPrayerEpochMillis: Long,
+        /**
          * The whole day the current slot belongs to, sunrise included, in
          * order — what the expanded Now Bar lists. Past midnight that's still
          * the day whose Isha is on.
@@ -191,6 +200,8 @@ sealed interface PrayerWidgetState {
                 markLabel = if (marked) label("marked", "") else label("markDone", ""),
                 untilWindowEndMillis = Duration.between(now, nextChange.at).toMillis(),
                 nextChangeEpochMillis = nextChange.at.toInstant(offset).toEpochMilli(),
+                untilNextPrayerMillis = Duration.between(now, nextPrayer.at).toMillis(),
+                nextPrayerEpochMillis = nextPrayer.at.toInstant(offset).toEpochMilli(),
                 today = today,
             )
         }

@@ -6,6 +6,10 @@
 <resources>
     <string name="widget_label">Prayer times</string>
     <string name="widget_description">Current and next prayer, with a countdown</string>
+    <string name="widget_day_label">Prayer times · day</string>
+    <string name="widget_day_description">The whole day\'s prayers at a glance</string>
+    <string name="widget_next_label">Prayer times · countdown</string>
+    <string name="widget_next_description">Time left until the next prayer</string>
     <!-- Only ever shown before the app has written its payload once (a fresh
          install), when there is no app language on record yet. -->
     <string name="widget_no_data">Open the app</string>

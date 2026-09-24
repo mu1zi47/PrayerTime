@@ -6,4 +6,12 @@
 <resources>
     <string name="widget_preview_current">Asr</string>
     <string name="widget_preview_next">Next prayer · Maghrib 18:32</string>
+    <string name="widget_preview_fajr">Fajr</string>
+    <string name="widget_preview_sunrise">Sunrise</string>
+    <string name="widget_preview_zuhr">Dhuhr</string>
+    <string name="widget_preview_asr">Asr</string>
+    <string name="widget_preview_maghrib">Maghrib</string>
+    <string name="widget_preview_isha">Isha</string>
+    <string name="widget_preview_next_short">Maghrib · 18:32</string>
+    <string name="widget_preview_countdown">1:04:12</string>
 </resources>

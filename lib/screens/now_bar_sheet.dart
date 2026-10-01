@@ -8,6 +8,7 @@ import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_switch.dart';
+import '../widgets/expand_reveal.dart';
 import '../widgets/settings_widgets.dart';
 
 /// "Now Bar" on the phones that have one, "Persistent notification"
@@ -151,9 +152,12 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                 ),
               ),
               // The Now Bar's expanded card, or the plain notification's
-              // expanded form everywhere else.
-              if (_status.enabled) ...[
-                SettingsRow(
+              // expanded form everywhere else. Each of these opens and
+              // folds away (see ExpandReveal), so the sheet grows and
+              // shrinks with them rather than jumping.
+              ExpandReveal(
+                visible: _status.enabled,
+                child: SettingsRow(
                   trailing: AppSwitch(
                     value: _status.showSchedule,
                     onChanged: _toggleSchedule,
@@ -165,32 +169,41 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                         : t.nowBarScheduleDescriptionPlain,
                   ),
                 ),
-              ],
-              if (showDeveloperSwitch) ...[
-                const SizedBox(height: 16),
-                NowBarDeveloperSwitchCard(status: _status),
-              ],
-              if (showNotificationsOff) ...[
-                const SizedBox(height: 14),
-                Text(
-                  t.nowBarNotificationsOff,
-                  style: AppTextStyles.body(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: muted,
-                  ).copyWith(height: 1.4),
+              ),
+              ExpandReveal(
+                visible: showDeveloperSwitch,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: NowBarDeveloperSwitchCard(status: _status),
                 ),
-                OptRow(
-                  onTap: _bridge.openNotificationSettings,
-                  child: Text(
-                    t.nowBarOpenSettings,
-                    style: AppTextStyles.body(
-                      fontSize: 15,
-                      color: AppColors.accent,
+              ),
+              ExpandReveal(
+                visible: showNotificationsOff,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 14),
+                    Text(
+                      t.nowBarNotificationsOff,
+                      style: AppTextStyles.body(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: muted,
+                      ).copyWith(height: 1.4),
                     ),
-                  ),
+                    OptRow(
+                      onTap: _bridge.openNotificationSettings,
+                      child: Text(
+                        t.nowBarOpenSettings,
+                        style: AppTextStyles.body(
+                          fontSize: 15,
+                          color: AppColors.accent,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ],
           ),
         ),

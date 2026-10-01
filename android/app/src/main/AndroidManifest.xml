@@ -163,11 +163,5 @@
             <action android:name="android.intent.action.SENDTO"/>
             <data android:scheme="mailto"/>
         </intent>
-        <!-- Telegram's own scheme, so the feedback row opens the app rather
-             than a browser tab pointing at t.me. -->
-        <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:scheme="tg"/>
-        </intent>
     </queries>
 </manifest>

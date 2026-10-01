@@ -100,8 +100,6 @@
   "notificationsScreenTitle": "Уведомления",
   "azanByPrayersKicker": "Уведомления по намазам",
 
-  "quietKicker": "Тишина",
-  "dontDisturbNight": "Не беспокоить ночью",
 
 
   "logSheetTitle": "Как прошёл {prayer}?",
@@ -222,10 +220,10 @@
       "prayer": {"type": "String"}
     }
   },
-  "notifPrayerEndingBody": "Осталось {minutes} мин, а намаз ещё не отмечен как прочитанный",
+  "notifPrayerEndingBody": "Осталось {left}, а намаз ещё не отмечен как прочитанный",
   "@notifPrayerEndingBody": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "left": {"type": "String"}
     }
   },
   "widgetMarkedLabel": "Прочитано",
@@ -301,11 +299,76 @@
 
   "onboardingNotifTitle": "Уведомления",
 
-  "onboardingNotifBody": "Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.",
+  "onboardingNotifBody": "Приложение напомнит о наступлении намаза и ещё раз ближе к концу его времени, если намаз не отмечен как прочитанный. Когда именно напоминать, можно выбрать в настройках.",
 
   "notifModeSound": "Со звуком",
   "notifModeSilent": "Без звука",
   "notifModeOff": "Выключено",
+  "notifBlockedTitle": "Уведомления выключены",
+  "notifBlockedBody": "Разрешите их в настройках приложения, чтобы не пропускать время намаза и напоминания.",
+  "notifBlockedAllow": "Разрешить уведомления",
+  "notifBlockedToast": "Сначала разрешите уведомления",
+  "notifBlockedShort": "Выключены",
+
+  "durationMinutes": "{minutes} мин",
+  "@durationMinutes": {
+    "placeholders": {"minutes": {"type": "int"}}
+  },
+  "durationHours": "{hours} ч",
+  "@durationHours": {
+    "placeholders": {"hours": {"type": "int"}}
+  },
+  "durationHoursMinutes": "{hours} ч {minutes} мин",
+  "@durationHoursMinutes": {
+    "placeholders": {"hours": {"type": "int"}, "minutes": {"type": "int"}}
+  },
+  "endRemindersWindowEnds": "Время намаза {prayer} заканчивается в {time}",
+  "@endRemindersWindowEnds": {
+    "placeholders": {"prayer": {"type": "String"}, "time": {"type": "String"}}
+  },
+  "endRemindersPrayerOff": "Уведомления для этого намаза выключены, поэтому напоминания не придут.",
+  "endRemindersEmpty": "Напоминаний пока нет",
+  "endReminderLead": "За {lead} до конца",
+  "@endReminderLead": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderAt": "Придёт в {time}",
+  "@endReminderAt": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderAdd": "Добавить напоминание",
+  "endRemindersLimit": "Можно не больше {count} напоминаний",
+  "@endRemindersLimit": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "wheelHoursLabel": "ч",
+  "wheelMinutesLabel": "мин",
+  "endReminderSave": "Готово",
+  "endReminderDuplicate": "Такое напоминание уже есть",
+  "endReminderDelete": "Удалить",
+  "endRemindersName": "Напоминание об окончании намаза",
+  "endRemindersKicker": "Напоминания",
+  "endRemindersListHeader": "Напоминание придёт:",
+  "endReminderAtShort": "в {time}",
+  "@endReminderAtShort": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderPickerSummary": "Напомнить за {lead} до конца намаза",
+  "@endReminderPickerSummary": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderOffToday": "Выключить на сегодня",
+  "endReminderOnToday": "Включить",
+  "endReminderOffTodayStatus": "Выключено на сегодня",
+  "endRemindersSwipeHint": "Смахните влево, чтобы увидеть меню взаимодействия",
+  "soundRowTitle": "Звук уведомлений",
+  "soundEveningReminder": "Вечернее напоминание",
+  "soundDefault": "По умолчанию",
+  "soundKindNotification": "Звуки уведомлений",
+  "soundKindAlarm": "Будильники",
+  "soundKindRingtone": "Мелодии звонка",
+  "soundPickerDone": "Готово",
+  "soundListUnavailable": "Не удалось получить звуки телефона",
 
   "calendarNotMarked": "Не отмечен",
   "calendarDayPanelKicker": "Отметьте намазы",

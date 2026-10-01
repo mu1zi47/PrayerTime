@@ -100,8 +100,6 @@
   "notificationsScreenTitle": "Notifications",
   "azanByPrayersKicker": "Notifications per prayer",
 
-  "quietKicker": "Quiet hours",
-  "dontDisturbNight": "Do not disturb at night",
 
 
   "logSheetTitle": "How did {prayer} go?",
@@ -222,10 +220,10 @@
       "prayer": {"type": "String"}
     }
   },
-  "notifPrayerEndingBody": "{minutes} min left, and this prayer still isn't marked as prayed",
+  "notifPrayerEndingBody": "{left} left, and this prayer still isn't marked as prayed",
   "@notifPrayerEndingBody": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "left": {"type": "String"}
     }
   },
   "widgetMarkedLabel": "Prayed",
@@ -301,11 +299,76 @@
 
   "onboardingNotifTitle": "Notifications",
 
-  "onboardingNotifBody": "The app announces each prayer, and reminds you again 30 minutes before its window closes if you haven't marked it as prayed.",
+  "onboardingNotifBody": "The app announces each prayer and reminds you again before its window closes if you haven't marked it as prayed. You can choose when in the settings.",
 
   "notifModeSound": "With sound",
   "notifModeSilent": "Silent",
   "notifModeOff": "Off",
+  "notifBlockedTitle": "Notifications are off",
+  "notifBlockedBody": "Allow them in the app settings so you never miss a prayer time or a reminder.",
+  "notifBlockedAllow": "Allow notifications",
+  "notifBlockedToast": "Allow notifications first",
+  "notifBlockedShort": "Off",
+
+  "durationMinutes": "{minutes} min",
+  "@durationMinutes": {
+    "placeholders": {"minutes": {"type": "int"}}
+  },
+  "durationHours": "{hours} h",
+  "@durationHours": {
+    "placeholders": {"hours": {"type": "int"}}
+  },
+  "durationHoursMinutes": "{hours} h {minutes} min",
+  "@durationHoursMinutes": {
+    "placeholders": {"hours": {"type": "int"}, "minutes": {"type": "int"}}
+  },
+  "endRemindersWindowEnds": "{prayer}'s time ends at {time}",
+  "@endRemindersWindowEnds": {
+    "placeholders": {"prayer": {"type": "String"}, "time": {"type": "String"}}
+  },
+  "endRemindersPrayerOff": "Notifications for this prayer are off, so these reminders won't come.",
+  "endRemindersEmpty": "No reminders yet",
+  "endReminderLead": "{lead} before the end",
+  "@endReminderLead": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderAt": "Comes at {time}",
+  "@endReminderAt": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderAdd": "Add reminder",
+  "endRemindersLimit": "Up to {count} reminders",
+  "@endRemindersLimit": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "wheelHoursLabel": "h",
+  "wheelMinutesLabel": "min",
+  "endReminderSave": "Done",
+  "endReminderDuplicate": "There's already a reminder at that time",
+  "endReminderDelete": "Delete",
+  "endRemindersName": "Prayer ending reminder",
+  "endRemindersKicker": "Reminders",
+  "endRemindersListHeader": "The reminder comes:",
+  "endReminderAtShort": "at {time}",
+  "@endReminderAtShort": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderPickerSummary": "Remind me {lead} before the prayer ends",
+  "@endReminderPickerSummary": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderOffToday": "Off for today",
+  "endReminderOnToday": "Turn on",
+  "endReminderOffTodayStatus": "Off for today",
+  "endRemindersSwipeHint": "Swipe left to see the actions",
+  "soundRowTitle": "Notification sound",
+  "soundEveningReminder": "Evening reminder",
+  "soundDefault": "Default",
+  "soundKindNotification": "Notification sounds",
+  "soundKindAlarm": "Alarms",
+  "soundKindRingtone": "Ringtones",
+  "soundPickerDone": "Done",
+  "soundListUnavailable": "Couldn't read the phone's sounds",
 
   "calendarNotMarked": "Not marked",
   "calendarDayPanelKicker": "Mark the prayers",

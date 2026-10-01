@@ -14,8 +14,10 @@ import 'prayer_settings_screen.dart';
 import 'system_settings_screen.dart';
 
 const _feedbackEmail = 'valiyevmuiz0407@gmail.com';
-const _feedbackTelegram = '@ThePr0bl3m';
-const _telegramHandle = 'ThePr0bl3m';
+
+/// The contacts section of the developer's site, where the Telegram row
+/// sends people.
+const _feedbackContactsUrl = 'https://mu1zi47.vercel.app/#contacts';
 
 class SettingsScreen extends StatelessWidget {
   final AppState appState;
@@ -23,12 +25,8 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.appState});
 
   /// Tries each URI in turn and falls back to the clipboard if none of them
-  /// opens anything — a phone with no mail app set up, or without Telegram,
-  /// would otherwise just swallow the tap.
-  ///
-  /// The order matters for Telegram: `tg://` opens the app itself, while
-  /// `https://t.me/…` is only a web link, so unless Telegram has claimed
-  /// that domain it lands in a browser instead.
+  /// opens anything — a phone with no mail app set up, or no browser, would
+  /// otherwise just swallow the tap.
   Future<void> _open(
     BuildContext context,
     List<Uri> uris,
@@ -107,7 +105,6 @@ class SettingsScreen extends StatelessWidget {
             _ContactRow(
               icon: Icons.mail_outline_rounded,
               label: t.feedbackEmail,
-              contact: _feedbackEmail,
               onTap: () => _open(context, [
                 Uri(
                   scheme: 'mailto',
@@ -119,11 +116,9 @@ class SettingsScreen extends StatelessWidget {
             _ContactRow(
               icon: Icons.send_rounded,
               label: t.feedbackTelegram,
-              contact: _feedbackTelegram,
               onTap: () => _open(context, [
-                Uri.parse('tg://resolve?domain=$_telegramHandle'),
-                Uri.parse('https://t.me/$_telegramHandle'),
-              ], _feedbackTelegram),
+                Uri.parse(_feedbackContactsUrl),
+              ], _feedbackContactsUrl),
             ),
           ],
         ),
@@ -168,13 +163,11 @@ class _AppVersion extends StatelessWidget {
 class _ContactRow extends StatelessWidget {
   final IconData icon;
   final String label;
-  final String contact;
   final VoidCallback onTap;
 
   const _ContactRow({
     required this.icon,
     required this.label,
-    required this.contact,
     required this.onTap,
   });
 
@@ -187,14 +180,6 @@ class _ContactRow extends StatelessWidget {
           IconBadge(icon),
           const SizedBox(width: 12),
           Expanded(child: Text(label, style: AppTextStyles.body(fontSize: 15))),
-          Text(
-            contact,
-            style: AppTextStyles.body(
-              fontSize: 12.5,
-              color: AppColors.text,
-            ).copyWith(color: AppColors.text.withValues(alpha: 0.5)),
-          ),
-          const SizedBox(width: 6),
         ],
       ),
     );

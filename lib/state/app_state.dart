@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/foundation.dart';
@@ -8,9 +9,12 @@ import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/day_completion.dart';
 import '../data/reference_data.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
+import '../models/end_reminders.dart';
+import '../models/notif_sound.dart';
 import '../models/notif_mode.dart';
 import '../models/prayer_day.dart';
 import '../models/prayer_log_status.dart';
@@ -24,8 +28,10 @@ import '../services/prayer_times_api.dart';
 const _kCity = 'city';
 const _kCityV2 = 'city_v2';
 const _kMadhab = 'madhab';
-const _kQuiet = 'quiet';
 const _kNotifPrefix = 'notif_';
+const _kEndReminders = 'end_reminders';
+const _kEndRemindersOff = 'end_reminders_off';
+const _kSoundShared = 'sound_shared';
 const _kThemeMode = 'theme_mode';
 const _kLocale = 'locale';
 const _kFavoriteNames = 'favorite_allah_names';
@@ -102,7 +108,6 @@ class AppState extends ChangeNotifier {
   City _selectedCity = ReferenceData.cities.firstWhere(
     (c) => c.id == 'tashkent',
   );
-  bool _quiet = false;
   ThemeMode _themeMode = ThemeMode.system;
   AppLocale _locale = AppLocale.ru;
   final Set<int> _favoriteNames = {};
@@ -110,6 +115,7 @@ class AppState extends ChangeNotifier {
 
   bool _onboardingDone = false;
   bool _restored = false;
+  bool _notificationsAllowed = true;
 
   final Map<String, Map<String, PrayerLogStatus>> _prayerLog = {};
 
@@ -122,6 +128,24 @@ class AppState extends ChangeNotifier {
     'isha': NotifMode.notification,
   };
 
+  /// Each prayer's "window is closing" reminders, as minutes before the
+  /// end, kept the way [normalizeEndReminders] leaves them. Tahajjud has
+  /// none — it isn't on the prayer log, so there's no "not marked yet" to
+  /// remind about.
+  final Map<String, List<int>> _endReminders = {
+    for (final key in requiredPrayerKeys) key: [...kDefaultEndReminders],
+  };
+
+  /// Reminders switched off for a single day (see
+  /// [toggleEndReminderOffToday]), by prayer: the leads in [_endReminders]
+  /// that day's prayers get no reminder at. Only one day is ever kept —
+  /// switching one off on a new day drops the last day's.
+  String? _endRemindersOffDate;
+  final Map<String, Set<int>> _endRemindersOff = {};
+
+  /// The sound every notification plays with.
+  NotifSound _sharedSound = const NotifSound.phoneDefault();
+
   List<PrayerDay> _days = [];
   bool _isLoadingDays = false;
   String? _daysError;
@@ -133,7 +157,6 @@ class AppState extends ChangeNotifier {
   City get selectedCity => _selectedCity;
   String get selectedCityId => _selectedCity.id;
   String cityLabel(AppLocalizations t) => cityNameFor(t, _selectedCity);
-  bool get quiet => _quiet;
   ThemeMode get themeMode => _themeMode;
   AppLocale get locale => _locale;
   bool get tahajjudEnabled => _tahajjudEnabled;
@@ -165,6 +188,32 @@ class AppState extends ChangeNotifier {
       _prayerLog[_dateKey(date)]?[prayerKey];
   late final Map<String, NotifMode> notifMode = UnmodifiableMapView(_notifMode);
   NotificationService get notifications => _notifications;
+
+  /// [prayerKey]'s reminders before its window closes, in minutes — the
+  /// earliest (longest lead) first.
+  List<int> endRemindersFor(String prayerKey) =>
+      UnmodifiableListView(_endReminders[prayerKey] ?? const []);
+
+  NotifSound get sharedSound => _sharedSound;
+
+  /// Whether the reminder [minutes] before [prayerKey]'s end is switched off
+  /// for today's prayer.
+  bool isEndReminderOffToday(String prayerKey, int minutes) =>
+      _endRemindersOffDate == _dateKey(cityNow) &&
+      (_endRemindersOff[prayerKey]?.contains(minutes) ?? false);
+
+  /// The longest lead a reminder for [prayerKey] can have — see
+  /// [maxEndReminderLead].
+  int maxEndReminderLeadFor(String prayerKey) =>
+      maxEndReminderLead(_days, prayerKey);
+
+  /// Whether the phone lets this app's notifications through. Without that
+  /// the per-prayer modes read as off and can't be changed (see
+  /// NotifModeSelector) — "with sound" means nothing when nothing is shown
+  /// at all. The chosen modes themselves are kept, and come back as they
+  /// were once notifications are allowed. Optimistic until the first check
+  /// comes back, so nobody who allowed them long ago sees a warning flash.
+  bool get notificationsAllowed => _notificationsAllowed;
 
   List<PrayerDay> get days => _days;
   bool get isLoadingDays => _isLoadingDays;
@@ -353,7 +402,15 @@ class AppState extends ChangeNotifier {
     // this object's own in-memory copy (see HomeWidgetBridge) — so whatever
     // was marked from the widget while the app sat in the background is
     // picked up the moment the app comes back to the foreground.
-    _lifecycle = AppLifecycleListener(onResume: _reloadPrayerLog);
+    // The notification permission is re-read on the same occasion: it's
+    // changed in the phone's settings, or in a system prompt, both of which
+    // end with the app coming back.
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        _reloadPrayerLog();
+        refreshNotificationsAllowed();
+      },
+    );
     // Routes the notification's "Прочитал"/"Done" action through the same
     // path the "Мои намазы" screen itself uses, so it updates in-memory
     // state (and notifies listeners) rather than only the disk copy.
@@ -369,7 +426,41 @@ class AppState extends ChangeNotifier {
         .timeout(const Duration(seconds: 5))
         // Ignored — see doc comment above.
         .catchError((_) {});
+    unawaited(refreshNotificationsAllowed());
     await loadPrayerTimes();
+  }
+
+  /// Re-reads [notificationsAllowed] from the platform.
+  Future<void> refreshNotificationsAllowed() async {
+    await _notificationsReady;
+    bool? allowed;
+    try {
+      allowed = await _notifications.areNotificationsAllowed();
+    } catch (_) {
+      // Unknown stays as it was — see [notificationsAllowed] on why the
+      // default is optimistic.
+    }
+    if (allowed == null || allowed == _notificationsAllowed) return;
+    _notificationsAllowed = allowed;
+    notifyListeners();
+    // iOS refuses to book anything while notifications are off, so
+    // whatever was scheduled before has to be booked again now.
+    if (allowed) _reschedule();
+  }
+
+  /// The "allow" button on the notifications-off notice: asks the system
+  /// first, and when that changes nothing — the prompt was refused for good,
+  /// or only the prayer channel is blocked — opens the app's notification
+  /// settings, the one place left to turn them on. Coming back from there
+  /// is picked up by the resume check in [init].
+  Future<void> allowNotifications() async {
+    try {
+      await _notifications.requestNotificationsPermission();
+    } catch (_) {
+      // Falls through to the settings page below.
+    }
+    await refreshNotificationsAllowed();
+    if (!_notificationsAllowed) await _notifications.openSystemSettings();
   }
 
   @override
@@ -403,7 +494,6 @@ class AppState extends ChangeNotifier {
     }
     _method = prefs.getString(_kMethod) ?? _method;
     _madhab = prefs.getString(_kMadhab) ?? _madhab;
-    _quiet = prefs.getBool(_kQuiet) ?? _quiet;
     _themeMode = _themeModeFromName(prefs.getString(_kThemeMode));
     final savedLocale = prefs.getString(_kLocale);
     // First launch (nothing saved yet) follows the device's own language;
@@ -456,6 +546,9 @@ class AppState extends ChangeNotifier {
       final saved = prefs.getString('$_kNotifPrefix$key');
       if (saved != null) _notifMode[key] = NotifMode.fromName(saved);
     }
+    _endReminders.addAll(_decodeEndReminders(prefs.getString(_kEndReminders)));
+    _restoreEndRemindersOff(prefs.getString(_kEndRemindersOff));
+    _restoreSounds(prefs);
     _restored = true;
     notifyListeners();
   }
@@ -593,7 +686,7 @@ class AppState extends ChangeNotifier {
 
   /// Debounced: rebuilding the schedule cancels and re-books up to ~180
   /// alarms across the platform channel, and a settings screen can fire
-  /// several changes in a row (three notification modes, quiet hours,
+  /// several changes in a row (three notification modes, reminders,
   /// Tahajjud). Without this each tap paid for the whole rebuild.
   void _reschedule() {
     if (_days.isEmpty) return;
@@ -620,9 +713,14 @@ class AppState extends ChangeNotifier {
           notifMode: _notifMode,
           utcOffset: _selectedCity.utcOffset,
           locale: _locale,
-          quietHoursEnabled: _quiet,
           includeTahajjud: _tahajjudEnabled,
           prayerLog: _prayerLog,
+          endReminders: _endReminders,
+          endRemindersOff: {?_endRemindersOffDate: _endRemindersOff},
+          sounds: {
+            for (final key in [..._notifMode.keys, kGeneralSoundKey])
+              key: _sharedSound.uri,
+          },
         )
         .catchError((_) {});
   }
@@ -667,11 +765,139 @@ class AppState extends ChangeNotifier {
     _save((p) => p.setString('$_kNotifPrefix$key', mode.name));
   }
 
-  void toggleQuiet() {
-    _quiet = !_quiet;
+  /// Adds a reminder [minutes] before [prayerKey]'s window closes, held to
+  /// [maxEndReminderLeadFor]. False — and nothing changes — when that
+  /// prayer already has one at the same lead, or already has
+  /// [kMaxEndReminders].
+  bool addEndReminder(String prayerKey, int minutes) {
+    minutes = min(minutes, maxEndReminderLeadFor(prayerKey));
+    final current = _endReminders[prayerKey] ?? const <int>[];
+    if (current.contains(minutes) || current.length >= kMaxEndReminders) {
+      return false;
+    }
+    _setEndReminders(prayerKey, [...current, minutes]);
+    return true;
+  }
+
+  /// Moves the reminder at [oldMinutes] to [newMinutes]. False when another
+  /// reminder of the same prayer is already there.
+  bool changeEndReminder(String prayerKey, int oldMinutes, int newMinutes) {
+    newMinutes = min(newMinutes, maxEndReminderLeadFor(prayerKey));
+    final current = _endReminders[prayerKey] ?? const <int>[];
+    if (newMinutes == oldMinutes) return true;
+    if (current.contains(newMinutes)) return false;
+    // Switched off for today, it stays off under its new lead.
+    final off = _endRemindersOff[prayerKey];
+    if (off != null && off.remove(oldMinutes)) {
+      off.add(newMinutes);
+      _saveEndRemindersOff();
+    }
+    _setEndReminders(prayerKey, [
+      for (final m in current) m == oldMinutes ? newMinutes : m,
+    ]);
+    return true;
+  }
+
+  void removeEndReminder(String prayerKey, int minutes) {
+    if (_endRemindersOff[prayerKey]?.remove(minutes) ?? false) {
+      _saveEndRemindersOff();
+    }
+    final current = _endReminders[prayerKey] ?? const <int>[];
+    _setEndReminders(prayerKey, [
+      for (final m in current)
+        if (m != minutes) m,
+    ]);
+  }
+
+  void _setEndReminders(String prayerKey, List<int> minutes) {
+    _endReminders[prayerKey] = normalizeEndReminders(minutes);
     notifyListeners();
-    _save((p) => p.setBool(_kQuiet, _quiet));
     _reschedule();
+    _save((p) => p.setString(_kEndReminders, jsonEncode(_endReminders)));
+  }
+
+  /// Switches the reminder [minutes] before [prayerKey]'s end off for
+  /// today's prayer alone, or back on. Tomorrow it's on again by itself.
+  void toggleEndReminderOffToday(String prayerKey, int minutes) {
+    final today = _dateKey(cityNow);
+    if (_endRemindersOffDate != today) {
+      _endRemindersOffDate = today;
+      _endRemindersOff.clear();
+    }
+    final off = _endRemindersOff.putIfAbsent(prayerKey, () => {});
+    if (!off.remove(minutes)) off.add(minutes);
+    notifyListeners();
+    _reschedule();
+    _saveEndRemindersOff();
+  }
+
+  void setSharedSound(NotifSound sound) {
+    _sharedSound = sound;
+    notifyListeners();
+    _reschedule();
+    _save((p) => p.setString(_kSoundShared, jsonEncode(sound.toJson())));
+  }
+
+  void _restoreSounds(SharedPreferences prefs) {
+    try {
+      final shared = prefs.getString(_kSoundShared);
+      if (shared != null) {
+        _sharedSound = NotifSound.fromJson(jsonDecode(shared));
+      }
+    } catch (_) {
+      // Unreadable: the phone's default.
+    }
+  }
+
+  void _saveEndRemindersOff() {
+    final date = _endRemindersOffDate;
+    _save(
+      (p) => p.setString(
+        _kEndRemindersOff,
+        jsonEncode({
+          'date': date,
+          'off': {
+            for (final e in _endRemindersOff.entries)
+              if (e.value.isNotEmpty) e.key: e.value.toList(),
+          },
+        }),
+      ),
+    );
+  }
+
+  void _restoreEndRemindersOff(String? raw) {
+    if (raw == null) return;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      final off = decoded['off'] as Map<String, dynamic>;
+      _endRemindersOffDate = decoded['date'] as String?;
+      _endRemindersOff
+        ..clear()
+        ..addAll({
+          for (final e in off.entries)
+            if (e.value is List)
+              e.key: (e.value as List).whereType<int>().toSet(),
+        });
+    } catch (_) {
+      // Unreadable: nothing is switched off.
+    }
+  }
+
+  /// Only the prayers actually stored — one missing (nothing saved yet, or
+  /// a prayer added later) keeps its default.
+  static Map<String, List<int>> _decodeEndReminders(String? raw) {
+    if (raw == null) return const {};
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return {
+        for (final key in requiredPrayerKeys)
+          if (decoded[key] is List)
+            key: normalizeEndReminders((decoded[key] as List).whereType<int>()),
+      };
+    } catch (_) {
+      // Unreadable: every prayer keeps its default.
+      return const {};
+    }
   }
 
   // Tahajjud (last-third-of-the-night prayer): an opt-in extra row on the
@@ -796,13 +1022,13 @@ class AppState extends ChangeNotifier {
     final marked = day.containsKey(prayerKey);
     if (day.isEmpty) _prayerLog.remove(key);
     // A prayer that's now marked has nothing left to be reminded about, so
-    // its pending "window is closing" nudge is dropped on the spot (see
-    // NotificationService.cancelPrayerEndReminder). Un-marking one instead
-    // has to put that reminder back, which only a full reschedule knows how
-    // to do — it's the rarer path, so it can afford the extra work.
+    // its pending "window is closing" nudges are dropped on the spot (see
+    // NotificationService.cancelPrayerEndReminders). Un-marking one instead
+    // has to put them back, which only a full reschedule knows how to do —
+    // it's the rarer path, so it can afford the extra work.
     if (marked) {
       _notifications
-          .cancelPrayerEndReminder(date, prayerKey)
+          .cancelPrayerEndReminders(date, prayerKey)
           .catchError((_) {});
     } else {
       _reschedule();

@@ -13,6 +13,7 @@ import '../theme/app_text_styles.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/notif_mode_selector.dart';
+import '../widgets/notifications_blocked_notice.dart';
 import '../widgets/prayer_icon.dart';
 import 'city_screen.dart';
 
@@ -54,6 +55,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? _cityError;
   bool _permissionAsked = false;
 
+  /// Set once the system prompt has been answered. Until then the
+  /// notifications step shows the modes as they are rather than as blocked
+  /// — permission isn't granted yet while the prompt is still up over it.
+  bool _permissionAnswered = false;
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -71,13 +77,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     // first frame, where it used to fire before anything was on screen.
     if (_Step.values[_index] == _Step.notifications && !_permissionAsked) {
       _permissionAsked = true;
-      widget.appState.notifications.requestPermissions();
+      _askPermission();
     }
     _pageController.animateToPage(
       _index,
       duration: const Duration(milliseconds: 280),
       curve: Curves.easeOutCubic,
     );
+  }
+
+  Future<void> _askPermission() async {
+    try {
+      await widget.appState.notifications.requestPermissions();
+    } catch (_) {
+      // Whatever the platform says next is still the answer to show.
+    }
+    await widget.appState.refreshNotificationsAllowed();
+    if (mounted) setState(() => _permissionAnswered = true);
   }
 
   void _back() {
@@ -379,11 +395,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _notificationsStep(AppLocalizations t) {
     final appState = widget.appState;
+    final blocked = _permissionAnswered && !appState.notificationsAllowed;
     return _StepShell(
       icon: Icons.notifications_active_rounded,
       title: t.onboardingNotifTitle,
       body: t.onboardingNotifBody,
       children: [
+        if (blocked) ...[
+          NotificationsBlockedNotice(onAllow: appState.allowNotifications),
+          const SizedBox(height: 14),
+        ],
         for (final (key, kind) in _notifOrder)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -413,6 +434,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   NotifModeSelector(
                     value: appState.notifMode[key] ?? NotifMode.notification,
                     onChanged: (mode) => appState.setNotifMode(key, mode),
+                    enabled: !blocked,
+                    onBlockedTap: () => AppToast.show(
+                      context,
+                      t.notifBlockedToast,
+                      icon: Icons.notifications_off_rounded,
+                    ),
                   ),
                 ],
               ),

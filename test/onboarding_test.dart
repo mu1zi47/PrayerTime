@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prayertime/main.dart';
+import 'package:prayertime/models/notif_mode.dart';
 import 'package:prayertime/models/prayer_day.dart';
 import 'package:prayertime/services/connectivity_service.dart';
 import 'package:prayertime/services/notification_service.dart';
 import 'package:prayertime/services/prayer_times_api.dart';
 import 'package:prayertime/state/app_state.dart';
+import 'package:prayertime/widgets/notif_mode_selector.dart';
 
 class _InstantFakeApi extends PrayerTimesApi {
   @override
@@ -45,14 +47,24 @@ class _AlwaysOnline extends ConnectivityService {
   Future<bool> hasConnection() async => true;
 }
 
-Widget _app({InstallTimes? installTimes}) => PrayerTimeApp(
-  appState: AppState(
-    api: _InstantFakeApi(),
-    notifications: NoopNotificationService(),
-    connectivity: const _AlwaysOnline(),
-    installTimes: () async => installTimes,
-  ),
+/// A phone where the notification prompt was refused.
+class _RefusedNotifications extends NoopNotificationService {
+  @override
+  Future<bool?> areNotificationsAllowed() async => false;
+}
+
+AppState _appState({
+  InstallTimes? installTimes,
+  NotificationService? notifications,
+}) => AppState(
+  api: _InstantFakeApi(),
+  notifications: notifications ?? NoopNotificationService(),
+  connectivity: const _AlwaysOnline(),
+  installTimes: () async => installTimes,
 );
+
+Widget _app({InstallTimes? installTimes}) =>
+    PrayerTimeApp(appState: _appState(installTimes: installTimes));
 
 final _installed = DateTime.utc(2026, 9, 15, 21, 59, 29);
 
@@ -89,6 +101,39 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Prayer'), findsOneWidget);
+  });
+
+  testWidgets('refused notifications leave the modes off and locked, '
+      'under a notice', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final appState = _appState(notifications: _RefusedNotifications());
+
+    await tester.pumpWidget(PrayerTimeApp(appState: appState));
+    await tester.pumpAndSettle();
+    for (var i = 0; i < 5; i++) {
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+    }
+
+    expect(find.text('Allow notifications'), findsOneWidget);
+
+    final fajrSilent = find.descendant(
+      of: find.byType(NotifModeSelector).first,
+      matching: find.byIcon(Icons.volume_off_rounded),
+    );
+    await tester.tap(fajrSilent);
+    // The toast's overlay goes in on this frame, the toast itself on the
+    // next — see AppToast.show.
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Allow notifications first'), findsOneWidget);
+    // The choice itself is kept for when notifications are allowed.
+    expect(appState.notifMode['fajr'], NotifMode.notification);
+
+    // Lets the toast run out rather than leaving its timer pending.
+    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('an install that predates setup is left alone', (tester) async {

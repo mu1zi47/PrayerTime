@@ -564,18 +564,6 @@ abstract class AppLocalizations {
   /// **'Уведомления по намазам'**
   String get azanByPrayersKicker;
 
-  /// No description provided for @quietKicker.
-  ///
-  /// In ru, this message translates to:
-  /// **'Тишина'**
-  String get quietKicker;
-
-  /// No description provided for @dontDisturbNight.
-  ///
-  /// In ru, this message translates to:
-  /// **'Не беспокоить ночью'**
-  String get dontDisturbNight;
-
   /// No description provided for @logSheetTitle.
   ///
   /// In ru, this message translates to:
@@ -1023,8 +1011,8 @@ abstract class AppLocalizations {
   /// No description provided for @notifPrayerEndingBody.
   ///
   /// In ru, this message translates to:
-  /// **'Осталось {minutes} мин, а намаз ещё не отмечен как прочитанный'**
-  String notifPrayerEndingBody(int minutes);
+  /// **'Осталось {left}, а намаз ещё не отмечен как прочитанный'**
+  String notifPrayerEndingBody(String left);
 
   /// No description provided for @widgetMarkedLabel.
   ///
@@ -1305,7 +1293,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingNotifBody.
   ///
   /// In ru, this message translates to:
-  /// **'Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.'**
+  /// **'Приложение напомнит о наступлении намаза и ещё раз ближе к концу его времени, если намаз не отмечен как прочитанный. Когда именно напоминать, можно выбрать в настройках.'**
   String get onboardingNotifBody;
 
   /// No description provided for @notifModeSound.
@@ -1325,6 +1313,228 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Выключено'**
   String get notifModeOff;
+
+  /// No description provided for @notifBlockedTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления выключены'**
+  String get notifBlockedTitle;
+
+  /// No description provided for @notifBlockedBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешите их в настройках приложения, чтобы не пропускать время намаза и напоминания.'**
+  String get notifBlockedBody;
+
+  /// No description provided for @notifBlockedAllow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить уведомления'**
+  String get notifBlockedAllow;
+
+  /// No description provided for @notifBlockedToast.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сначала разрешите уведомления'**
+  String get notifBlockedToast;
+
+  /// No description provided for @notifBlockedShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключены'**
+  String get notifBlockedShort;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In ru, this message translates to:
+  /// **'{minutes} мин'**
+  String durationMinutes(int minutes);
+
+  /// No description provided for @durationHours.
+  ///
+  /// In ru, this message translates to:
+  /// **'{hours} ч'**
+  String durationHours(int hours);
+
+  /// No description provided for @durationHoursMinutes.
+  ///
+  /// In ru, this message translates to:
+  /// **'{hours} ч {minutes} мин'**
+  String durationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @endRemindersWindowEnds.
+  ///
+  /// In ru, this message translates to:
+  /// **'Время намаза {prayer} заканчивается в {time}'**
+  String endRemindersWindowEnds(String prayer, String time);
+
+  /// No description provided for @endRemindersPrayerOff.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уведомления для этого намаза выключены, поэтому напоминания не придут.'**
+  String get endRemindersPrayerOff;
+
+  /// No description provided for @endRemindersEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напоминаний пока нет'**
+  String get endRemindersEmpty;
+
+  /// No description provided for @endReminderLead.
+  ///
+  /// In ru, this message translates to:
+  /// **'За {lead} до конца'**
+  String endReminderLead(String lead);
+
+  /// No description provided for @endReminderAt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Придёт в {time}'**
+  String endReminderAt(String time);
+
+  /// No description provided for @endReminderAdd.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить напоминание'**
+  String get endReminderAdd;
+
+  /// No description provided for @endRemindersLimit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Можно не больше {count} напоминаний'**
+  String endRemindersLimit(int count);
+
+  /// No description provided for @wheelHoursLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'ч'**
+  String get wheelHoursLabel;
+
+  /// No description provided for @wheelMinutesLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'мин'**
+  String get wheelMinutesLabel;
+
+  /// No description provided for @endReminderSave.
+  ///
+  /// In ru, this message translates to:
+  /// **'Готово'**
+  String get endReminderSave;
+
+  /// No description provided for @endReminderDuplicate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Такое напоминание уже есть'**
+  String get endReminderDuplicate;
+
+  /// No description provided for @endReminderDelete.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить'**
+  String get endReminderDelete;
+
+  /// No description provided for @endRemindersName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напоминание об окончании намаза'**
+  String get endRemindersName;
+
+  /// No description provided for @endRemindersKicker.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напоминания'**
+  String get endRemindersKicker;
+
+  /// No description provided for @endRemindersListHeader.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напоминание придёт:'**
+  String get endRemindersListHeader;
+
+  /// No description provided for @endReminderAtShort.
+  ///
+  /// In ru, this message translates to:
+  /// **'в {time}'**
+  String endReminderAtShort(String time);
+
+  /// No description provided for @endReminderPickerSummary.
+  ///
+  /// In ru, this message translates to:
+  /// **'Напомнить за {lead} до конца намаза'**
+  String endReminderPickerSummary(String lead);
+
+  /// No description provided for @endReminderOffToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключить на сегодня'**
+  String get endReminderOffToday;
+
+  /// No description provided for @endReminderOnToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Включить'**
+  String get endReminderOnToday;
+
+  /// No description provided for @endReminderOffTodayStatus.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключено на сегодня'**
+  String get endReminderOffTodayStatus;
+
+  /// No description provided for @endRemindersSwipeHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Смахните влево, чтобы увидеть меню взаимодействия'**
+  String get endRemindersSwipeHint;
+
+  /// No description provided for @soundRowTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Звук уведомлений'**
+  String get soundRowTitle;
+
+  /// No description provided for @soundEveningReminder.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вечернее напоминание'**
+  String get soundEveningReminder;
+
+  /// No description provided for @soundDefault.
+  ///
+  /// In ru, this message translates to:
+  /// **'По умолчанию'**
+  String get soundDefault;
+
+  /// No description provided for @soundKindNotification.
+  ///
+  /// In ru, this message translates to:
+  /// **'Звуки уведомлений'**
+  String get soundKindNotification;
+
+  /// No description provided for @soundKindAlarm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Будильники'**
+  String get soundKindAlarm;
+
+  /// No description provided for @soundKindRingtone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мелодии звонка'**
+  String get soundKindRingtone;
+
+  /// No description provided for @soundPickerDone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Готово'**
+  String get soundPickerDone;
+
+  /// No description provided for @soundListUnavailable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось получить звуки телефона'**
+  String get soundListUnavailable;
 
   /// No description provided for @calendarNotMarked.
   ///

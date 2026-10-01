@@ -246,12 +246,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get azanByPrayersKicker => 'Уведомления по намазам';
 
   @override
-  String get quietKicker => 'Тишина';
-
-  @override
-  String get dontDisturbNight => 'Не беспокоить ночью';
-
-  @override
   String logSheetTitle(String prayer) {
     return 'Как прошёл $prayer?';
   }
@@ -490,8 +484,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String notifPrayerEndingBody(int minutes) {
-    return 'Осталось $minutes мин, а намаз ещё не отмечен как прочитанный';
+  String notifPrayerEndingBody(String left) {
+    return 'Осталось $left, а намаз ещё не отмечен как прочитанный';
   }
 
   @override
@@ -650,7 +644,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboardingNotifBody =>
-      'Приложение напомнит о наступлении намаза и ещё раз за 30 минут до конца его времени, если намаз не отмечен как прочитанный.';
+      'Приложение напомнит о наступлении намаза и ещё раз ближе к концу его времени, если намаз не отмечен как прочитанный. Когда именно напоминать, можно выбрать в настройках.';
 
   @override
   String get notifModeSound => 'Со звуком';
@@ -660,6 +654,138 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notifModeOff => 'Выключено';
+
+  @override
+  String get notifBlockedTitle => 'Уведомления выключены';
+
+  @override
+  String get notifBlockedBody =>
+      'Разрешите их в настройках приложения, чтобы не пропускать время намаза и напоминания.';
+
+  @override
+  String get notifBlockedAllow => 'Разрешить уведомления';
+
+  @override
+  String get notifBlockedToast => 'Сначала разрешите уведомления';
+
+  @override
+  String get notifBlockedShort => 'Выключены';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String durationHours(int hours) {
+    return '$hours ч';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String endRemindersWindowEnds(String prayer, String time) {
+    return 'Время намаза $prayer заканчивается в $time';
+  }
+
+  @override
+  String get endRemindersPrayerOff =>
+      'Уведомления для этого намаза выключены, поэтому напоминания не придут.';
+
+  @override
+  String get endRemindersEmpty => 'Напоминаний пока нет';
+
+  @override
+  String endReminderLead(String lead) {
+    return 'За $lead до конца';
+  }
+
+  @override
+  String endReminderAt(String time) {
+    return 'Придёт в $time';
+  }
+
+  @override
+  String get endReminderAdd => 'Добавить напоминание';
+
+  @override
+  String endRemindersLimit(int count) {
+    return 'Можно не больше $count напоминаний';
+  }
+
+  @override
+  String get wheelHoursLabel => 'ч';
+
+  @override
+  String get wheelMinutesLabel => 'мин';
+
+  @override
+  String get endReminderSave => 'Готово';
+
+  @override
+  String get endReminderDuplicate => 'Такое напоминание уже есть';
+
+  @override
+  String get endReminderDelete => 'Удалить';
+
+  @override
+  String get endRemindersName => 'Напоминание об окончании намаза';
+
+  @override
+  String get endRemindersKicker => 'Напоминания';
+
+  @override
+  String get endRemindersListHeader => 'Напоминание придёт:';
+
+  @override
+  String endReminderAtShort(String time) {
+    return 'в $time';
+  }
+
+  @override
+  String endReminderPickerSummary(String lead) {
+    return 'Напомнить за $lead до конца намаза';
+  }
+
+  @override
+  String get endReminderOffToday => 'Выключить на сегодня';
+
+  @override
+  String get endReminderOnToday => 'Включить';
+
+  @override
+  String get endReminderOffTodayStatus => 'Выключено на сегодня';
+
+  @override
+  String get endRemindersSwipeHint =>
+      'Смахните влево, чтобы увидеть меню взаимодействия';
+
+  @override
+  String get soundRowTitle => 'Звук уведомлений';
+
+  @override
+  String get soundEveningReminder => 'Вечернее напоминание';
+
+  @override
+  String get soundDefault => 'По умолчанию';
+
+  @override
+  String get soundKindNotification => 'Звуки уведомлений';
+
+  @override
+  String get soundKindAlarm => 'Будильники';
+
+  @override
+  String get soundKindRingtone => 'Мелодии звонка';
+
+  @override
+  String get soundPickerDone => 'Готово';
+
+  @override
+  String get soundListUnavailable => 'Не удалось получить звуки телефона';
 
   @override
   String get calendarNotMarked => 'Не отмечен';

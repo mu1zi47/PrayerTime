@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
+import '../services/notification_sounds_bridge.dart';
 import '../services/now_bar_bridge.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
@@ -9,6 +10,7 @@ import '../theme/app_text_styles.dart';
 import '../widgets/choice_sheet.dart';
 import '../widgets/screen_back_button.dart';
 import '../widgets/settings_widgets.dart';
+import 'notification_sound_sheet.dart';
 import 'notifications_screen.dart';
 import 'now_bar_sheet.dart';
 
@@ -52,11 +54,64 @@ class SystemSettingsScreen extends StatelessWidget {
                 children: [
                   OptRow(
                     onTap: () => showNotificationsSheet(context, appState),
-                    child: Text(
-                      t.azanAndReminders,
-                      style: AppTextStyles.body(fontSize: 15),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            t.azanAndReminders,
+                            style: AppTextStyles.body(fontSize: 15),
+                          ),
+                        ),
+                        // The sheet says why and offers the fix; this is
+                        // only so it's noticed without opening it.
+                        if (!appState.notificationsAllowed) ...[
+                          Text(
+                            t.notifBlockedShort,
+                            style: AppTextStyles.body(
+                              fontSize: 14,
+                              color: AppColors.text.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                      ],
                     ),
                   ),
+                  // The phone's own sounds are only an app's to use on
+                  // Android.
+                  if (NotificationSoundsBridge.supported)
+                    OptRow(
+                      onTap: () async {
+                        final picked = await showSoundPicker(
+                          context,
+                          title: t.soundRowTitle,
+                          current: appState.sharedSound,
+                        );
+                        if (picked != null) appState.setSharedSound(picked);
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            t.soundRowTitle,
+                            style: AppTextStyles.body(fontSize: 15),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              appState.sharedSound.label(t),
+                              textAlign: TextAlign.end,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.body(
+                                fontSize: 14,
+                                color: AppColors.text.withValues(alpha: 0.5),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                      ),
+                    ),
                   _NowBarRow(appState: appState),
                 ],
               ),

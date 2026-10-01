@@ -1,26 +1,40 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform, visibleForTesting;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:url_launcher/url_launcher.dart';
 
+import '../data/prayer_window.dart';
 import '../data/timezone_utils.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
+import '../models/end_reminders.dart';
 import '../models/notif_mode.dart';
 import '../models/prayer_day.dart';
 import '../models/prayer_log_status.dart';
 import '../widgets/prayer_icon.dart';
+import 'now_bar_bridge.dart';
 import 'prayer_log_store.dart';
 
-const _notifChannelId = 'prayer_notification';
+// Every prayer gets its own notification channel, and Android fixes a
+// channel's sound once it exists — so the sound is part of the id, and
+// picking another one moves the prayer to a fresh channel (see
+// NotificationService.channelIdFor and _syncChannels).
+const _channelPrefix = 'prayer_sound_';
+
+// The single channel everything went out on before sounds could be picked;
+// deleted once the per-prayer channels are in place.
+const _legacyChannelId = 'prayer_notification';
+
+/// The channel key of notifications that aren't about one prayer — the
+/// evening "mark your prayers" nudge. Its sound is the shared one.
+const kGeneralSoundKey = 'general';
 
 // The "Прочитал"/"Done" action button on a prayer-time notification — see
 // NotificationService._onResponse and _notificationBackgroundHandler.
 const _markDoneActionId = 'mark_done';
-
-/// How long before a prayer's window closes the "you haven't marked this one
-/// yet" nudge fires — see [NotificationService.scheduleForDays].
-const kPrayerEndingReminderLead = Duration(minutes: 30);
 
 const _prayerOrder = [
   ('fajr', PrayerKind.fajr),
@@ -32,11 +46,17 @@ const _prayerOrder = [
 
 // Every prayer-day owns a fixed block of ids, one per slot below, so a
 // single scheduled notification can be addressed (and cancelled) on its own
-// later — see NotificationService.cancelPrayerEndReminder, which is how
-// marking a prayer prayed silences its pending reminder without rebuilding
+// later — see NotificationService.cancelPrayerEndReminders, which is how
+// marking a prayer prayed silences its pending reminders without rebuilding
 // the whole schedule.
-const _slotsPerDay = 16;
+//
+// Slots 0–5 are the prayers themselves (see [_prayerSlot]), 15 the evening
+// reminder, and from 16 on each of the five prayers has
+// [_endReminderSlotsPerPrayer] slots for its "window is closing" reminders.
+const _slotsPerDay = 64;
 const _slotEveningReminder = 15;
+const _slotFirstEndReminder = 16;
+const _endReminderSlotsPerPrayer = 8;
 
 int _prayerSlot(String key) => switch (key) {
   'tahajjud' => 0,
@@ -54,6 +74,13 @@ int _prayerSlot(String key) => switch (key) {
 int _notifId(DateTime date, int slot) =>
     ((date.year * 512 + date.month * 32 + date.day) * _slotsPerDay) + slot;
 
+/// The slot of [prayerKey]'s [n]th "window is closing" reminder — counted
+/// from Fajr, since Tahajjud gets none.
+int _endReminderSlot(String prayerKey, int n) =>
+    _slotFirstEndReminder +
+    (_prayerSlot(prayerKey) - 1) * _endReminderSlotsPerPrayer +
+    n;
+
 /// Runs in a fresh, isolated Dart isolate with no access to any running
 /// AppState — the app process was fully terminated when the action fired.
 /// Writes straight to shared_preferences via [PrayerLogStore], the same
@@ -68,15 +95,15 @@ void _notificationBackgroundHandler(NotificationResponse response) {
   // Same reason AppState.setPrayerStatus does this — a prayer marked from
   // the notification itself shouldn't still get nagged about later. Best
   // effort: this isolate may not have a live plugin channel to cancel
-  // through, in which case the reminder just fires as scheduled.
-  FlutterLocalNotificationsPlugin()
-      .cancel(
-        id: NotificationService.prayerEndReminderId(
-          DateTime.parse(dateKey),
-          prayerKey,
-        ),
-      )
-      .catchError((_) {});
+  // through, in which case the reminders just fire as scheduled.
+  final plugin = FlutterLocalNotificationsPlugin();
+  final ids = NotificationService.prayerEndReminderIds(
+    DateTime.parse(dateKey),
+    prayerKey,
+  );
+  for (final id in ids) {
+    plugin.cancel(id: id).catchError((_) {});
+  }
 }
 
 (String, String)? _parseMarkDonePayload(String? payload) {
@@ -88,9 +115,9 @@ void _notificationBackgroundHandler(NotificationResponse response) {
 
 /// One notification the schedule says should exist, before anything has
 /// been handed to the platform — see [NotificationService.scheduleForDays],
-/// which builds the whole list first and only then books it, nearest first
-/// and in small batches.
-class _PlannedNotification {
+/// which builds the whole list first (see [NotificationService.plan]) and
+/// only then books it, nearest first and in small batches.
+class PlannedNotification {
   final int id;
   final tz.TZDateTime when;
   final String title;
@@ -99,7 +126,14 @@ class _PlannedNotification {
   final String? payload;
   final String? actionLabel;
 
-  const _PlannedNotification({
+  /// Which channel it goes out on — a prayer's key, or [kGeneralSoundKey] —
+  /// with [sound] (the phone's default when null) and [channelName], what
+  /// the phone's settings list that channel as.
+  final String channel;
+  final String channelName;
+  final String? sound;
+
+  const PlannedNotification({
     required this.id,
     required this.when,
     required this.title,
@@ -107,7 +141,12 @@ class _PlannedNotification {
     required this.mode,
     required this.payload,
     required this.actionLabel,
+    required this.channel,
+    required this.channelName,
+    required this.sound,
   });
+
+  String get channelId => NotificationService.channelIdFor(channel, sound);
 }
 
 class NotificationService {
@@ -143,19 +182,8 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse:
           _notificationBackgroundHandler,
     );
-
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(
-          const AndroidNotificationChannel(
-            _notifChannelId,
-            'Уведомления о намазе',
-            description: 'Уведомление о наступлении времени намаза',
-            importance: Importance.high,
-          ),
-        );
+    // No channels here: which ones there should be depends on the sounds
+    // picked, and scheduleForDays sets them up (see _syncChannels).
   }
 
   /// Called from the first-run setup flow (see OnboardingScreen), not from
@@ -178,129 +206,114 @@ class NotificationService {
 
   /// Just the notification permission, without the exact-alarm settings
   /// detour [requestPermissions] takes — for turning on the Now Bar
-  /// notification, which needs nothing else.
+  /// notification, which needs nothing else, and for asking again from the
+  /// notification settings after the first prompt was refused.
   Future<void> requestNotificationsPermission() async {
     await _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.requestNotificationsPermission();
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  /// Whether anything scheduled here would actually be shown: notifications
+  /// allowed for the app and, on Android, not every prayer channel blocked
+  /// on its own in system settings — that reads as allowed at the app
+  /// level, but nothing posted ever appears. One prayer's channel blocked
+  /// is a choice about that prayer, not notifications being off. Null when
+  /// the platform won't say.
+  Future<bool?> areNotificationsAllowed() async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android != null) {
+      final enabled = await android.areNotificationsEnabled();
+      if (enabled != true) return enabled;
+      final ours = [
+        for (final c in await android.getNotificationChannels() ?? const [])
+          if (c.id.startsWith(_channelPrefix)) c,
+      ];
+      return ours.isEmpty || ours.any((c) => c.importance != Importance.none);
+    }
+
+    final ios = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
+    if (ios != null) return (await ios.checkPermissions())?.isEnabled;
+    return null;
+  }
+
+  /// The app's page in the phone's notification settings — the only way
+  /// back once the system prompt has been refused for good (iOS after the
+  /// first time, Android after the second), or when just the prayer channel
+  /// was switched off there.
+  Future<void> openSystemSettings() async {
+    if (kIsWeb) return;
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        await const NowBarBridge().openNotificationSettings();
+      case TargetPlatform.iOS:
+        try {
+          await launchUrl(Uri.parse('app-settings:'));
+        } catch (_) {
+          // Nothing else to offer; the notice still says what to change.
+        }
+      default:
+        break;
+    }
   }
 
   /// [prayerLog] is AppState's own log, in the same shape it keeps it —
-  /// a prayer already marked there gets no "window is closing" reminder,
+  /// a prayer already marked there gets no "window is closing" reminders,
   /// since there's nothing left to remind about (see
-  /// [cancelPrayerEndReminder] for the same thing happening after the fact,
-  /// when a prayer is marked while its reminder is already scheduled).
+  /// [cancelPrayerEndReminders] for the same thing happening after the
+  /// fact, when a prayer is marked while its reminders are already
+  /// scheduled). [endReminders] holds each prayer's reminder leads in
+  /// minutes, as AppState keeps them, and [endRemindersOff] the ones
+  /// switched off for a single day: by that day's date key, then prayer.
+  /// [sounds] is each prayer's sound URI, and [kGeneralSoundKey]'s — the
+  /// phone's default where it's null or missing.
   Future<void> scheduleForDays({
     required List<PrayerDay> days,
     required Map<String, NotifMode> notifMode,
     required Duration utcOffset,
     required AppLocale locale,
-    required bool quietHoursEnabled,
     bool includeTahajjud = false,
     Map<String, Map<String, PrayerLogStatus>> prayerLog = const {},
+    Map<String, List<int>> endReminders = const {},
+    Map<String, Map<String, Set<int>>> endRemindersOff = const {},
+    Map<String, String?> sounds = const {},
   }) async {
     final generation = ++_generation;
-    final t = lookupAppLocalizations(locale.localeValue);
     final location = tz.UTC;
-    final planned = <_PlannedNotification>[];
+    final planned = plan(
+      days: days,
+      notifMode: notifMode,
+      utcOffset: utcOffset,
+      locale: locale,
+      includeTahajjud: includeTahajjud,
+      prayerLog: prayerLog,
+      endReminders: endReminders,
+      endRemindersOff: endRemindersOff,
+      sounds: sounds,
+      now: tz.TZDateTime.now(location),
+    );
 
-    // Tahajjud sorts before Fajr — it's the last third of the *same*
-    // record's night, so it always falls earlier in the clock than that
-    // record's own Fajr (see PrayerDay.tahajjud).
-    final order = [
-      if (includeTahajjud) ('tahajjud', PrayerKind.tahajjud),
-      ..._prayerOrder,
-    ];
-
-    for (var i = 0; i < days.length; i++) {
-      final day = days[i];
-      final dayKey = PrayerLogStore.dateKey(day.date);
-      final dayLog = prayerLog[dayKey] ?? const <String, PrayerLogStatus>{};
-
-      for (final (key, kind) in order) {
-        final mode = notifMode[key] ?? NotifMode.notification;
-        if (mode == NotifMode.off) continue;
-        final naive = _combine(day.date, _timeFor(day, key));
-        final scheduled = _toTz(naive, utcOffset, location);
-        if (scheduled.isBefore(tz.TZDateTime.now(location))) continue;
-
-        // Tahajjud isn't one of the five prayers tracked on the prayer log,
-        // so it gets no mark-done action — there's nowhere for that mark to
-        // show up.
-        final payload = key == 'tahajjud' ? null : '$dayKey|$key';
-        planned.add(
-          _PlannedNotification(
-            id: _notifId(day.date, _prayerSlot(key)),
-            when: scheduled,
-            title: t.notifPlainTitle(nameForPrayer(t, kind)),
-            body: t.notifBody,
-            mode: _effectiveMode(mode, naive.hour, quietHoursEnabled),
-            payload: payload,
-            actionLabel: t.notifMarkDoneAction,
-          ),
-        );
-      }
-
-      // A last call before each prayer's window closes, for a prayer that
-      // still isn't marked as prayed. The window ends where the next one
-      // starts (Fajr's at sunrise, Isha's at the following day's Fajr), so
-      // the very last day on hand gets no Isha reminder — there's no next
-      // day to end its window.
-      for (final (key, kind) in _prayerOrder) {
-        if (dayLog.containsKey(key)) continue;
-        // Turning a prayer's notifications off turns off its reminder too.
-        final mode = notifMode[key] ?? NotifMode.notification;
-        if (mode == NotifMode.off) continue;
-        final end = _windowEnd(days, i, key);
-        if (end == null) continue;
-        final naive = end.subtract(kPrayerEndingReminderLead);
-        final scheduled = _toTz(naive, utcOffset, location);
-        if (scheduled.isBefore(tz.TZDateTime.now(location))) continue;
-
-        planned.add(
-          _PlannedNotification(
-            id: prayerEndReminderId(day.date, key),
-            when: scheduled,
-            title: t.notifPrayerEndingTitle(nameForPrayer(t, kind)),
-            body: t.notifPrayerEndingBody(kPrayerEndingReminderLead.inMinutes),
-            mode: _effectiveMode(mode, naive.hour, quietHoursEnabled),
-            payload: '$dayKey|$key',
-            actionLabel: t.notifMarkDoneAction,
-          ),
-        );
-      }
-
-      // A nudge to log the day's prayers — the prayer log otherwise depends
-      // entirely on the user remembering to open the app and mark them.
-      final reminderNaive = _combine(
-        day.date,
-        day.isha,
-      ).add(const Duration(minutes: 45));
-      final reminderScheduled = _toTz(reminderNaive, utcOffset, location);
-      if (!reminderScheduled.isBefore(tz.TZDateTime.now(location))) {
-        planned.add(
-          _PlannedNotification(
-            id: _notifId(day.date, _slotEveningReminder),
-            when: reminderScheduled,
-            title: t.notifEveningReminderTitle,
-            body: t.notifEveningReminderBody,
-            mode: _effectiveMode(
-              NotifMode.notification,
-              reminderNaive.hour,
-              quietHoursEnabled,
-            ),
-            payload: null,
-            actionLabel: null,
-          ),
-        );
-      }
+    try {
+      await _syncChannels(planned);
+    } catch (_) {
+      // Booking still goes ahead: the plugin creates a missing channel
+      // itself, just without the sound picked for it.
     }
-
-    // Nearest first, so the part of the schedule anyone could actually
-    // notice is in place before the rest.
-    planned.sort((a, b) => a.when.compareTo(b.when));
+    if (generation != _generation) return;
 
     // No cancelAll(): ids are deterministic (see [_notifId]), so rebooking
     // overwrites in place, and only what the new schedule *doesn't* want —
@@ -343,7 +356,7 @@ class NotificationService {
   static const _batchGap = Duration(milliseconds: 120);
 
   Future<void> _scheduleGradually(
-    List<_PlannedNotification> plans,
+    List<PlannedNotification> plans,
     int generation,
   ) async {
     for (var i = 0; i < plans.length; i += _batchSize) {
@@ -361,50 +374,214 @@ class NotificationService {
     }
   }
 
-  /// The id of the "window is closing" reminder for [prayerKey] on
-  /// [prayerDate] — stable across reschedules (see [_notifId]) so a reminder
-  /// scheduled by one [scheduleForDays] pass can be cancelled by a later,
-  /// unrelated call.
-  static int prayerEndReminderId(DateTime prayerDate, String prayerKey) =>
-      _notifId(prayerDate, _prayerSlot(prayerKey) + 6);
+  /// Everything [scheduleForDays] books, nearest first — what should be
+  /// pending once it's done. Split out so the schedule can be checked
+  /// without a platform to book it on.
+  @visibleForTesting
+  List<PlannedNotification> plan({
+    required List<PrayerDay> days,
+    required Map<String, NotifMode> notifMode,
+    required Duration utcOffset,
+    required AppLocale locale,
+    required tz.TZDateTime now,
+    bool includeTahajjud = false,
+    Map<String, Map<String, PrayerLogStatus>> prayerLog = const {},
+    Map<String, List<int>> endReminders = const {},
+    Map<String, Map<String, Set<int>>> endRemindersOff = const {},
+    Map<String, String?> sounds = const {},
+  }) {
+    final t = lookupAppLocalizations(locale.localeValue);
+    final location = tz.UTC;
+    final planned = <PlannedNotification>[];
 
-  /// Drops the pending "window is closing" reminder for a prayer that's
-  /// just been marked as prayed. A no-op when nothing is scheduled under
-  /// that id (already fired, or never scheduled at all).
-  Future<void> cancelPrayerEndReminder(DateTime date, String prayerKey) async {
-    await _plugin.cancel(id: prayerEndReminderId(date, prayerKey));
+    // Tahajjud sorts before Fajr — it's the last third of the *same*
+    // record's night, so it always falls earlier in the clock than that
+    // record's own Fajr (see PrayerDay.tahajjud).
+    final order = [
+      if (includeTahajjud) ('tahajjud', PrayerKind.tahajjud),
+      ..._prayerOrder,
+    ];
+
+    for (var i = 0; i < days.length; i++) {
+      final day = days[i];
+      final dayKey = PrayerLogStore.dateKey(day.date);
+      final dayLog = prayerLog[dayKey] ?? const <String, PrayerLogStatus>{};
+
+      for (final (key, kind) in order) {
+        final mode = notifMode[key] ?? NotifMode.notification;
+        if (mode == NotifMode.off) continue;
+        final naive = prayerWindowStart(day, key);
+        final scheduled = _toTz(naive, utcOffset, location);
+        if (scheduled.isBefore(now)) continue;
+
+        // Tahajjud isn't one of the five prayers tracked on the prayer log,
+        // so it gets no mark-done action — there's nowhere for that mark to
+        // show up.
+        final payload = key == 'tahajjud' ? null : '$dayKey|$key';
+        planned.add(
+          PlannedNotification(
+            id: _notifId(day.date, _prayerSlot(key)),
+            when: scheduled,
+            title: t.notifPlainTitle(nameForPrayer(t, kind)),
+            body: t.notifBody,
+            mode: mode,
+            payload: payload,
+            actionLabel: t.notifMarkDoneAction,
+            channel: key,
+            channelName: nameForPrayer(t, kind),
+            sound: sounds[key],
+          ),
+        );
+      }
+
+      // The last calls before each prayer's window closes, for a prayer that
+      // still isn't marked as prayed — as many as were set for it, each
+      // [endReminders] minutes ahead of the end. The window ends where the
+      // next one starts (see prayerWindowEnd), so the very last day on hand
+      // gets no Isha reminders — there's no next day to end its window.
+      for (final (key, kind) in _prayerOrder) {
+        if (dayLog.containsKey(key)) continue;
+        // Turning a prayer's notifications off turns off its reminders too.
+        final mode = notifMode[key] ?? NotifMode.notification;
+        if (mode == NotifMode.off) continue;
+        final end = prayerWindowEnd(days, i, key);
+        if (end == null) continue;
+        final start = prayerWindowStart(day, key);
+        final leads = endReminders[key] ?? const <int>[];
+        final off = endRemindersOff[dayKey]?[key] ?? const <int>{};
+
+        for (var n = 0; n < leads.length; n++) {
+          if (n >= _endReminderSlotsPerPrayer) break;
+          final lead = leads[n];
+          if (off.contains(lead)) continue;
+          final naive = end.subtract(Duration(minutes: lead));
+          // A lead longer than the whole window (two hours before the end
+          // of a 70-minute Maghrib) would land before the prayer has even
+          // begun — there's nothing to remind about yet. The picker doesn't
+          // offer one (see maxEndReminderLead); this is for leads set under
+          // another city's longer windows.
+          if (naive.isBefore(start)) continue;
+          final scheduled = _toTz(naive, utcOffset, location);
+          if (scheduled.isBefore(now)) continue;
+
+          planned.add(
+            PlannedNotification(
+              id: _notifId(day.date, _endReminderSlot(key, n)),
+              when: scheduled,
+              title: t.notifPrayerEndingTitle(nameForPrayer(t, kind)),
+              body: t.notifPrayerEndingBody(formatLeadTime(t, lead)),
+              mode: mode,
+              payload: '$dayKey|$key',
+              actionLabel: t.notifMarkDoneAction,
+              // A prayer's reminders sound like the prayer itself.
+              channel: key,
+              channelName: nameForPrayer(t, kind),
+              sound: sounds[key],
+            ),
+          );
+        }
+      }
+
+      // A nudge to log the day's prayers — the prayer log otherwise depends
+      // entirely on the user remembering to open the app and mark them.
+      final reminderNaive = prayerWindowStart(
+        day,
+        'isha',
+      ).add(const Duration(minutes: 45));
+      final reminderScheduled = _toTz(reminderNaive, utcOffset, location);
+      if (!reminderScheduled.isBefore(now)) {
+        planned.add(
+          PlannedNotification(
+            id: _notifId(day.date, _slotEveningReminder),
+            when: reminderScheduled,
+            title: t.notifEveningReminderTitle,
+            body: t.notifEveningReminderBody,
+            mode: NotifMode.notification,
+            payload: null,
+            actionLabel: null,
+            channel: kGeneralSoundKey,
+            channelName: t.soundEveningReminder,
+            sound: sounds[kGeneralSoundKey],
+          ),
+        );
+      }
+    }
+
+    // Nearest first, so the part of the schedule anyone could actually
+    // notice is in place before the rest.
+    planned.sort((a, b) => a.when.compareTo(b.when));
+    return planned;
   }
 
-  /// City-local wall-clock end of [key]'s window on `days[index]` — where
-  /// the next prayer starts. Null when that can't be known: Isha's window
-  /// ends at the *following* day's Fajr, which the last entry in [days]
-  /// doesn't have.
-  DateTime? _windowEnd(List<PrayerDay> days, int index, String key) {
-    final day = days[index];
-    switch (key) {
-      case 'fajr':
-        return _combine(day.date, day.sunrise);
-      case 'zuhr':
-        return _combine(day.date, day.asr);
-      case 'asr':
-        return _combine(day.date, day.maghrib);
-      case 'maghrib':
-        return _combine(day.date, day.isha);
-      case 'isha':
-        if (index + 1 >= days.length) return null;
-        final next = days[index + 1];
-        return _combine(next.date, next.fajr);
-      default:
-        return null;
+  /// The channel a notification of [key] — a prayer's, or
+  /// [kGeneralSoundKey] — goes out on with [soundUri] (the phone's default
+  /// when null). Stable for the same pair, different for any other.
+  static String channelIdFor(String key, String? soundUri) =>
+      '$_channelPrefix${key}_${soundUri == null ? 'default' : _soundTag(soundUri)}';
+
+  /// A short, stable stand-in for a sound URI inside a channel id (FNV-1a).
+  static String _soundTag(String uri) {
+    var hash = 0x811c9dc5;
+    for (final unit in uri.codeUnits) {
+      hash ^= unit;
+      hash = (hash * 0x01000193) & 0xffffffff;
+    }
+    return hash.toRadixString(16).padLeft(8, '0');
+  }
+
+  /// Makes sure every channel [planned] goes out on exists with its sound,
+  /// and drops the ones nothing does any more — a sound picked over, and
+  /// the single channel from before sounds could be picked. A channel's
+  /// name is set again each time, so it follows the app's language.
+  Future<void> _syncChannels(List<PlannedNotification> planned) async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return;
+
+    final wanted = <String, PlannedNotification>{
+      for (final p in planned) p.channelId: p,
+    };
+    for (final p in wanted.values) {
+      await android.createNotificationChannel(
+        AndroidNotificationChannel(
+          p.channelId,
+          p.channelName,
+          importance: Importance.high,
+          sound: p.sound == null ? null : UriAndroidNotificationSound(p.sound!),
+        ),
+      );
+    }
+    for (final channel in await android.getNotificationChannels() ?? const []) {
+      final stale =
+          channel.id == _legacyChannelId ||
+          (channel.id.startsWith(_channelPrefix) &&
+              !wanted.containsKey(channel.id));
+      if (stale) await android.deleteNotificationChannel(channelId: channel.id);
     }
   }
 
-  // Quiet hours (22:00–06:00 city-local time) downgrade any sound to a
-  // silent notification instead of skipping it outright.
-  NotifMode _effectiveMode(NotifMode mode, int hour, bool quietHoursEnabled) =>
-      quietHoursEnabled && _isQuietHour(hour) ? NotifMode.silent : mode;
+  /// The ids every "window is closing" reminder for [prayerKey] on
+  /// [prayerDate] can have — stable across reschedules (see [_notifId]), so
+  /// reminders scheduled by one [scheduleForDays] pass can be cancelled by a
+  /// later, unrelated call.
+  static List<int> prayerEndReminderIds(
+    DateTime prayerDate,
+    String prayerKey,
+  ) => [
+    for (var n = 0; n < _endReminderSlotsPerPrayer; n++)
+      _notifId(prayerDate, _endReminderSlot(prayerKey, n)),
+  ];
 
-  bool _isQuietHour(int hour) => hour >= 22 || hour < 6;
+  /// Drops the pending "window is closing" reminders for a prayer that's
+  /// just been marked as prayed. Every slot is cleared, not only the ones
+  /// in use, which costs nothing for ids with nothing scheduled under them.
+  Future<void> cancelPrayerEndReminders(DateTime date, String prayerKey) async {
+    for (final id in prayerEndReminderIds(date, prayerKey)) {
+      await _plugin.cancel(id: id);
+    }
+  }
 
   /// [naive] is a city-local wall clock encoded the same way AppState.cityNow
   /// is (UTC-flagged DateTime whose fields are the city's local time) —
@@ -415,7 +592,7 @@ class NotificationService {
     tz.Location location,
   ) => tz.TZDateTime.from(naive.subtract(utcOffset), location);
 
-  Future<void> _scheduleOne(_PlannedNotification plan) async {
+  Future<void> _scheduleOne(PlannedNotification plan) async {
     final id = plan.id;
     final when = plan.when;
     final title = plan.title;
@@ -438,13 +615,19 @@ class NotificationService {
             ),
           ];
 
+    // The channel carries the sound (see _syncChannels); a silent one is
+    // silenced here instead. Android 8+ ignores a single notification's own
+    // sound settings, so turning `playSound` off — as this used to — left
+    // "silent" prayers playing the channel's sound all along.
     final android = AndroidNotificationDetails(
-      _notifChannelId,
-      'Уведомления о намазе',
-      channelDescription: 'Уведомление о наступлении времени намаза',
+      plan.channelId,
+      plan.channelName,
       importance: Importance.high,
       priority: Priority.high,
-      playSound: mode == NotifMode.notification,
+      sound: plan.sound == null
+          ? null
+          : UriAndroidNotificationSound(plan.sound!),
+      silent: mode != NotifMode.notification,
       actions: actions,
     );
 
@@ -487,27 +670,6 @@ class NotificationService {
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
   }
-
-  String _timeFor(PrayerDay day, String key) => switch (key) {
-    'tahajjud' => day.tahajjud,
-    'fajr' => day.fajr,
-    'zuhr' => day.zuhr,
-    'asr' => day.asr,
-    'maghrib' => day.maghrib,
-    'isha' => day.isha,
-    _ => day.fajr,
-  };
-
-  DateTime _combine(DateTime date, String hhmm) {
-    final parts = hhmm.split(':');
-    return DateTime.utc(
-      date.year,
-      date.month,
-      date.day,
-      int.parse(parts[0]),
-      int.parse(parts[1]),
-    );
-  }
 }
 
 class NoopNotificationService extends NotificationService {
@@ -524,18 +686,29 @@ class NoopNotificationService extends NotificationService {
   Future<void> requestNotificationsPermission() async {}
 
   @override
+  Future<bool?> areNotificationsAllowed() async => true;
+
+  @override
+  Future<void> openSystemSettings() async {}
+
+  @override
   Future<void> scheduleForDays({
     required List<PrayerDay> days,
     required Map<String, NotifMode> notifMode,
     required Duration utcOffset,
     required AppLocale locale,
-    required bool quietHoursEnabled,
     bool includeTahajjud = false,
     Map<String, Map<String, PrayerLogStatus>> prayerLog = const {},
+    Map<String, List<int>> endReminders = const {},
+    Map<String, Map<String, Set<int>>> endRemindersOff = const {},
+    Map<String, String?> sounds = const {},
   }) async {}
 
   @override
-  Future<void> cancelPrayerEndReminder(DateTime date, String prayerKey) async {}
+  Future<void> cancelPrayerEndReminders(
+    DateTime date,
+    String prayerKey,
+  ) async {}
 
   @override
   Future<void> cancelAll() async {}

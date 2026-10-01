@@ -100,8 +100,6 @@
   "notificationsScreenTitle": "Bildirishnomalar",
   "azanByPrayersKicker": "Har namoz uchun bildirishnoma",
 
-  "quietKicker": "Jimlik",
-  "dontDisturbNight": "Kechasi bezovta qilmaslik",
 
 
   "logSheetTitle": "{prayer} qanday o'tdi?",
@@ -222,10 +220,10 @@
       "prayer": {"type": "String"}
     }
   },
-  "notifPrayerEndingBody": "{minutes} daqiqa qoldi, namoz hali o'qilgan deb belgilanmagan",
+  "notifPrayerEndingBody": "{left} qoldi, namoz hali o'qilgan deb belgilanmagan",
   "@notifPrayerEndingBody": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "left": {"type": "String"}
     }
   },
   "widgetMarkedLabel": "Bajarildi",
@@ -301,11 +299,76 @@
 
   "onboardingNotifTitle": "Bildirishnomalar",
 
-  "onboardingNotifBody": "Ilova har bir namoz kirganini bildiradi va agar namoz o'qildi deb belgilanmagan bo'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.",
+  "onboardingNotifBody": "Ilova har bir namoz kirganini bildiradi va agar namoz o'qildi deb belgilanmagan bo'lsa, vaqti tugashidan oldin yana eslatadi. Qachon eslatishni sozlamalarda tanlash mumkin.",
 
   "notifModeSound": "Ovoz bilan",
   "notifModeSilent": "Ovozsiz",
   "notifModeOff": "O'chirilgan",
+  "notifBlockedTitle": "Bildirishnomalar o'chirilgan",
+  "notifBlockedBody": "Namoz vaqti va eslatmalarni o'tkazib yubormaslik uchun ilova sozlamalarida ularga ruxsat bering.",
+  "notifBlockedAllow": "Bildirishnomalarga ruxsat berish",
+  "notifBlockedToast": "Avval bildirishnomalarga ruxsat bering",
+  "notifBlockedShort": "O'chirilgan",
+
+  "durationMinutes": "{minutes} daqiqa",
+  "@durationMinutes": {
+    "placeholders": {"minutes": {"type": "int"}}
+  },
+  "durationHours": "{hours} soat",
+  "@durationHours": {
+    "placeholders": {"hours": {"type": "int"}}
+  },
+  "durationHoursMinutes": "{hours} soat {minutes} daqiqa",
+  "@durationHoursMinutes": {
+    "placeholders": {"hours": {"type": "int"}, "minutes": {"type": "int"}}
+  },
+  "endRemindersWindowEnds": "{prayer} namozi vaqti {time} da tugaydi",
+  "@endRemindersWindowEnds": {
+    "placeholders": {"prayer": {"type": "String"}, "time": {"type": "String"}}
+  },
+  "endRemindersPrayerOff": "Bu namoz uchun bildirishnomalar o'chirilgan, shuning uchun eslatmalar kelmaydi.",
+  "endRemindersEmpty": "Hozircha eslatma yo'q",
+  "endReminderLead": "Tugashiga {lead} qolganda",
+  "@endReminderLead": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderAt": "{time} da keladi",
+  "@endReminderAt": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderAdd": "Eslatma qo'shish",
+  "endRemindersLimit": "Ko'pi bilan {count} ta eslatma",
+  "@endRemindersLimit": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "wheelHoursLabel": "soat",
+  "wheelMinutesLabel": "daqiqa",
+  "endReminderSave": "Tayyor",
+  "endReminderDuplicate": "Bunday eslatma allaqachon bor",
+  "endReminderDelete": "O'chirish",
+  "endRemindersName": "Namoz vaqti tugashi haqida eslatma",
+  "endRemindersKicker": "Eslatmalar",
+  "endRemindersListHeader": "Eslatma keladi:",
+  "endReminderAtShort": "{time} da",
+  "@endReminderAtShort": {
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "endReminderPickerSummary": "Namoz tugashiga {lead} qolganda eslatish",
+  "@endReminderPickerSummary": {
+    "placeholders": {"lead": {"type": "String"}}
+  },
+  "endReminderOffToday": "Bugunga to'xtatish",
+  "endReminderOnToday": "Yoqish",
+  "endReminderOffTodayStatus": "Bugunga to'xtatilgan",
+  "endRemindersSwipeHint": "Amallarni ko'rish uchun chapga suring",
+  "soundRowTitle": "Bildirishnoma ovozi",
+  "soundEveningReminder": "Kechki eslatma",
+  "soundDefault": "Standart",
+  "soundKindNotification": "Bildirishnoma ovozlari",
+  "soundKindAlarm": "Budilnik ovozlari",
+  "soundKindRingtone": "Qo'ng'iroq ohanglari",
+  "soundPickerDone": "Tayyor",
+  "soundListUnavailable": "Telefon ovozlarini olib bo'lmadi",
 
   "calendarNotMarked": "Belgilanmagan",
   "calendarDayPanelKicker": "Namozlarni belgilang",

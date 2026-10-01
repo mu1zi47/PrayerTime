@@ -247,12 +247,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get azanByPrayersKicker => 'Har namoz uchun bildirishnoma';
 
   @override
-  String get quietKicker => 'Jimlik';
-
-  @override
-  String get dontDisturbNight => 'Kechasi bezovta qilmaslik';
-
-  @override
   String logSheetTitle(String prayer) {
     return '$prayer qanday o\'tdi?';
   }
@@ -492,8 +486,8 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String notifPrayerEndingBody(int minutes) {
-    return '$minutes daqiqa qoldi, namoz hali o\'qilgan deb belgilanmagan';
+  String notifPrayerEndingBody(String left) {
+    return '$left qoldi, namoz hali o\'qilgan deb belgilanmagan';
   }
 
   @override
@@ -653,7 +647,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get onboardingNotifBody =>
-      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.';
+      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashidan oldin yana eslatadi. Qachon eslatishni sozlamalarda tanlash mumkin.';
 
   @override
   String get notifModeSound => 'Ovoz bilan';
@@ -663,6 +657,137 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get notifModeOff => 'O\'chirilgan';
+
+  @override
+  String get notifBlockedTitle => 'Bildirishnomalar o\'chirilgan';
+
+  @override
+  String get notifBlockedBody =>
+      'Namoz vaqti va eslatmalarni o\'tkazib yubormaslik uchun ilova sozlamalarida ularga ruxsat bering.';
+
+  @override
+  String get notifBlockedAllow => 'Bildirishnomalarga ruxsat berish';
+
+  @override
+  String get notifBlockedToast => 'Avval bildirishnomalarga ruxsat bering';
+
+  @override
+  String get notifBlockedShort => 'O\'chirilgan';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes daqiqa';
+  }
+
+  @override
+  String durationHours(int hours) {
+    return '$hours soat';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours soat $minutes daqiqa';
+  }
+
+  @override
+  String endRemindersWindowEnds(String prayer, String time) {
+    return '$prayer namozi vaqti $time da tugaydi';
+  }
+
+  @override
+  String get endRemindersPrayerOff =>
+      'Bu namoz uchun bildirishnomalar o\'chirilgan, shuning uchun eslatmalar kelmaydi.';
+
+  @override
+  String get endRemindersEmpty => 'Hozircha eslatma yo\'q';
+
+  @override
+  String endReminderLead(String lead) {
+    return 'Tugashiga $lead qolganda';
+  }
+
+  @override
+  String endReminderAt(String time) {
+    return '$time da keladi';
+  }
+
+  @override
+  String get endReminderAdd => 'Eslatma qo\'shish';
+
+  @override
+  String endRemindersLimit(int count) {
+    return 'Ko\'pi bilan $count ta eslatma';
+  }
+
+  @override
+  String get wheelHoursLabel => 'soat';
+
+  @override
+  String get wheelMinutesLabel => 'daqiqa';
+
+  @override
+  String get endReminderSave => 'Tayyor';
+
+  @override
+  String get endReminderDuplicate => 'Bunday eslatma allaqachon bor';
+
+  @override
+  String get endReminderDelete => 'O\'chirish';
+
+  @override
+  String get endRemindersName => 'Namoz vaqti tugashi haqida eslatma';
+
+  @override
+  String get endRemindersKicker => 'Eslatmalar';
+
+  @override
+  String get endRemindersListHeader => 'Eslatma keladi:';
+
+  @override
+  String endReminderAtShort(String time) {
+    return '$time da';
+  }
+
+  @override
+  String endReminderPickerSummary(String lead) {
+    return 'Namoz tugashiga $lead qolganda eslatish';
+  }
+
+  @override
+  String get endReminderOffToday => 'Bugunga to\'xtatish';
+
+  @override
+  String get endReminderOnToday => 'Yoqish';
+
+  @override
+  String get endReminderOffTodayStatus => 'Bugunga to\'xtatilgan';
+
+  @override
+  String get endRemindersSwipeHint => 'Amallarni ko\'rish uchun chapga suring';
+
+  @override
+  String get soundRowTitle => 'Bildirishnoma ovozi';
+
+  @override
+  String get soundEveningReminder => 'Kechki eslatma';
+
+  @override
+  String get soundDefault => 'Standart';
+
+  @override
+  String get soundKindNotification => 'Bildirishnoma ovozlari';
+
+  @override
+  String get soundKindAlarm => 'Budilnik ovozlari';
+
+  @override
+  String get soundKindRingtone => 'Qo\'ng\'iroq ohanglari';
+
+  @override
+  String get soundPickerDone => 'Tayyor';
+
+  @override
+  String get soundListUnavailable => 'Telefon ovozlarini olib bo\'lmadi';
 
   @override
   String get calendarNotMarked => 'Belgilanmagan';
@@ -948,12 +1073,6 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get azanByPrayersKicker => 'Ҳар намоз учун билдиришнома';
 
   @override
-  String get quietKicker => 'Жимлик';
-
-  @override
-  String get dontDisturbNight => 'Кечаси безовта қилмаслик';
-
-  @override
   String logSheetTitle(String prayer) {
     return '$prayer қандай ўтди?';
   }
@@ -1192,8 +1311,8 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   }
 
   @override
-  String notifPrayerEndingBody(int minutes) {
-    return '$minutes дақиқа қолди, намоз ҳали ўқилган деб белгиланмаган';
+  String notifPrayerEndingBody(String left) {
+    return '$left қолди, намоз ҳали ўқилган деб белгиланмаган';
   }
 
   @override
@@ -1352,7 +1471,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get onboardingNotifBody =>
-      'Илова ҳар бир намоз кирганини билдиради ва агар намоз ўқилди деб белгиланмаган бўлса, вақти тугашига 30 дақиқа қолганда яна эслатади.';
+      'Илова ҳар бир намоз кирганини билдиради ва агар намоз ўқилди деб белгиланмаган бўлса, вақти тугашидан олдин яна эслатади. Қачон эслатишни созламаларда танлаш мумкин.';
 
   @override
   String get notifModeSound => 'Овоз билан';
@@ -1362,6 +1481,137 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get notifModeOff => 'Ўчирилган';
+
+  @override
+  String get notifBlockedTitle => 'Билдиришномалар ўчирилган';
+
+  @override
+  String get notifBlockedBody =>
+      'Намоз вақти ва эслатмаларни ўтказиб юбормаслик учун илова созламаларида уларга рухсат беринг.';
+
+  @override
+  String get notifBlockedAllow => 'Билдиришномаларга рухсат бериш';
+
+  @override
+  String get notifBlockedToast => 'Аввал билдиришномаларга рухсат беринг';
+
+  @override
+  String get notifBlockedShort => 'Ўчирилган';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes дақиқа';
+  }
+
+  @override
+  String durationHours(int hours) {
+    return '$hours соат';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours соат $minutes дақиқа';
+  }
+
+  @override
+  String endRemindersWindowEnds(String prayer, String time) {
+    return '$prayer намози вақти $time да тугайди';
+  }
+
+  @override
+  String get endRemindersPrayerOff =>
+      'Бу намоз учун билдиришномалар ўчирилган, шунинг учун эслатмалар келмайди.';
+
+  @override
+  String get endRemindersEmpty => 'Ҳозирча эслатма йўқ';
+
+  @override
+  String endReminderLead(String lead) {
+    return 'Тугашига $lead қолганда';
+  }
+
+  @override
+  String endReminderAt(String time) {
+    return '$time да келади';
+  }
+
+  @override
+  String get endReminderAdd => 'Эслатма қўшиш';
+
+  @override
+  String endRemindersLimit(int count) {
+    return 'Кўпи билан $count та эслатма';
+  }
+
+  @override
+  String get wheelHoursLabel => 'соат';
+
+  @override
+  String get wheelMinutesLabel => 'дақиқа';
+
+  @override
+  String get endReminderSave => 'Тайёр';
+
+  @override
+  String get endReminderDuplicate => 'Бундай эслатма аллақачон бор';
+
+  @override
+  String get endReminderDelete => 'Ўчириш';
+
+  @override
+  String get endRemindersName => 'Намоз вақти тугаши ҳақида эслатма';
+
+  @override
+  String get endRemindersKicker => 'Эслатмалар';
+
+  @override
+  String get endRemindersListHeader => 'Эслатма келади:';
+
+  @override
+  String endReminderAtShort(String time) {
+    return '$time да';
+  }
+
+  @override
+  String endReminderPickerSummary(String lead) {
+    return 'Намоз тугашига $lead қолганда эслатиш';
+  }
+
+  @override
+  String get endReminderOffToday => 'Бугунга тўхтатиш';
+
+  @override
+  String get endReminderOnToday => 'Ёқиш';
+
+  @override
+  String get endReminderOffTodayStatus => 'Бугунга тўхтатилган';
+
+  @override
+  String get endRemindersSwipeHint => 'Амалларни кўриш учун чапга суринг';
+
+  @override
+  String get soundRowTitle => 'Билдиришнома овози';
+
+  @override
+  String get soundEveningReminder => 'Кечки эслатма';
+
+  @override
+  String get soundDefault => 'Стандарт';
+
+  @override
+  String get soundKindNotification => 'Билдиришнома овозлари';
+
+  @override
+  String get soundKindAlarm => 'Будильник овозлари';
+
+  @override
+  String get soundKindRingtone => 'Қўнғироқ оҳанглари';
+
+  @override
+  String get soundPickerDone => 'Тайёр';
+
+  @override
+  String get soundListUnavailable => 'Телефон овозларини олиб бўлмади';
 
   @override
   String get calendarNotMarked => 'Белгиланмаган';
@@ -1647,12 +1897,6 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get azanByPrayersKicker => 'Har namoz uchun bildirishnoma';
 
   @override
-  String get quietKicker => 'Jimlik';
-
-  @override
-  String get dontDisturbNight => 'Kechasi bezovta qilmaslik';
-
-  @override
   String logSheetTitle(String prayer) {
     return '$prayer qanday o\'tdi?';
   }
@@ -1892,8 +2136,8 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   }
 
   @override
-  String notifPrayerEndingBody(int minutes) {
-    return '$minutes daqiqa qoldi, namoz hali o\'qilgan deb belgilanmagan';
+  String notifPrayerEndingBody(String left) {
+    return '$left qoldi, namoz hali o\'qilgan deb belgilanmagan';
   }
 
   @override
@@ -2053,7 +2297,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get onboardingNotifBody =>
-      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashiga 30 daqiqa qolganda yana eslatadi.';
+      'Ilova har bir namoz kirganini bildiradi va agar namoz o\'qildi deb belgilanmagan bo\'lsa, vaqti tugashidan oldin yana eslatadi. Qachon eslatishni sozlamalarda tanlash mumkin.';
 
   @override
   String get notifModeSound => 'Ovoz bilan';
@@ -2063,6 +2307,137 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get notifModeOff => 'O\'chirilgan';
+
+  @override
+  String get notifBlockedTitle => 'Bildirishnomalar o\'chirilgan';
+
+  @override
+  String get notifBlockedBody =>
+      'Namoz vaqti va eslatmalarni o\'tkazib yubormaslik uchun ilova sozlamalarida ularga ruxsat bering.';
+
+  @override
+  String get notifBlockedAllow => 'Bildirishnomalarga ruxsat berish';
+
+  @override
+  String get notifBlockedToast => 'Avval bildirishnomalarga ruxsat bering';
+
+  @override
+  String get notifBlockedShort => 'O\'chirilgan';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes daqiqa';
+  }
+
+  @override
+  String durationHours(int hours) {
+    return '$hours soat';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours soat $minutes daqiqa';
+  }
+
+  @override
+  String endRemindersWindowEnds(String prayer, String time) {
+    return '$prayer namozi vaqti $time da tugaydi';
+  }
+
+  @override
+  String get endRemindersPrayerOff =>
+      'Bu namoz uchun bildirishnomalar o\'chirilgan, shuning uchun eslatmalar kelmaydi.';
+
+  @override
+  String get endRemindersEmpty => 'Hozircha eslatma yo\'q';
+
+  @override
+  String endReminderLead(String lead) {
+    return 'Tugashiga $lead qolganda';
+  }
+
+  @override
+  String endReminderAt(String time) {
+    return '$time da keladi';
+  }
+
+  @override
+  String get endReminderAdd => 'Eslatma qo\'shish';
+
+  @override
+  String endRemindersLimit(int count) {
+    return 'Ko\'pi bilan $count ta eslatma';
+  }
+
+  @override
+  String get wheelHoursLabel => 'soat';
+
+  @override
+  String get wheelMinutesLabel => 'daqiqa';
+
+  @override
+  String get endReminderSave => 'Tayyor';
+
+  @override
+  String get endReminderDuplicate => 'Bunday eslatma allaqachon bor';
+
+  @override
+  String get endReminderDelete => 'O\'chirish';
+
+  @override
+  String get endRemindersName => 'Namoz vaqti tugashi haqida eslatma';
+
+  @override
+  String get endRemindersKicker => 'Eslatmalar';
+
+  @override
+  String get endRemindersListHeader => 'Eslatma keladi:';
+
+  @override
+  String endReminderAtShort(String time) {
+    return '$time da';
+  }
+
+  @override
+  String endReminderPickerSummary(String lead) {
+    return 'Namoz tugashiga $lead qolganda eslatish';
+  }
+
+  @override
+  String get endReminderOffToday => 'Bugunga to\'xtatish';
+
+  @override
+  String get endReminderOnToday => 'Yoqish';
+
+  @override
+  String get endReminderOffTodayStatus => 'Bugunga to\'xtatilgan';
+
+  @override
+  String get endRemindersSwipeHint => 'Amallarni ko\'rish uchun chapga suring';
+
+  @override
+  String get soundRowTitle => 'Bildirishnoma ovozi';
+
+  @override
+  String get soundEveningReminder => 'Kechki eslatma';
+
+  @override
+  String get soundDefault => 'Standart';
+
+  @override
+  String get soundKindNotification => 'Bildirishnoma ovozlari';
+
+  @override
+  String get soundKindAlarm => 'Budilnik ovozlari';
+
+  @override
+  String get soundKindRingtone => 'Qo\'ng\'iroq ohanglari';
+
+  @override
+  String get soundPickerDone => 'Tayyor';
+
+  @override
+  String get soundListUnavailable => 'Telefon ovozlarini olib bo\'lmadi';
 
   @override
   String get calendarNotMarked => 'Belgilanmagan';

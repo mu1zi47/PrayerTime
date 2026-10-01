@@ -246,12 +246,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get azanByPrayersKicker => 'Notifications per prayer';
 
   @override
-  String get quietKicker => 'Quiet hours';
-
-  @override
-  String get dontDisturbNight => 'Do not disturb at night';
-
-  @override
   String logSheetTitle(String prayer) {
     return 'How did $prayer go?';
   }
@@ -490,8 +484,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String notifPrayerEndingBody(int minutes) {
-    return '$minutes min left, and this prayer still isn\'t marked as prayed';
+  String notifPrayerEndingBody(String left) {
+    return '$left left, and this prayer still isn\'t marked as prayed';
   }
 
   @override
@@ -651,7 +645,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingNotifBody =>
-      'The app announces each prayer, and reminds you again 30 minutes before its window closes if you haven\'t marked it as prayed.';
+      'The app announces each prayer and reminds you again before its window closes if you haven\'t marked it as prayed. You can choose when in the settings.';
 
   @override
   String get notifModeSound => 'With sound';
@@ -661,6 +655,137 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifModeOff => 'Off';
+
+  @override
+  String get notifBlockedTitle => 'Notifications are off';
+
+  @override
+  String get notifBlockedBody =>
+      'Allow them in the app settings so you never miss a prayer time or a reminder.';
+
+  @override
+  String get notifBlockedAllow => 'Allow notifications';
+
+  @override
+  String get notifBlockedToast => 'Allow notifications first';
+
+  @override
+  String get notifBlockedShort => 'Off';
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String durationHours(int hours) {
+    return '$hours h';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String endRemindersWindowEnds(String prayer, String time) {
+    return '$prayer\'s time ends at $time';
+  }
+
+  @override
+  String get endRemindersPrayerOff =>
+      'Notifications for this prayer are off, so these reminders won\'t come.';
+
+  @override
+  String get endRemindersEmpty => 'No reminders yet';
+
+  @override
+  String endReminderLead(String lead) {
+    return '$lead before the end';
+  }
+
+  @override
+  String endReminderAt(String time) {
+    return 'Comes at $time';
+  }
+
+  @override
+  String get endReminderAdd => 'Add reminder';
+
+  @override
+  String endRemindersLimit(int count) {
+    return 'Up to $count reminders';
+  }
+
+  @override
+  String get wheelHoursLabel => 'h';
+
+  @override
+  String get wheelMinutesLabel => 'min';
+
+  @override
+  String get endReminderSave => 'Done';
+
+  @override
+  String get endReminderDuplicate => 'There\'s already a reminder at that time';
+
+  @override
+  String get endReminderDelete => 'Delete';
+
+  @override
+  String get endRemindersName => 'Prayer ending reminder';
+
+  @override
+  String get endRemindersKicker => 'Reminders';
+
+  @override
+  String get endRemindersListHeader => 'The reminder comes:';
+
+  @override
+  String endReminderAtShort(String time) {
+    return 'at $time';
+  }
+
+  @override
+  String endReminderPickerSummary(String lead) {
+    return 'Remind me $lead before the prayer ends';
+  }
+
+  @override
+  String get endReminderOffToday => 'Off for today';
+
+  @override
+  String get endReminderOnToday => 'Turn on';
+
+  @override
+  String get endReminderOffTodayStatus => 'Off for today';
+
+  @override
+  String get endRemindersSwipeHint => 'Swipe left to see the actions';
+
+  @override
+  String get soundRowTitle => 'Notification sound';
+
+  @override
+  String get soundEveningReminder => 'Evening reminder';
+
+  @override
+  String get soundDefault => 'Default';
+
+  @override
+  String get soundKindNotification => 'Notification sounds';
+
+  @override
+  String get soundKindAlarm => 'Alarms';
+
+  @override
+  String get soundKindRingtone => 'Ringtones';
+
+  @override
+  String get soundPickerDone => 'Done';
+
+  @override
+  String get soundListUnavailable => 'Couldn\'t read the phone\'s sounds';
 
   @override
   String get calendarNotMarked => 'Not marked';

@@ -6,10 +6,12 @@ import '../state/app_state.dart';
 import '../widgets/icon_badge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
-import '../widgets/app_switch.dart';
+import '../widgets/app_toast.dart';
 import '../widgets/notif_mode_selector.dart';
+import '../widgets/notifications_blocked_notice.dart';
 import '../widgets/prayer_icon.dart';
 import '../widgets/settings_widgets.dart';
+import 'end_reminders_sheet.dart';
 
 /// Opens notification settings as a modal sheet rather than a pushed full
 /// screen — a fairly short, self-contained block of toggles doesn't need a
@@ -44,6 +46,12 @@ class _NotificationsSheet extends StatelessWidget {
       builder: (context, _) {
         final t = AppLocalizations.of(context)!;
         final bottomInset = MediaQuery.paddingOf(context).bottom;
+        final allowed = appState.notificationsAllowed;
+        void showBlocked() => AppToast.show(
+          context,
+          t.notifBlockedToast,
+          icon: Icons.notifications_off_rounded,
+        );
         return ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * 0.85,
@@ -82,6 +90,12 @@ class _NotificationsSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (!allowed) ...[
+                          NotificationsBlockedNotice(
+                            onAllow: appState.allowNotifications,
+                          ),
+                          const SizedBox(height: 18),
+                        ],
                         SettingsGroup(
                           kicker: t.azanByPrayersKicker,
                           children: [
@@ -97,6 +111,8 @@ class _NotificationsSheet extends StatelessWidget {
                                       NotifMode.notification,
                                   onChanged: (mode) =>
                                       appState.setNotifMode(key, mode),
+                                  enabled: allowed,
+                                  onBlockedTap: showBlocked,
                                 ),
                                 child: Row(
                                   children: [
@@ -117,16 +133,34 @@ class _NotificationsSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         SettingsGroup(
-                          kicker: t.quietKicker,
+                          kicker: t.endRemindersKicker,
                           children: [
-                            SettingsRow(
-                              trailing: AppSwitch(
-                                value: appState.quiet,
-                                onChanged: (_) => appState.toggleQuiet(),
-                              ),
-                              child: Text(
-                                t.dontDisturbNight,
-                                style: AppTextStyles.body(fontSize: 15),
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 200),
+                              opacity: allowed ? 1 : 0.45,
+                              child: OptRow(
+                                onTap: allowed
+                                    ? () => showEndRemindersSheet(
+                                        context,
+                                        appState,
+                                      )
+                                    : showBlocked,
+                                child: Row(
+                                  children: [
+                                    const IconBadge(
+                                      Icons.alarm_rounded,
+                                      size: 32,
+                                      iconSize: 16,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        t.endRemindersName,
+                                        style: AppTextStyles.body(fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],

@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.provider.Settings
 import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
+import uz.mu1zi47.prayertime.sounds.NotificationSounds
 import uz.mu1zi47.prayertime.widget.PrayerWidgets
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -78,6 +79,32 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        // The phone's sounds, for the notification sound settings — see
+        // NotificationSoundsBridge on the Dart side.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SOUNDS_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                val context = applicationContext
+                when (call.method) {
+                    "list" -> result.success(NotificationSounds.list(context))
+                    "defaultTitle" -> result.success(NotificationSounds.defaultTitle(context))
+                    "play" -> {
+                        NotificationSounds.play(context, call.arguments as String?)
+                        result.success(null)
+                    }
+                    "stop" -> {
+                        NotificationSounds.stop()
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    // A preview shouldn't keep playing once the app is out of sight.
+    override fun onPause() {
+        NotificationSounds.stop()
+        super.onPause()
     }
 
     private fun openAppSettings(action: String) {
@@ -105,5 +132,6 @@ class MainActivity : FlutterActivity() {
     companion object {
         private const val WIDGET_CHANNEL = "uz.mu1zi47.prayertime/widget"
         private const val NOW_BAR_CHANNEL = "uz.mu1zi47.prayertime/now_bar"
+        private const val SOUNDS_CHANNEL = "uz.mu1zi47.prayertime/sounds"
     }
 }

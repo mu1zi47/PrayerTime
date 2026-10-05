@@ -18,6 +18,30 @@ void main() {
     }
   });
 
+  // The Now Bar and the home-screen widget cancel these reminders natively
+  // (android/.../EndReminders.kt), computing the ids the same way — these
+  // are the numbers that file's comment quotes.
+  test('reminder ids match the scheme the native side computes', () {
+    expect(
+      NotificationService.prayerEndReminderIds(DateTime(2026, 10, 5), 'zuhr'),
+      [for (var id = 66408792; id <= 66408799; id++) id],
+    );
+    expect(
+      NotificationService.prayerEndReminderIds(
+        DateTime(2026, 10, 5),
+        'fajr',
+      ).first,
+      66408784,
+    );
+    expect(
+      NotificationService.prayerEndReminderIds(
+        DateTime(2026, 10, 5),
+        'isha',
+      ).last,
+      66408823,
+    );
+  });
+
   test('reminder ids stay inside the 32-bit range notifications allow', () {
     final ids = NotificationService.prayerEndReminderIds(
       DateTime(2099, 12, 31),

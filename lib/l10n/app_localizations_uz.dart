@@ -828,6 +828,50 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get namesDisclaimerTitle => 'E\'tibor bering';
+
+  @override
+  String get mosqueMapTitle => 'Masjidlar xaritasi';
+
+  @override
+  String get mosqueUnnamed => 'Masjid';
+
+  @override
+  String get mosqueDirections => 'Yo\'nalish';
+
+  @override
+  String get mosqueZoomInHint =>
+      'Masjidlarni ko\'rish uchun xaritani yaqinlashtiring';
+
+  @override
+  String get mosqueLoading => 'Yaqin atrofdagi masjidlar qidirilmoqda…';
+
+  @override
+  String get mosqueLoadError =>
+      'Masjidlarni yuklab bo\'lmadi. Internetni tekshiring';
+
+  @override
+  String get mosqueOpenMapsError => 'Xarita ilovasini ochib bo\'lmadi';
+
+  @override
+  String mosqueDistanceMeters(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String mosqueDistanceKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String mosqueDistanceAway(String distance) {
+    return 'Sizdan $distance';
+  }
+
+  @override
+  String get zoomBarMoveLeft => 'Chapga o\'tkazish';
+
+  @override
+  String get zoomBarMoveRight => 'O\'ngga o\'tkazish';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -1652,6 +1696,50 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get namesDisclaimerTitle => 'Эътибор беринг';
+
+  @override
+  String get mosqueMapTitle => 'Масжидлар харитаси';
+
+  @override
+  String get mosqueUnnamed => 'Масжид';
+
+  @override
+  String get mosqueDirections => 'Йўналиш';
+
+  @override
+  String get mosqueZoomInHint =>
+      'Масжидларни кўриш учун харитани яқинлаштиринг';
+
+  @override
+  String get mosqueLoading => 'Яқин атрофдаги масжидлар қидирилмоқда…';
+
+  @override
+  String get mosqueLoadError =>
+      'Масжидларни юклаб бўлмади. Интернетни текширинг';
+
+  @override
+  String get mosqueOpenMapsError => 'Харита иловасини очиб бўлмади';
+
+  @override
+  String mosqueDistanceMeters(String meters) {
+    return '$meters м';
+  }
+
+  @override
+  String mosqueDistanceKm(String km) {
+    return '$km км';
+  }
+
+  @override
+  String mosqueDistanceAway(String distance) {
+    return 'Сиздан $distance';
+  }
+
+  @override
+  String get zoomBarMoveLeft => 'Чапга ўтказиш';
+
+  @override
+  String get zoomBarMoveRight => 'Ўнгга ўтказиш';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -2478,4 +2566,48 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get namesDisclaimerTitle => 'E\'tibor bering';
+
+  @override
+  String get mosqueMapTitle => 'Masjidlar xaritasi';
+
+  @override
+  String get mosqueUnnamed => 'Masjid';
+
+  @override
+  String get mosqueDirections => 'Yo\'nalish';
+
+  @override
+  String get mosqueZoomInHint =>
+      'Masjidlarni ko\'rish uchun xaritani yaqinlashtiring';
+
+  @override
+  String get mosqueLoading => 'Yaqin atrofdagi masjidlar qidirilmoqda…';
+
+  @override
+  String get mosqueLoadError =>
+      'Masjidlarni yuklab bo\'lmadi. Internetni tekshiring';
+
+  @override
+  String get mosqueOpenMapsError => 'Xarita ilovasini ochib bo\'lmadi';
+
+  @override
+  String mosqueDistanceMeters(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String mosqueDistanceKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String mosqueDistanceAway(String distance) {
+    return 'Sizdan $distance';
+  }
+
+  @override
+  String get zoomBarMoveLeft => 'Chapga o\'tkazish';
+
+  @override
+  String get zoomBarMoveRight => 'O\'ngga o\'tkazish';
 }

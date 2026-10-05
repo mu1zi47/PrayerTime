@@ -28,6 +28,11 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Приложению нужен доступ к геолокации, чтобы автоматически определить ваш город, показать точное время намаза и направление киблы.</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+		<key>MosqueMap</key>
+		<string>Точное местоположение нужно, чтобы показать ближайшие к вам мечети на карте.</string>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

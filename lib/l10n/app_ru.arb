@@ -389,5 +389,34 @@
 
   "namesNoticeDisclaimer": "Возможны неточности в написании и толкованиях. Если заметите ошибку — напишите нам через раздел «Обратная связь» в настройках.",
 
-  "namesDisclaimerTitle": "Обратите внимание"
+  "namesDisclaimerTitle": "Обратите внимание",
+
+  "mosqueMapTitle": "Карта мечетей",
+  "mosqueUnnamed": "Мечеть",
+  "mosqueDirections": "Маршрут",
+  "mosqueZoomInHint": "Приблизьте карту, чтобы увидеть мечети",
+  "mosqueLoading": "Ищем мечети поблизости…",
+  "mosqueLoadError": "Не удалось загрузить мечети. Проверьте интернет",
+  "mosqueOpenMapsError": "Не удалось открыть приложение карт",
+  "mosqueDistanceMeters": "{meters} м",
+  "@mosqueDistanceMeters": {
+    "placeholders": {
+      "meters": {"type": "String"}
+    }
+  },
+  "mosqueDistanceKm": "{km} км",
+  "@mosqueDistanceKm": {
+    "placeholders": {
+      "km": {"type": "String"}
+    }
+  },
+  "mosqueDistanceAway": "{distance} от вас",
+  "@mosqueDistanceAway": {
+    "placeholders": {
+      "distance": {"type": "String"}
+    }
+  },
+
+  "zoomBarMoveLeft": "Перенести влево",
+  "zoomBarMoveRight": "Перенести вправо"
 }

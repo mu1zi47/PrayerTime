@@ -4,10 +4,13 @@
          release builds only see this main manifest — without it here,
          every network call fails with SocketException in release builds. -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Needed for the "detect automatically" button on the city picker.
-         Coarse only: the city is all this resolves to, and asking for the
-         precise location would need a separate justification on Play. -->
+    <!-- Coarse is all the city picker's "detect automatically" needs. Fine
+         is for the mosque map, where an approximate fix (a couple of km
+         off) can't tell which mosque is the near one. Both are declared so
+         Android 12+ lets the user pick precise or approximate. Foreground
+         only — no ACCESS_BACKGROUND_LOCATION. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!-- Needed to schedule/show prayer-time notifications. SCHEDULE_EXACT_ALARM
          is the one the user grants; USE_EXACT_ALARM (granted automatically) is
          deliberately not declared — Play restricts it to alarm-clock and
@@ -162,6 +165,12 @@
         <intent>
             <action android:name="android.intent.action.SENDTO"/>
             <data android:scheme="mailto"/>
+        </intent>
+        <!-- The mosque map's "Directions" button hands the spot to whatever
+             maps app is installed (Yandex, Google, 2GIS, ...) via geo:. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="geo"/>
         </intent>
     </queries>
 </manifest>

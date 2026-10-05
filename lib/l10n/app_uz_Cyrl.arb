@@ -384,5 +384,34 @@
 
   "namesNoticeDisclaimer": "Ёзилиши ва шарҳларида хатолар бўлиши мумкин. Хатони сезсангиз, созламалардаги «Алоқа» бўлими орқали ёзинг.",
 
-  "namesDisclaimerTitle": "Эътибор беринг"
+  "namesDisclaimerTitle": "Эътибор беринг",
+
+  "mosqueMapTitle": "Масжидлар харитаси",
+  "mosqueUnnamed": "Масжид",
+  "mosqueDirections": "Йўналиш",
+  "mosqueZoomInHint": "Масжидларни кўриш учун харитани яқинлаштиринг",
+  "mosqueLoading": "Яқин атрофдаги масжидлар қидирилмоқда…",
+  "mosqueLoadError": "Масжидларни юклаб бўлмади. Интернетни текширинг",
+  "mosqueOpenMapsError": "Харита иловасини очиб бўлмади",
+  "mosqueDistanceMeters": "{meters} м",
+  "@mosqueDistanceMeters": {
+    "placeholders": {
+      "meters": {"type": "String"}
+    }
+  },
+  "mosqueDistanceKm": "{km} км",
+  "@mosqueDistanceKm": {
+    "placeholders": {
+      "km": {"type": "String"}
+    }
+  },
+  "mosqueDistanceAway": "Сиздан {distance}",
+  "@mosqueDistanceAway": {
+    "placeholders": {
+      "distance": {"type": "String"}
+    }
+  },
+
+  "zoomBarMoveLeft": "Чапга ўтказиш",
+  "zoomBarMoveRight": "Ўнгга ўтказиш"
 }

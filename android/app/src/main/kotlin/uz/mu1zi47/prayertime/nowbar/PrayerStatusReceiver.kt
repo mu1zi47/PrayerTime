@@ -3,6 +3,7 @@ package uz.mu1zi47.prayertime.nowbar
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import uz.mu1zi47.prayertime.EndReminders
 import uz.mu1zi47.prayertime.widget.PrayerWidgets
 import uz.mu1zi47.prayertime.widget.PrayerWidgetStore
 
@@ -20,7 +21,13 @@ class PrayerStatusReceiver : BroadcastReceiver() {
             ACTION_MARK_DONE -> {
                 val date = intent.getStringExtra(EXTRA_DATE) ?: return
                 val prayer = intent.getStringExtra(EXTRA_PRAYER) ?: return
-                PrayerWidgetStore.toggleOnTime(context, date, prayer)
+                // Marked: its "window is closing" reminders have nothing
+                // left to remind about. Un-marked: the app books them again
+                // when it next comes to the foreground (AppState reloads
+                // the log and reschedules).
+                if (PrayerWidgetStore.toggleOnTime(context, date, prayer)) {
+                    EndReminders.cancel(context, date, prayer)
+                }
                 PrayerStatusNotifier.refresh(context)
                 PrayerWidgets.refreshAll(context)
             }

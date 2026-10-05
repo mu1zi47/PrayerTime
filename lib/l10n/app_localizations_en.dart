@@ -826,4 +826,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get namesDisclaimerTitle => 'Please note';
+
+  @override
+  String get mosqueMapTitle => 'Mosque map';
+
+  @override
+  String get mosqueUnnamed => 'Mosque';
+
+  @override
+  String get mosqueDirections => 'Directions';
+
+  @override
+  String get mosqueZoomInHint => 'Zoom in to see mosques';
+
+  @override
+  String get mosqueLoading => 'Looking for mosques nearby…';
+
+  @override
+  String get mosqueLoadError =>
+      'Couldn\'t load mosques. Check your internet connection';
+
+  @override
+  String get mosqueOpenMapsError => 'Couldn\'t open a maps app';
+
+  @override
+  String mosqueDistanceMeters(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String mosqueDistanceKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String mosqueDistanceAway(String distance) {
+    return '$distance away';
+  }
+
+  @override
+  String get zoomBarMoveLeft => 'Move to the left';
+
+  @override
+  String get zoomBarMoveRight => 'Move to the right';
 }

@@ -826,4 +826,47 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get namesDisclaimerTitle => 'Обратите внимание';
+
+  @override
+  String get mosqueMapTitle => 'Карта мечетей';
+
+  @override
+  String get mosqueUnnamed => 'Мечеть';
+
+  @override
+  String get mosqueDirections => 'Маршрут';
+
+  @override
+  String get mosqueZoomInHint => 'Приблизьте карту, чтобы увидеть мечети';
+
+  @override
+  String get mosqueLoading => 'Ищем мечети поблизости…';
+
+  @override
+  String get mosqueLoadError =>
+      'Не удалось загрузить мечети. Проверьте интернет';
+
+  @override
+  String get mosqueOpenMapsError => 'Не удалось открыть приложение карт';
+
+  @override
+  String mosqueDistanceMeters(String meters) {
+    return '$meters м';
+  }
+
+  @override
+  String mosqueDistanceKm(String km) {
+    return '$km км';
+  }
+
+  @override
+  String mosqueDistanceAway(String distance) {
+    return '$distance от вас';
+  }
+
+  @override
+  String get zoomBarMoveLeft => 'Перенести влево';
+
+  @override
+  String get zoomBarMoveRight => 'Перенести вправо';
 }

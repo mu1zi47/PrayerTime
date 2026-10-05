@@ -2,7 +2,10 @@ package uz.mu1zi47.prayertime
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Rect
+import android.os.Build
 import android.provider.Settings
+import android.view.ViewConfiguration
 import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
 import uz.mu1zi47.prayertime.sounds.NotificationSounds
 import uz.mu1zi47.prayertime.widget.PrayerWidgets
@@ -99,6 +102,39 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        // The phone's gesture settings for the mosque map's zoom strip: where
+        // a swipe from the edge belongs to the app rather than to the system
+        // back gesture, and how long a long press is. See
+        // SystemGesturesBridge on the Dart side.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, GESTURES_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "setExclusionRects" -> {
+                        setGestureExclusion(call.arguments as? List<*> ?: emptyList<Any>())
+                        result.success(null)
+                    }
+                    "longPressTimeout" -> result.success(ViewConfiguration.getLongPressTimeout())
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    /// [rects] come as [left, top, right, bottom] in Flutter's logical
+    /// pixels; Android wants physical ones.
+    private fun setGestureExclusion(rects: List<*>) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        val density = resources.displayMetrics.density
+        window.decorView.systemGestureExclusionRects = rects.mapNotNull { item ->
+            val edges = (item as? List<*>)?.map { (it as? Number)?.toDouble() ?: 0.0 }
+            if (edges == null || edges.size != 4) return@mapNotNull null
+            Rect(
+                (edges[0] * density).toInt(),
+                (edges[1] * density).toInt(),
+                (edges[2] * density).toInt(),
+                (edges[3] * density).toInt(),
+            )
+        }
     }
 
     // A preview shouldn't keep playing once the app is out of sight.
@@ -133,5 +169,6 @@ class MainActivity : FlutterActivity() {
         private const val WIDGET_CHANNEL = "uz.mu1zi47.prayertime/widget"
         private const val NOW_BAR_CHANNEL = "uz.mu1zi47.prayertime/now_bar"
         private const val SOUNDS_CHANNEL = "uz.mu1zi47.prayertime/sounds"
+        private const val GESTURES_CHANNEL = "uz.mu1zi47.prayertime/gestures"
     }
 }

@@ -128,8 +128,7 @@ class SystemSettingsScreen extends StatelessWidget {
                           ChoiceSheetOption(label: l.label),
                       ],
                       selectedIndex: AppLocale.values.indexOf(appState.locale),
-                      onSelect: (i) =>
-                          appState.setLocale(AppLocale.values[i]),
+                      onSelect: (i) => appState.setLocale(AppLocale.values[i]),
                     ),
                     child: Text(
                       appState.locale.label,
@@ -171,14 +170,11 @@ class SystemSettingsScreen extends StatelessWidget {
                         _ => ThemeMode.system,
                       }),
                     ),
-                    child: Text(
-                      switch (appState.themeMode) {
-                        ThemeMode.light => t.themeLight,
-                        ThemeMode.dark => t.themeDark,
-                        ThemeMode.system => t.themeSystem,
-                      },
-                      style: AppTextStyles.body(fontSize: 15),
-                    ),
+                    child: Text(switch (appState.themeMode) {
+                      ThemeMode.light => t.themeLight,
+                      ThemeMode.dark => t.themeDark,
+                      ThemeMode.system => t.themeSystem,
+                    }, style: AppTextStyles.body(fontSize: 15)),
                   ),
                 ],
               ),

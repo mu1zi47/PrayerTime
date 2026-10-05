@@ -384,5 +384,34 @@
 
   "namesNoticeDisclaimer": "Spellings and commentary may contain mistakes. If you spot one, write to us through Feedback in settings.",
 
-  "namesDisclaimerTitle": "Please note"
+  "namesDisclaimerTitle": "Please note",
+
+  "mosqueMapTitle": "Mosque map",
+  "mosqueUnnamed": "Mosque",
+  "mosqueDirections": "Directions",
+  "mosqueZoomInHint": "Zoom in to see mosques",
+  "mosqueLoading": "Looking for mosques nearby…",
+  "mosqueLoadError": "Couldn't load mosques. Check your internet connection",
+  "mosqueOpenMapsError": "Couldn't open a maps app",
+  "mosqueDistanceMeters": "{meters} m",
+  "@mosqueDistanceMeters": {
+    "placeholders": {
+      "meters": {"type": "String"}
+    }
+  },
+  "mosqueDistanceKm": "{km} km",
+  "@mosqueDistanceKm": {
+    "placeholders": {
+      "km": {"type": "String"}
+    }
+  },
+  "mosqueDistanceAway": "{distance} away",
+  "@mosqueDistanceAway": {
+    "placeholders": {
+      "distance": {"type": "String"}
+    }
+  },
+
+  "zoomBarMoveLeft": "Move to the left",
+  "zoomBarMoveRight": "Move to the right"
 }

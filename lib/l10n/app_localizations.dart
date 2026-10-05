@@ -1607,6 +1607,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Обратите внимание'**
   String get namesDisclaimerTitle;
+
+  /// No description provided for @mosqueMapTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Карта мечетей'**
+  String get mosqueMapTitle;
+
+  /// No description provided for @mosqueUnnamed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мечеть'**
+  String get mosqueUnnamed;
+
+  /// No description provided for @mosqueDirections.
+  ///
+  /// In ru, this message translates to:
+  /// **'Маршрут'**
+  String get mosqueDirections;
+
+  /// No description provided for @mosqueZoomInHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Приблизьте карту, чтобы увидеть мечети'**
+  String get mosqueZoomInHint;
+
+  /// No description provided for @mosqueLoading.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ищем мечети поблизости…'**
+  String get mosqueLoading;
+
+  /// No description provided for @mosqueLoadError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить мечети. Проверьте интернет'**
+  String get mosqueLoadError;
+
+  /// No description provided for @mosqueOpenMapsError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось открыть приложение карт'**
+  String get mosqueOpenMapsError;
+
+  /// No description provided for @mosqueDistanceMeters.
+  ///
+  /// In ru, this message translates to:
+  /// **'{meters} м'**
+  String mosqueDistanceMeters(String meters);
+
+  /// No description provided for @mosqueDistanceKm.
+  ///
+  /// In ru, this message translates to:
+  /// **'{km} км'**
+  String mosqueDistanceKm(String km);
+
+  /// No description provided for @mosqueDistanceAway.
+  ///
+  /// In ru, this message translates to:
+  /// **'{distance} от вас'**
+  String mosqueDistanceAway(String distance);
+
+  /// No description provided for @zoomBarMoveLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенести влево'**
+  String get zoomBarMoveLeft;
+
+  /// No description provided for @zoomBarMoveRight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенести вправо'**
+  String get zoomBarMoveRight;
 }
 
 class _AppLocalizationsDelegate

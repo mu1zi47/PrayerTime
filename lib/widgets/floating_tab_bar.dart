@@ -128,9 +128,7 @@ class _FloatingTabButton extends StatelessWidget {
             Icon(
               spec.icon,
               size: 20,
-              color: selected
-                  ? onFill
-                  : AppColors.text.withValues(alpha: 0.55),
+              color: selected ? onFill : AppColors.text.withValues(alpha: 0.55),
             ),
             AnimatedSize(
               duration: const Duration(milliseconds: 320),

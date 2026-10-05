@@ -166,7 +166,9 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                                   fontSize: 14,
                                   color: AppColors.accent700,
                                 ).copyWith(
-                                  color: AppColors.accent700.withValues(alpha: 0.85),
+                                  color: AppColors.accent700.withValues(
+                                    alpha: 0.85,
+                                  ),
                                 ),
                           ),
                         ],

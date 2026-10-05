@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.SizeF
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
+import uz.mu1zi47.prayertime.EndReminders
 import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
 
 /**
@@ -50,7 +51,11 @@ abstract class BasePrayerWidgetProvider : AppWidgetProvider() {
             PrayerWidgets.ACTION_MARK_DONE -> {
                 val date = intent.getStringExtra(PrayerWidgets.EXTRA_DATE) ?: return
                 val prayer = intent.getStringExtra(PrayerWidgets.EXTRA_PRAYER) ?: return
-                PrayerWidgetStore.toggleOnTime(context, date, prayer)
+                // As with the Now Bar's button (see PrayerStatusReceiver): a
+                // marked prayer's "window is closing" reminders go too.
+                if (PrayerWidgetStore.toggleOnTime(context, date, prayer)) {
+                    EndReminders.cancel(context, date, prayer)
+                }
                 // Every other widget and the current-prayer notification show
                 // that same mark.
                 PrayerWidgets.refreshAll(context)

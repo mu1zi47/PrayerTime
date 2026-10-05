@@ -30,10 +30,7 @@ class PrayerCacheStore {
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kCacheSignature, signature);
-    await prefs.setString(
-      _kCacheDays,
-      jsonEncode(days.map(_toJson).toList()),
-    );
+    await prefs.setString(_kCacheDays, jsonEncode(days.map(_toJson).toList()));
   }
 
   /// Returns the cached days for [signature], or null if nothing is cached

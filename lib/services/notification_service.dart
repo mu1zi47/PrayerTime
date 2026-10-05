@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show DartPluginRegistrant;
 
 import 'package:flutter/foundation.dart'
     show kIsWeb, defaultTargetPlatform, TargetPlatform, visibleForTesting;
@@ -86,23 +87,38 @@ int _endReminderSlot(String prayerKey, int n) =>
 /// Writes straight to shared_preferences via [PrayerLogStore], the same
 /// on-disk format AppState itself reads/writes.
 @pragma('vm:entry-point')
-void _notificationBackgroundHandler(NotificationResponse response) {
+Future<void> _notificationBackgroundHandler(
+  NotificationResponse response,
+) async {
   if (response.actionId != _markDoneActionId) return;
   final parsed = _parseMarkDonePayload(response.payload);
   if (parsed == null) return;
   final (dateKey, prayerKey) = parsed;
-  PrayerLogStore.markOnTime(dateKey, prayerKey);
+  // This isolate runs on an engine the plugin started just for the action,
+  // where plugins with a Dart side (shared_preferences, this plugin itself)
+  // aren't registered until asked. Without it, the cancels below found no
+  // Android implementation to go through and quietly did nothing — so the
+  // "window is closing" reminders still went off for a prayer marked right
+  // here.
+  DartPluginRegistrant.ensureInitialized();
+  try {
+    await PrayerLogStore.markOnTime(dateKey, prayerKey);
+  } catch (_) {
+    // Not saved — the reminders below are still worth silencing.
+  }
   // Same reason AppState.setPrayerStatus does this — a prayer marked from
-  // the notification itself shouldn't still get nagged about later. Best
-  // effort: this isolate may not have a live plugin channel to cancel
-  // through, in which case the reminders just fire as scheduled.
+  // the notification itself shouldn't still get nagged about later.
   final plugin = FlutterLocalNotificationsPlugin();
   final ids = NotificationService.prayerEndReminderIds(
     DateTime.parse(dateKey),
     prayerKey,
   );
   for (final id in ids) {
-    plugin.cancel(id: id).catchError((_) {});
+    try {
+      await plugin.cancel(id: id);
+    } catch (_) {
+      // Nothing booked under this id, or no channel — move on.
+    }
   }
 }
 

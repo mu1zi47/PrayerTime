@@ -123,7 +123,9 @@ class PrayerSettingsScreen extends StatelessWidget {
                       },
                     ),
                     child: Text(
-                      appState.madhab == 'shafi' ? t.madhabShafi : t.madhabHanafi,
+                      appState.madhab == 'shafi'
+                          ? t.madhabShafi
+                          : t.madhabHanafi,
                       style: AppTextStyles.body(fontSize: 15),
                     ),
                   ),

@@ -371,5 +371,34 @@
 
   "namesNoticeDisclaimer": "Yozilishi va sharhlarida xatolar bo'lishi mumkin. Xatoni sezsangiz, sozlamalardagi «Aloqa» bo'limi orqali yozing.",
 
-  "namesDisclaimerTitle": "E'tibor bering"
+  "namesDisclaimerTitle": "E'tibor bering",
+
+  "mosqueMapTitle": "Masjidlar xaritasi",
+  "mosqueUnnamed": "Masjid",
+  "mosqueDirections": "Yo'nalish",
+  "mosqueZoomInHint": "Masjidlarni ko'rish uchun xaritani yaqinlashtiring",
+  "mosqueLoading": "Yaqin atrofdagi masjidlar qidirilmoqda…",
+  "mosqueLoadError": "Masjidlarni yuklab bo'lmadi. Internetni tekshiring",
+  "mosqueOpenMapsError": "Xarita ilovasini ochib bo'lmadi",
+  "mosqueDistanceMeters": "{meters} m",
+  "@mosqueDistanceMeters": {
+    "placeholders": {
+      "meters": {"type": "String"}
+    }
+  },
+  "mosqueDistanceKm": "{km} km",
+  "@mosqueDistanceKm": {
+    "placeholders": {
+      "km": {"type": "String"}
+    }
+  },
+  "mosqueDistanceAway": "Sizdan {distance}",
+  "@mosqueDistanceAway": {
+    "placeholders": {
+      "distance": {"type": "String"}
+    }
+  },
+
+  "zoomBarMoveLeft": "Chapga o'tkazish",
+  "zoomBarMoveRight": "O'ngga o'tkazish"
 }

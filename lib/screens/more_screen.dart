@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import 'mosque_map_screen.dart';
 import 'names_screen.dart';
 import 'prayer_calendar_screen.dart';
 
@@ -29,6 +30,11 @@ List<_MoreItemSpec> _items(AppState appState, AppLocalizations t) => [
     icon: Icons.calendar_month_rounded,
     label: t.calendarScreenTitle,
     screenBuilder: (_) => PrayerCalendarScreen(appState: appState),
+  ),
+  _MoreItemSpec(
+    icon: Icons.mosque_rounded,
+    label: t.mosqueMapTitle,
+    screenBuilder: (_) => MosqueMapScreen(appState: appState),
   ),
 ];
 

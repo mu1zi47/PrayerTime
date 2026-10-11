@@ -10,13 +10,10 @@ class AppSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // On, it takes the same two gold tones as the selected tab and the icon
-    // badges (accent100/accent700): the track the deep one, the knob the
-    // light one. The ramps run in opposite directions in the two themes
-    // (see AppPalette), hence the swap. Off stays a plain grey track.
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final deep = dark ? AppColors.accent100 : AppColors.accent700;
-    final soft = dark ? AppColors.accent700 : AppColors.accent100;
+    AppColors.watch(context);
+    // Semantic colors interpolate across the reversed light/dark ramps.
+    final deep = AppColors.controlFill;
+    final soft = AppColors.onControlFill;
     return GestureDetector(
       onTap: () => onChanged(!value),
       child: AnimatedContainer(

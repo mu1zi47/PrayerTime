@@ -57,7 +57,11 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
   @override
   void initState() {
     super.initState();
-    _load();
+    // Paint the sheet and its loading indicator before asking Android for
+    // the sound catalogue.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _load();
+    });
   }
 
   @override
@@ -94,6 +98,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final sounds = _sounds;
@@ -262,6 +267,7 @@ class _EntranceState extends State<_Entrance>
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return FadeTransition(
       opacity: _animation,
       child: SlideTransition(
@@ -296,6 +302,7 @@ class _PickerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final fg = selected ? AppColors.accent700 : AppColors.text;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),

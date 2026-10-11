@@ -175,36 +175,45 @@ void main() {
     expect(find.text('Времена намазов'), findsOneWidget);
   });
 
-  testWidgets('swiping moves between the three months', (tester) async {
-    await _pumpApp(tester);
-    await tester.tap(find.text('Расписание на месяц'));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'month arrows navigate backwards; right swipe returns to the previous screen',
+    (tester) async {
+      await _pumpApp(tester);
+      await tester.tap(find.text('Расписание на месяц'));
+      await tester.pumpAndSettle();
 
-    final now = DateTime.now();
-    String label(DateTime month) => DateLabels.monthYearLabel(
-      lookupAppLocalizations(const Locale('ru')),
-      month,
-    );
+      final now = DateTime.now();
+      String label(DateTime month) => DateLabels.monthYearLabel(
+        lookupAppLocalizations(const Locale('ru')),
+        month,
+      );
 
-    expect(find.text(label(DateTime(now.year, now.month))), findsOneWidget);
+      expect(find.text(label(DateTime(now.year, now.month))), findsOneWidget);
 
-    // Left: the month ahead.
-    await tester.drag(find.byType(PageView), const Offset(-600, 0));
-    await tester.pumpAndSettle();
-    expect(find.text(label(DateTime(now.year, now.month + 1))), findsOneWidget);
+      // Left: the month ahead.
+      await tester.drag(find.byType(PageView), const Offset(-600, 0));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(label(DateTime(now.year, now.month + 1))),
+        findsOneWidget,
+      );
 
-    // Back past this month to the one behind it, and no further — the pager
-    // holds exactly the three months the arrows reach.
-    await tester.drag(find.byType(PageView), const Offset(600, 0));
-    await tester.pumpAndSettle();
-    await tester.drag(find.byType(PageView), const Offset(600, 0));
-    await tester.pumpAndSettle();
-    expect(find.text(label(DateTime(now.year, now.month - 1))), findsOneWidget);
+      // Rightward swipes now mean back from anywhere inside a pushed screen.
+      // The previous-month arrow still reaches the other two months.
+      await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
+      await tester.pumpAndSettle();
+      expect(
+        find.text(label(DateTime(now.year, now.month - 1))),
+        findsOneWidget,
+      );
 
-    await tester.drag(find.byType(PageView), const Offset(600, 0));
-    await tester.pumpAndSettle();
-    expect(find.text(label(DateTime(now.year, now.month - 1))), findsOneWidget);
-  });
+      await tester.drag(find.byType(PageView), const Offset(600, 0));
+      await tester.pumpAndSettle();
+      expect(find.text('Расписание на месяц'), findsOneWidget);
+    },
+  );
 
   testWidgets('a month is fetched once and then read from cache', (
     tester,

@@ -78,6 +78,7 @@ class _ToastHostState extends State<_ToastHost> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Positioned(
       left: 0,
@@ -232,6 +233,7 @@ class _ToastCardState extends State<_ToastCard> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final dragDistance = _dragOffset.distance;
     final dragOpacity = (1 - dragDistance / 180).clamp(0.0, 1.0);
 
@@ -267,6 +269,7 @@ class _ToastCardVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: BackdropFilter(

@@ -94,6 +94,7 @@ class _NamesScreenState extends State<NamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: content (including
     // the back button/title row) should scroll edge-to-edge, under the
     // transparent status/navigation bars, not stop short of them.
@@ -265,6 +266,7 @@ class _NoticeSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
@@ -385,6 +387,7 @@ class _FloatingSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -476,6 +479,7 @@ class _NamesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     if (names.isEmpty && emptyMessage != null) {
       return ListView(
         padding: EdgeInsets.fromLTRB(18, 24, 18, bottomPadding),
@@ -526,6 +530,7 @@ class _NameRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(

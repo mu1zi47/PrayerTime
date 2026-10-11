@@ -872,6 +872,34 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get zoomBarMoveRight => 'O\'ngga o\'tkazish';
+
+  @override
+  String get tasbihTitle => 'Tasbeh';
+
+  @override
+  String get tasbihUnlimited => 'Cheksiz';
+
+  @override
+  String get tasbihTotal => 'Jami bosishlar';
+
+  @override
+  String get tasbihTapHint => 'Sanash uchun bosing';
+
+  @override
+  String get tasbihClearAll => 'Hammasini tozalash';
+
+  @override
+  String get tasbihClearTitle => 'Tasbeh tozalansinmi?';
+
+  @override
+  String get tasbihClearBody =>
+      'Joriy davra va jami bosishlar soni nolga qaytariladi.';
+
+  @override
+  String get tasbihCancel => 'Bekor qilish';
+
+  @override
+  String get tasbihClear => 'Tozalash';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -1740,6 +1768,34 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get zoomBarMoveRight => 'Ўнгга ўтказиш';
+
+  @override
+  String get tasbihTitle => 'Тасбеҳ';
+
+  @override
+  String get tasbihUnlimited => 'Чексиз';
+
+  @override
+  String get tasbihTotal => 'Жами босишлар';
+
+  @override
+  String get tasbihTapHint => 'Санаш учун босинг';
+
+  @override
+  String get tasbihClearAll => 'Ҳаммасини тозалаш';
+
+  @override
+  String get tasbihClearTitle => 'Тасбеҳ тозалансинми?';
+
+  @override
+  String get tasbihClearBody =>
+      'Жорий давра ва жами босишлар сони нолга қайтарилади.';
+
+  @override
+  String get tasbihCancel => 'Бекор қилиш';
+
+  @override
+  String get tasbihClear => 'Тозалаш';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -2610,4 +2666,32 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get zoomBarMoveRight => 'O\'ngga o\'tkazish';
+
+  @override
+  String get tasbihTitle => 'Tasbeh';
+
+  @override
+  String get tasbihUnlimited => 'Cheksiz';
+
+  @override
+  String get tasbihTotal => 'Jami bosishlar';
+
+  @override
+  String get tasbihTapHint => 'Sanash uchun bosing';
+
+  @override
+  String get tasbihClearAll => 'Hammasini tozalash';
+
+  @override
+  String get tasbihClearTitle => 'Tasbeh tozalansinmi?';
+
+  @override
+  String get tasbihClearBody =>
+      'Joriy davra va jami bosishlar soni nolga qaytariladi.';
+
+  @override
+  String get tasbihCancel => 'Bekor qilish';
+
+  @override
+  String get tasbihClear => 'Tozalash';
 }

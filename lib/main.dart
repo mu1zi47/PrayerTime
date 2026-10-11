@@ -68,6 +68,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // `home` is [_root], built once in the field above rather than inline:
     // recreating it here would tear down and rebuild the entire RootShell
     // subtree from scratch every time the theme or language changes, on top
@@ -79,6 +80,17 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: _themeMode,
+      themeAnimationDuration: const Duration(milliseconds: 350),
+      themeAnimationCurve: Curves.easeInOutCubic,
+      builder: (context, child) => AnimatedAppPalette(
+        dark: switch (_themeMode) {
+          ThemeMode.dark => true,
+          ThemeMode.light => false,
+          ThemeMode.system =>
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+        },
+        child: child!,
+      ),
       locale: _locale.localeValue,
       localizationsDelegates: const [
         ...AppLocalizations.localizationsDelegates,
@@ -99,8 +111,8 @@ class _ThemedRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    AppColors.setDark(isDark);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -162,6 +174,7 @@ class _EntryState extends State<_Entry> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // Settings are read from disk in milliseconds, but showing setup and
     // then yanking it away once they land would be worse than a blank
     // frame or two of the app's own background.

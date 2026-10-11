@@ -388,6 +388,7 @@ class _MapZoomStripState extends State<MapZoomStrip>
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _excludeFromBackGesture(),
     );

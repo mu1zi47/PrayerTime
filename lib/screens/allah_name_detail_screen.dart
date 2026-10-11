@@ -44,6 +44,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final name = widget.names[_index];
     final padding = MediaQuery.paddingOf(context);
     return Scaffold(
@@ -242,6 +243,7 @@ class _NavArrowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: enabled ? onTap : null,
       behavior: HitTestBehavior.opaque,

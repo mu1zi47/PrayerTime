@@ -27,6 +27,7 @@ class IconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Container(
       width: size,
       height: size,

@@ -413,5 +413,14 @@
   },
 
   "zoomBarMoveLeft": "Chapga o'tkazish",
-  "zoomBarMoveRight": "O'ngga o'tkazish"
+  "zoomBarMoveRight": "O'ngga o'tkazish",
+  "tasbihTitle": "Tasbeh",
+  "tasbihUnlimited": "Cheksiz",
+  "tasbihTotal": "Jami bosishlar",
+  "tasbihTapHint": "Sanash uchun bosing",
+  "tasbihClearAll": "Hammasini tozalash",
+  "tasbihClearTitle": "Tasbeh tozalansinmi?",
+  "tasbihClearBody": "Joriy davra va jami bosishlar soni nolga qaytariladi.",
+  "tasbihCancel": "Bekor qilish",
+  "tasbihClear": "Tozalash"
 }

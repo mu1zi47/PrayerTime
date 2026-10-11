@@ -92,6 +92,7 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final padding = MediaQuery.paddingOf(context);
     return AnimatedBuilder(
       animation: widget.appState,
@@ -184,6 +185,7 @@ class _MonthNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final enabled = onTap != null;
     return GestureDetector(
       onTap: onTap,
@@ -223,6 +225,7 @@ class _CalendarGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final firstOfMonth = DateTime(month.year, month.month);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
@@ -316,6 +319,7 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final (bg, fg) = switch (completion) {
       DayCompletion.onTime => (StatusColors.onTime, StatusColors.onOnTime),
       DayCompletion.qada => (StatusColors.qada, StatusColors.onQada),
@@ -387,6 +391,7 @@ class _DayLogPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
@@ -438,6 +443,7 @@ class _PrayerLogRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final (statusLabel, statusColor) = switch (status) {
       PrayerLogStatus.onTime => (t.legendOnTime, StatusColors.onTime),
@@ -491,6 +497,7 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

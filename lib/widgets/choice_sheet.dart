@@ -53,6 +53,7 @@ class _ChoiceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
@@ -112,6 +113,7 @@ class _ChoiceOption extends StatelessWidget {
   /// is already soft gold).
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final fg = selected ? AppColors.accent700 : AppColors.text;
     return InkWell(
       onTap: onTap,

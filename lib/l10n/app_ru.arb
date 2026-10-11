@@ -418,5 +418,14 @@
   },
 
   "zoomBarMoveLeft": "Перенести влево",
-  "zoomBarMoveRight": "Перенести вправо"
+  "zoomBarMoveRight": "Перенести вправо",
+  "tasbihTitle": "Тасбих",
+  "tasbihUnlimited": "Бесконечно",
+  "tasbihTotal": "Всего нажатий",
+  "tasbihTapHint": "Нажимайте, чтобы считать",
+  "tasbihClearAll": "Очистить полностью",
+  "tasbihClearTitle": "Очистить тасбих?",
+  "tasbihClearBody": "Счётчик круга и общее число нажатий будут обнулены.",
+  "tasbihCancel": "Отмена",
+  "tasbihClear": "Очистить"
 }

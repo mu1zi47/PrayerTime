@@ -123,6 +123,7 @@ class _EndRemindersSheetState extends State<_EndRemindersSheet> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return AnimatedBuilder(
       animation: _appState,
       builder: (context, _) {
@@ -299,6 +300,7 @@ class _PrayerSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Row(
       children: [
@@ -383,6 +385,7 @@ class _ReminderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final muted = AppColors.text.withValues(alpha: 0.55);
     final window = this.window;
@@ -556,6 +559,7 @@ class _LeadPickerSheetState extends State<_LeadPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final muted = AppColors.text.withValues(alpha: 0.6);
@@ -691,6 +695,7 @@ class _Wheel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return CupertinoPicker(
       scrollController: controller,
       itemExtent: itemExtent,
@@ -710,6 +715,7 @@ class _SheetHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Center(
       child: Container(
         width: 36,

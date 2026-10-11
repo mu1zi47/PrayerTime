@@ -869,4 +869,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zoomBarMoveRight => 'Move to the right';
+
+  @override
+  String get tasbihTitle => 'Tasbih';
+
+  @override
+  String get tasbihUnlimited => 'Unlimited';
+
+  @override
+  String get tasbihTotal => 'Total taps';
+
+  @override
+  String get tasbihTapHint => 'Tap to count';
+
+  @override
+  String get tasbihClearAll => 'Clear all';
+
+  @override
+  String get tasbihClearTitle => 'Clear tasbih?';
+
+  @override
+  String get tasbihClearBody =>
+      'The current round and total taps will be reset to zero.';
+
+  @override
+  String get tasbihCancel => 'Cancel';
+
+  @override
+  String get tasbihClear => 'Clear';
 }

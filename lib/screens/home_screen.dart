@@ -86,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final appState = widget.appState;
     final days = appState.days;
@@ -408,6 +409,7 @@ class _NextPrayerPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final kicker = isTomorrow
         ? t.nextPrayerTomorrowLabel(DateLabels.dateLabel(t, info.date))
@@ -481,6 +483,7 @@ class _Kicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
@@ -534,6 +537,7 @@ class _ScheduleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final current = spec.current;
     final active = spec.active;
@@ -642,6 +646,7 @@ class _StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     if (status == null) {
       final ringColor = onFill
           ? AppColors.accent700.withValues(alpha: 0.7)
@@ -750,6 +755,7 @@ class _SwipeToLogState extends State<_SwipeToLog>
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // Mirrors _StatusDot's own color logic — the button previews whatever
     // swiping it will actually open, not a generic "mark done" checkmark
     // regardless of what's already logged.
@@ -829,6 +835,7 @@ class _MonthLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
@@ -869,6 +876,7 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Container(
       color: AppColors.bg,
       child: Center(child: CircularProgressIndicator(color: AppColors.accent)),
@@ -884,6 +892,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Container(
       color: AppColors.bg,

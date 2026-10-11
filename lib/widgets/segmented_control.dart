@@ -21,6 +21,7 @@ class SegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

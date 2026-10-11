@@ -58,6 +58,7 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -186,6 +187,7 @@ class _MonthPageState extends State<_MonthPage>
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     super.build(context);
     final t = AppLocalizations.of(context)!;
     final padding = MediaQuery.paddingOf(context);
@@ -378,6 +380,7 @@ class _HeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final style = AppTextStyles.body(
       fontSize: 10.5,
@@ -437,6 +440,7 @@ class _DayRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final timeStyle = isToday ? styles.timeToday : styles.time;
 
     Widget time(String value) => Expanded(
@@ -493,6 +497,7 @@ class _MonthNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final enabled = onTap != null;
     return GestureDetector(
       onTap: onTap,
@@ -525,6 +530,7 @@ class _ErrorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),

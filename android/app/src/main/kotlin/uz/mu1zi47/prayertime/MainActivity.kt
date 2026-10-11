@@ -89,8 +89,16 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 val context = applicationContext
                 when (call.method) {
-                    "list" -> result.success(NotificationSounds.list(context))
-                    "defaultTitle" -> result.success(NotificationSounds.defaultTitle(context))
+                    // Media provider queries must not block the sheet's
+                    // opening animation on the Android UI thread.
+                    "list" -> Thread {
+                        val sounds = NotificationSounds.list(context)
+                        runOnUiThread { result.success(sounds) }
+                    }.start()
+                    "defaultTitle" -> Thread {
+                        val title = NotificationSounds.defaultTitle(context)
+                        runOnUiThread { result.success(title) }
+                    }.start()
                     "play" -> {
                         NotificationSounds.play(context, call.arguments as String?)
                         result.success(null)

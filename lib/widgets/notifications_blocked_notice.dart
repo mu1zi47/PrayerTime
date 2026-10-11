@@ -18,6 +18,7 @@ class NotificationsBlockedNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),

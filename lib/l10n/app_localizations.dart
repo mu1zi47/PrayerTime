@@ -1679,6 +1679,60 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Перенести вправо'**
   String get zoomBarMoveRight;
+
+  /// No description provided for @tasbihTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тасбих'**
+  String get tasbihTitle;
+
+  /// No description provided for @tasbihUnlimited.
+  ///
+  /// In ru, this message translates to:
+  /// **'Бесконечно'**
+  String get tasbihUnlimited;
+
+  /// No description provided for @tasbihTotal.
+  ///
+  /// In ru, this message translates to:
+  /// **'Всего нажатий'**
+  String get tasbihTotal;
+
+  /// No description provided for @tasbihTapHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нажимайте, чтобы считать'**
+  String get tasbihTapHint;
+
+  /// No description provided for @tasbihClearAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очистить полностью'**
+  String get tasbihClearAll;
+
+  /// No description provided for @tasbihClearTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очистить тасбих?'**
+  String get tasbihClearTitle;
+
+  /// No description provided for @tasbihClearBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Счётчик круга и общее число нажатий будут обнулены.'**
+  String get tasbihClearBody;
+
+  /// No description provided for @tasbihCancel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отмена'**
+  String get tasbihCancel;
+
+  /// No description provided for @tasbihClear.
+  ///
+  /// In ru, this message translates to:
+  /// **'Очистить'**
+  String get tasbihClear;
 }
 
 class _AppLocalizationsDelegate

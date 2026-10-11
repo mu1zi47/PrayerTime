@@ -19,6 +19,7 @@ class PrayerSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: content should scroll
     // edge-to-edge, under the transparent status/navigation bars.
     final padding = MediaQuery.paddingOf(context);

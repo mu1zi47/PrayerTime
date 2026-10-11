@@ -46,6 +46,7 @@ class _LogPrayerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
@@ -132,6 +133,7 @@ class _LogOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),

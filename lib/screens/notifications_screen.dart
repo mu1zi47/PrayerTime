@@ -41,6 +41,7 @@ class _NotificationsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return AnimatedBuilder(
       animation: appState,
       builder: (context, _) {

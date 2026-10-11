@@ -10,6 +10,7 @@ class SectionKicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 2),
       child: Text(
@@ -36,6 +37,7 @@ class SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [SectionKicker(kicker), ...children],
@@ -54,6 +56,7 @@ class OptRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -84,6 +87,7 @@ class SettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 13),
       decoration: BoxDecoration(

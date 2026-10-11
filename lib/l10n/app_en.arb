@@ -413,5 +413,14 @@
   },
 
   "zoomBarMoveLeft": "Move to the left",
-  "zoomBarMoveRight": "Move to the right"
+  "zoomBarMoveRight": "Move to the right",
+  "tasbihTitle": "Tasbih",
+  "tasbihUnlimited": "Unlimited",
+  "tasbihTotal": "Total taps",
+  "tasbihTapHint": "Tap to count",
+  "tasbihClearAll": "Clear all",
+  "tasbihClearTitle": "Clear tasbih?",
+  "tasbihClearBody": "The current round and total taps will be reset to zero.",
+  "tasbihCancel": "Cancel",
+  "tasbihClear": "Clear"
 }

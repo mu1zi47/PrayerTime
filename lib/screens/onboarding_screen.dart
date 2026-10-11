@@ -181,6 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final padding = MediaQuery.paddingOf(context);
     return AnimatedBuilder(
       animation: widget.appState,
@@ -492,6 +493,7 @@ class _StepProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -545,6 +547,7 @@ class _StepShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 28, 18, 18),
       children: [
@@ -593,6 +596,7 @@ class _OptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -651,6 +655,7 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -683,6 +688,7 @@ class _SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,

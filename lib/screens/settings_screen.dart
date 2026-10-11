@@ -55,6 +55,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: content should scroll
     // edge-to-edge, under the transparent status bar, not stop short of it.
     final topInset = MediaQuery.paddingOf(context).top;
@@ -140,6 +141,7 @@ class _AppVersion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return FutureBuilder<PackageInfo>(
       future: _info,
       builder: (context, snapshot) {
@@ -173,6 +175,7 @@ class _ContactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return OptRow(
       onTap: onTap,
       child: Row(

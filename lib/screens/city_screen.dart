@@ -165,6 +165,7 @@ class _CityScreenState extends State<CityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final cities = ReferenceData.cities
         .where(
@@ -392,6 +393,7 @@ class _FloatingSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -488,6 +490,7 @@ class _CityRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return InkWell(
       onTap: onTap,
       child: Container(

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
@@ -22,7 +23,7 @@ List<_TabSpec> _tabs(AppLocalizations t) => [
 /// A floating, pill-shaped nav bar in the style of Samsung One UI 8.5/9 —
 /// detached from the screen edge, glassy/blurred, with a filled capsule
 /// that morphs to the selected tab instead of a fixed underline/bar.
-class FloatingTabBar extends StatelessWidget {
+class FloatingTabBar extends StatefulWidget {
   final int index;
   final ValueChanged<int> onSelect;
 
@@ -33,7 +34,107 @@ class FloatingTabBar extends StatelessWidget {
   });
 
   @override
+  State<FloatingTabBar> createState() => _FloatingTabBarState();
+}
+
+class _FloatingTabBarState extends State<FloatingTabBar> {
+  final _rowKey = GlobalKey();
+  final _tabKeys = List.generate(3, (_) => GlobalKey());
+  List<Rect>? _targets;
+  Offset _start = Offset.zero;
+  Offset _origin = Offset.zero;
+  Rect? _capsule;
+  int? _target;
+  int _source = 0;
+  int _layoutIndex = 0;
+  bool _pickup = false;
+
+  void _startDrag(Offset position) {
+    final targets = [
+      for (final key in _tabKeys)
+        if (key.currentContext?.findRenderObject() case final RenderBox box)
+          box.localToGlobal(Offset.zero) & box.size,
+    ];
+    final pressed = targets.indexWhere((rect) => rect.contains(position));
+    if (targets.length != 3 || pressed < 0) {
+      return;
+    }
+    final row = _rowKey.currentContext!.findRenderObject()! as RenderBox;
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _targets = targets;
+      _layoutIndex = widget.index;
+      _source = pressed;
+      _target = pressed;
+      _pickup = pressed != widget.index;
+      _start = position;
+      _origin = row.localToGlobal(Offset.zero);
+      _capsule = targets[widget.index];
+    });
+    if (pressed != widget.index) {
+      widget.onSelect(pressed);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !identical(_targets, targets) || !_pickup) return;
+        setState(() => _capsule = targets[pressed]);
+      });
+    }
+  }
+
+  void _moveDrag(Offset position) {
+    final targets = _targets;
+    if (targets == null) return;
+    final ordered = [...targets]
+      ..sort((a, b) => a.center.dx.compareTo(b.center.dx));
+    final center = targets[_source].center.dx + position.dx - _start.dx;
+    var capsule = center < ordered.first.center.dx
+        ? ordered.first
+        : ordered.last;
+    for (var i = 0; i < ordered.length - 1; i++) {
+      final left = ordered[i];
+      final right = ordered[i + 1];
+      if (center >= left.center.dx && center <= right.center.dx) {
+        capsule = Rect.lerp(
+          left,
+          right,
+          (center - left.center.dx) / (right.center.dx - left.center.dx),
+        )!;
+        break;
+      }
+    }
+    var target = _source;
+    var distance = double.infinity;
+    for (var i = 0; i < targets.length; i++) {
+      final d = (targets[i].center.dx - position.dx).abs();
+      if (d < distance) {
+        target = i;
+        distance = d;
+      }
+    }
+    if (target != _target) HapticFeedback.selectionClick();
+    setState(() {
+      _pickup = false;
+      _capsule = capsule;
+      _target = target;
+    });
+  }
+
+  void _finishDrag({bool cancel = false}) {
+    if (_targets == null) return;
+    final target = _target;
+    setState(() {
+      _pickup = false;
+      _targets = null;
+      _capsule = null;
+      _target = null;
+    });
+    if (!cancel && target != null && target != widget.index) {
+      widget.onSelect(target);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final tabs = _tabs(AppLocalizations.of(context)!);
     return SafeArea(
       top: false,
@@ -67,16 +168,55 @@ class FloatingTabBar extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < tabs.length; i++)
-                      _FloatingTabButton(
-                        spec: tabs[i],
-                        selected: i == index,
-                        onTap: () => onSelect(i),
-                      ),
-                  ],
+                child: Listener(
+                  onPointerDown: (_) => HapticFeedback.lightImpact(),
+                  onPointerCancel: (_) => _finishDrag(cancel: true),
+                  child: GestureDetector(
+                    onLongPressStart: (d) => _startDrag(d.globalPosition),
+                    onLongPressMoveUpdate: (d) => _moveDrag(d.globalPosition),
+                    onLongPressEnd: (_) => _finishDrag(),
+                    onLongPressCancel: () => _finishDrag(cancel: true),
+                    child: Stack(
+                      children: [
+                        if (_capsule case final Rect capsule)
+                          AnimatedPositioned.fromRect(
+                            duration: _pickup
+                                ? const Duration(milliseconds: 220)
+                                : Duration.zero,
+                            curve: Curves.easeOutCubic,
+                            rect: capsule.shift(-_origin),
+                            child: IgnorePointer(
+                              child: DecoratedBox(
+                                key: const ValueKey("tab-drag-capsule"),
+                                decoration: BoxDecoration(
+                                  color: AppColors.controlFill,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                              ),
+                            ),
+                          ),
+                        Row(
+                          key: _rowKey,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (var i = 0; i < tabs.length; i++)
+                              _FloatingTabButton(
+                                key: _tabKeys[i],
+                                spec: tabs[i],
+                                selected:
+                                    i ==
+                                    (_targets != null
+                                        ? _layoutIndex
+                                        : widget.index),
+                                dragging: _targets != null,
+                                highlighted: i == (_target ?? widget.index),
+                                onTap: () => widget.onSelect(i),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -91,8 +231,13 @@ class _FloatingTabButton extends StatelessWidget {
   final _TabSpec spec;
   final bool selected;
   final VoidCallback onTap;
+  final bool dragging;
+  final bool highlighted;
 
   const _FloatingTabButton({
+    super.key,
+    required this.dragging,
+    required this.highlighted,
     required this.spec,
     required this.selected,
     required this.onTap,
@@ -100,26 +245,22 @@ class _FloatingTabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The selected tab uses the same two gold tones as the icon badges on
-    // the "More" screen (accent100/accent700), arranged so the pill is
-    // always the deep one and the icon and label the light one. The ramps run
-    // in opposite directions in the two themes (see AppPalette), hence the
-    // swap.
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final fill = dark ? AppColors.accent100 : AppColors.accent700;
-    final onFill = dark ? AppColors.accent700 : AppColors.accent100;
+    AppColors.watch(context);
+    // Semantic colors interpolate across the reversed light/dark ramps.
+    final fill = AppColors.controlFill;
+    final onFill = AppColors.onControlFill;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 320),
+        duration: dragging ? Duration.zero : const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
           horizontal: selected ? 20 : 16,
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: selected ? fill : Colors.transparent,
+          color: selected && !dragging ? fill : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
@@ -128,7 +269,9 @@ class _FloatingTabButton extends StatelessWidget {
             Icon(
               spec.icon,
               size: 20,
-              color: selected ? onFill : AppColors.text.withValues(alpha: 0.55),
+              color: highlighted
+                  ? onFill
+                  : AppColors.text.withValues(alpha: 0.55),
             ),
             AnimatedSize(
               duration: const Duration(milliseconds: 320),
@@ -140,7 +283,7 @@ class _FloatingTabButton extends StatelessWidget {
                         spec.label,
                         style: AppTextStyles.body(
                           fontSize: 13,
-                          color: onFill,
+                          color: highlighted ? onFill : AppColors.text,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

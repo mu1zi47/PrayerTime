@@ -655,6 +655,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final padding = MediaQuery.paddingOf(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -903,6 +904,7 @@ class _MosqueLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final camera = MapCamera.of(context);
     final dpr = MediaQuery.devicePixelRatioOf(context);
     return MobileLayerTransformer(
@@ -1173,6 +1175,7 @@ class _Floating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -1201,6 +1204,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return _Floating(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
@@ -1240,6 +1244,7 @@ class _Attribution extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: () => launchUrl(
         Uri.parse(_copyrightUrl),
@@ -1269,6 +1274,7 @@ class _UserDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return Container(
       decoration: BoxDecoration(
         color: _userBlue,
@@ -1361,6 +1367,7 @@ class _MosqueSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final title = mosque.localizedName(_language) ?? t.mosqueUnnamed;

@@ -869,4 +869,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zoomBarMoveRight => 'Перенести вправо';
+
+  @override
+  String get tasbihTitle => 'Тасбих';
+
+  @override
+  String get tasbihUnlimited => 'Бесконечно';
+
+  @override
+  String get tasbihTotal => 'Всего нажатий';
+
+  @override
+  String get tasbihTapHint => 'Нажимайте, чтобы считать';
+
+  @override
+  String get tasbihClearAll => 'Очистить полностью';
+
+  @override
+  String get tasbihClearTitle => 'Очистить тасбих?';
+
+  @override
+  String get tasbihClearBody =>
+      'Счётчик круга и общее число нажатий будут обнулены.';
+
+  @override
+  String get tasbihCancel => 'Отмена';
+
+  @override
+  String get tasbihClear => 'Очистить';
 }

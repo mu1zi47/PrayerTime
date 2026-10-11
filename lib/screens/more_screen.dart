@@ -6,6 +6,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import 'mosque_map_screen.dart';
 import 'names_screen.dart';
+import 'tasbih_screen.dart';
 import 'prayer_calendar_screen.dart';
 
 class _MoreItemSpec {
@@ -36,6 +37,11 @@ List<_MoreItemSpec> _items(AppState appState, AppLocalizations t) => [
     label: t.mosqueMapTitle,
     screenBuilder: (_) => MosqueMapScreen(appState: appState),
   ),
+  _MoreItemSpec(
+    icon: Icons.touch_app_rounded,
+    label: t.tasbihTitle,
+    screenBuilder: (_) => const TasbihScreen(),
+  ),
 ];
 
 class MoreScreen extends StatelessWidget {
@@ -45,6 +51,7 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: the title and grid
     // should scroll edge-to-edge, under the transparent status bar, rather
     // than stop short of it. CustomScrollView (instead of ListView) so the
@@ -87,6 +94,7 @@ class _MoreTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return InkWell(
       onTap: () => Navigator.of(
         context,

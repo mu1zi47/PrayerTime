@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prayertime/main.dart';
+import 'package:prayertime/screens/home_screen.dart';
+import 'package:prayertime/screens/more_screen.dart';
+import 'package:prayertime/screens/settings_screen.dart';
 import 'package:prayertime/models/prayer_day.dart';
 import 'package:prayertime/services/connectivity_service.dart';
 import 'package:prayertime/services/notification_service.dart';
@@ -87,8 +90,41 @@ void main() {
     expect(find.text('Настройки'), findsNothing);
 
     await tester.tap(find.byIcon(Icons.tune_rounded));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final width = tester.getSize(find.byType(PageView)).width;
+    expect(
+      tester.getTopLeft(find.byType(HomeScreen)).dx,
+      inExclusiveRange(-width, 0),
+    );
+    expect(
+      tester.getTopLeft(find.byType(SettingsScreen)).dx,
+      inExclusiveRange(0, width),
+    );
+    expect(find.byType(MoreScreen), findsNothing);
     await tester.pumpAndSettle();
 
     expect(find.text('Настройки'), findsWidgets);
+    await tester.tap(find.byIcon(Icons.home_rounded));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      tester.getTopLeft(find.byType(SettingsScreen)).dx,
+      inExclusiveRange(0, width),
+    );
+    expect(
+      tester.getTopLeft(find.byType(HomeScreen)).dx,
+      inExclusiveRange(-width, 0),
+    );
+    expect(find.byType(MoreScreen), findsNothing);
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.byType(HomeScreen)).dx, 0);
+
+    // Normal swiping still follows the original tab order after the shortcut.
+    await tester.dragFrom(const Offset(700, 70), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.byType(MoreScreen)).dx, 0);
   });
 }

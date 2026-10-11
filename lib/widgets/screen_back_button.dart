@@ -9,6 +9,7 @@ class ScreenBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,

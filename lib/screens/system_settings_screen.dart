@@ -21,6 +21,7 @@ class SystemSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: content should scroll
     // edge-to-edge, under the transparent status/navigation bars.
     final padding = MediaQuery.paddingOf(context);
@@ -232,6 +233,7 @@ class _NowBarRowState extends State<_NowBarRow> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final status = _status;
     if (status == null) return const SizedBox.shrink();
     final t = AppLocalizations.of(context)!;

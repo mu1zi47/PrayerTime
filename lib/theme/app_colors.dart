@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppPalette {
+  final Color controlFill;
+  final Color onControlFill;
   final Color bg;
   final Color surface;
   final Color text;
@@ -38,6 +40,8 @@ class AppPalette {
   final Color accent2_900;
 
   const AppPalette({
+    required this.controlFill,
+    required this.onControlFill,
     required this.bg,
     required this.surface,
     required this.text,
@@ -72,6 +76,43 @@ class AppPalette {
     required this.accent2_900,
   });
 
+  static AppPalette lerp(AppPalette a, AppPalette b, double t) => AppPalette(
+    controlFill: Color.lerp(a.controlFill, b.controlFill, t)!,
+    onControlFill: Color.lerp(a.onControlFill, b.onControlFill, t)!,
+    bg: Color.lerp(a.bg, b.bg, t)!,
+    surface: Color.lerp(a.surface, b.surface, t)!,
+    text: Color.lerp(a.text, b.text, t)!,
+    accent: Color.lerp(a.accent, b.accent, t)!,
+    accent2: Color.lerp(a.accent2, b.accent2, t)!,
+    neutral100: Color.lerp(a.neutral100, b.neutral100, t)!,
+    neutral200: Color.lerp(a.neutral200, b.neutral200, t)!,
+    neutral300: Color.lerp(a.neutral300, b.neutral300, t)!,
+    neutral400: Color.lerp(a.neutral400, b.neutral400, t)!,
+    neutral500: Color.lerp(a.neutral500, b.neutral500, t)!,
+    neutral600: Color.lerp(a.neutral600, b.neutral600, t)!,
+    neutral700: Color.lerp(a.neutral700, b.neutral700, t)!,
+    neutral800: Color.lerp(a.neutral800, b.neutral800, t)!,
+    neutral900: Color.lerp(a.neutral900, b.neutral900, t)!,
+    accent100: Color.lerp(a.accent100, b.accent100, t)!,
+    accent200: Color.lerp(a.accent200, b.accent200, t)!,
+    accent300: Color.lerp(a.accent300, b.accent300, t)!,
+    accent400: Color.lerp(a.accent400, b.accent400, t)!,
+    accent500: Color.lerp(a.accent500, b.accent500, t)!,
+    accent600: Color.lerp(a.accent600, b.accent600, t)!,
+    accent700: Color.lerp(a.accent700, b.accent700, t)!,
+    accent800: Color.lerp(a.accent800, b.accent800, t)!,
+    accent900: Color.lerp(a.accent900, b.accent900, t)!,
+    accent2_100: Color.lerp(a.accent2_100, b.accent2_100, t)!,
+    accent2_200: Color.lerp(a.accent2_200, b.accent2_200, t)!,
+    accent2_300: Color.lerp(a.accent2_300, b.accent2_300, t)!,
+    accent2_400: Color.lerp(a.accent2_400, b.accent2_400, t)!,
+    accent2_500: Color.lerp(a.accent2_500, b.accent2_500, t)!,
+    accent2_600: Color.lerp(a.accent2_600, b.accent2_600, t)!,
+    accent2_700: Color.lerp(a.accent2_700, b.accent2_700, t)!,
+    accent2_800: Color.lerp(a.accent2_800, b.accent2_800, t)!,
+    accent2_900: Color.lerp(a.accent2_900, b.accent2_900, t)!,
+  );
+
   Color get divider => text.withValues(alpha: 0.16);
 }
 
@@ -87,6 +128,8 @@ class AppPalette {
 // right now), so it's kept dark enough in both themes to carry light text
 // and to read apart from accent's brighter gold (a late, "qada" mark).
 const _light = AppPalette(
+  controlFill: Color(0xFF8C631A),
+  onControlFill: Color(0xFFFAEBD1),
   bg: Color(0xFFF2F4F8),
   surface: Color(0xFFFFFFFF),
   text: Color(0xFF16213C),
@@ -126,6 +169,8 @@ const _light = AppPalette(
 // flipped, since in dark mode the darkest tone is the background and the
 // lightest is the readable-on-dark end.
 const _dark = AppPalette(
+  controlFill: Color(0xFF3A2E15),
+  onControlFill: Color(0xFFE0B152),
   bg: Color(0xFF0D1526),
   surface: Color(0xFF17223C),
   text: Color(0xFFF4EFE3),
@@ -166,11 +211,19 @@ class AppColors {
   static const AppPalette lightPalette = _light;
   static const AppPalette darkPalette = _dark;
 
-  static bool _isDark = false;
+  static AppPalette _active = _light;
 
-  static void setDark(bool value) => _isDark = value;
+  static void setDark(bool value) => _active = value ? _dark : _light;
 
-  static AppPalette get _active => _isDark ? _dark : _light;
+  static void setPalette(AppPalette palette) => _active = palette;
+
+  /// Subscribe even const widgets to palette changes.
+  static void watch(BuildContext context) {
+    context.dependOnInheritedWidgetOfExactType<AppPaletteScope>();
+  }
+
+  static Color get controlFill => _active.controlFill;
+  static Color get onControlFill => _active.onControlFill;
 
   static Color get bg => _active.bg;
   static Color get surface => _active.surface;
@@ -219,4 +272,74 @@ class AppRadius {
   static const sm = 8.0;
   static const md = 12.0;
   static const lg = 16.0;
+}
+
+/// Covers the Navigator too, so sheets and pushed routes recolor together.
+class AppPaletteScope extends InheritedNotifier<ValueNotifier<AppPalette>> {
+  const AppPaletteScope({
+    super.key,
+    required ValueNotifier<AppPalette> palette,
+    required super.child,
+  }) : super(notifier: palette);
+}
+
+class AnimatedAppPalette extends StatefulWidget {
+  final bool dark;
+  final Widget child;
+
+  const AnimatedAppPalette({
+    super.key,
+    required this.dark,
+    required this.child,
+  });
+
+  @override
+  State<AnimatedAppPalette> createState() => _AnimatedAppPaletteState();
+}
+
+class _AnimatedAppPaletteState extends State<AnimatedAppPalette>
+    with SingleTickerProviderStateMixin {
+  late final _palette = ValueNotifier(widget.dark ? _dark : _light);
+  late AppPalette _from = _palette.value;
+  late AppPalette _to = _palette.value;
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 350),
+  )..addListener(_tick);
+
+  @override
+  void initState() {
+    super.initState();
+    AppColors.setPalette(_palette.value);
+  }
+
+  void _tick() {
+    final palette = AppPalette.lerp(
+      _from,
+      _to,
+      Curves.easeInOutCubic.transform(_controller.value),
+    );
+    AppColors.setPalette(palette);
+    _palette.value = palette;
+  }
+
+  @override
+  void didUpdateWidget(AnimatedAppPalette oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dark == widget.dark) return;
+    _from = _palette.value;
+    _to = widget.dark ? _dark : _light;
+    _controller.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _palette.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      AppPaletteScope(palette: _palette, child: widget.child);
 }

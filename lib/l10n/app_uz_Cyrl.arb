@@ -413,5 +413,14 @@
   },
 
   "zoomBarMoveLeft": "Чапга ўтказиш",
-  "zoomBarMoveRight": "Ўнгга ўтказиш"
+  "zoomBarMoveRight": "Ўнгга ўтказиш",
+  "tasbihTitle": "Тасбеҳ",
+  "tasbihUnlimited": "Чексиз",
+  "tasbihTotal": "Жами босишлар",
+  "tasbihTapHint": "Санаш учун босинг",
+  "tasbihClearAll": "Ҳаммасини тозалаш",
+  "tasbihClearTitle": "Тасбеҳ тозалансинми?",
+  "tasbihClearBody": "Жорий давра ва жами босишлар сони нолга қайтарилади.",
+  "tasbihCancel": "Бекор қилиш",
+  "tasbihClear": "Тозалаш"
 }

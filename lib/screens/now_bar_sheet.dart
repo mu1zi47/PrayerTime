@@ -90,6 +90,7 @@ class _NowBarSheetState extends State<_NowBarSheet> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final muted = AppColors.text.withValues(alpha: 0.65);
@@ -260,6 +261,7 @@ class _LabelWithInfoState extends State<_LabelWithInfo> {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Row(
       children: [
@@ -310,6 +312,7 @@ class _InfoBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final screen = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
     final color = AppColors.accent100;
@@ -453,6 +456,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final unlocked = status.developerOptionsEnabled;
     final steps = [

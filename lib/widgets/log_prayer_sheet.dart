@@ -1,3 +1,5 @@
+import 'app_tap.dart';
+import 'settings_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -85,31 +87,33 @@ class _LogPrayerSheet extends StatelessWidget {
             ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
           ),
           const SizedBox(height: 20),
-          _LogOption(
-            icon: Icons.check_circle_rounded,
-            label: t.logSheetOnTime,
-            color: StatusColors.onTime,
-            selected: current == PrayerLogStatus.onTime,
-            onTap: () => onPick(PrayerLogStatus.onTime),
+          ActionGroup(
+            children: [
+              _LogOption(
+                icon: Icons.check_circle_rounded,
+                label: t.logSheetOnTime,
+                color: StatusColors.onTime,
+                selected: current == PrayerLogStatus.onTime,
+                onTap: () => onPick(PrayerLogStatus.onTime),
+              ),
+              _LogOption(
+                icon: Icons.history_toggle_off_rounded,
+                label: t.logSheetLate,
+                color: StatusColors.qada,
+                selected: current == PrayerLogStatus.qada,
+                onTap: () => onPick(PrayerLogStatus.qada),
+              ),
+              if (current != null) ...[
+                _LogOption(
+                  icon: Icons.close_rounded,
+                  label: t.logSheetClear,
+                  color: AppColors.text.withValues(alpha: 0.7),
+                  selected: false,
+                  onTap: () => onPick(null),
+                ),
+              ],
+            ],
           ),
-          const SizedBox(height: 10),
-          _LogOption(
-            icon: Icons.history_toggle_off_rounded,
-            label: t.logSheetLate,
-            color: StatusColors.qada,
-            selected: current == PrayerLogStatus.qada,
-            onTap: () => onPick(PrayerLogStatus.qada),
-          ),
-          if (current != null) ...[
-            const SizedBox(height: 10),
-            _LogOption(
-              icon: Icons.close_rounded,
-              label: t.logSheetClear,
-              color: AppColors.text.withValues(alpha: 0.7),
-              selected: false,
-              onTap: () => onPick(null),
-            ),
-          ],
         ],
       ),
     );
@@ -134,18 +138,14 @@ class _LogOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return InkWell(
+    return AppTap(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.15) : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: selected ? color : Colors.transparent,
-            width: 1.6,
-          ),
+          gradient: selected ? AppColors.selectionGradient : null,
+          borderRadius: BorderRadius.zero,
         ),
         child: Row(
           children: [

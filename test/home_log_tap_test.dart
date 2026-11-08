@@ -71,6 +71,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Asr's time, unique on the screen — a plain tap, no swipe.
+    await tester.ensureVisible(find.text('00:04'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('00:04'));
     await tester.pumpAndSettle();
 

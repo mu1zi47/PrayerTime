@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../models/notif_mode.dart';
@@ -31,12 +32,12 @@ class NotifModeSelector extends StatelessWidget {
     final shown = enabled ? value : NotifMode.off;
     final selectedIndex = _modes.indexOf(shown);
     // Semantic colors interpolate across the reversed light/dark ramps.
-    final deep = AppColors.controlFill;
     final soft = AppColors.onControlFill;
     final selector = Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.bg,
+        border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+        color: AppColors.text.withValues(alpha: .04),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Stack(
@@ -51,8 +52,11 @@ class NotifModeSelector extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: deep,
-                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(
+                  color: AppColors.text.withValues(alpha: .08),
+                ),
+                gradient: AppColors.selectionGradient,
+                borderRadius: BorderRadius.circular(AppRadius.inner),
               ),
             ),
           ),
@@ -60,7 +64,7 @@ class NotifModeSelector extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               for (final mode in _modes)
-                GestureDetector(
+                AppTap(
                   onTap: enabled ? () => onChanged(mode) : onBlockedTap,
                   behavior: HitTestBehavior.opaque,
                   child: SizedBox(

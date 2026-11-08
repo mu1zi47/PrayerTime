@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'dart:async';
 import 'dart:ui';
 
@@ -241,7 +242,7 @@ class _ToastCardState extends State<_ToastCard> with TickerProviderStateMixin {
       opacity: _fade,
       child: SlideTransition(
         position: _slide,
-        child: GestureDetector(
+        child: AppTap(
           onPanStart: _onPanStart,
           onPanUpdate: _onPanUpdate,
           onPanEnd: _onPanEnd,

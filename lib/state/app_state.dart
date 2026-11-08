@@ -98,6 +98,7 @@ class AppState extends ChangeNotifier {
   int? _installedAtMs;
   AppLifecycleListener? _lifecycle;
   Timer? _rescheduleDebounce;
+  bool _disposed = false;
 
   /// Completes once the notification plugin has been initialized — see
   /// [init] and [_rescheduleNow].
@@ -362,6 +363,19 @@ class AppState extends ChangeNotifier {
   // serve another city's schedule. Backed by the same store the day window
   // uses, so it survives a restart too (see PrayerCacheStore.saveMonth).
   final Map<String, List<PrayerDay>> _monthCache = {};
+  final Map<String, Future<List<PrayerDay>>> _monthRequests = {};
+  static const _maxMemoryMonths = 12;
+
+  List<PrayerDay> _rememberMonth(String key, List<PrayerDay> days) {
+    final snapshot = List<PrayerDay>.unmodifiable(days);
+    if (_disposed) return snapshot;
+    _monthCache.remove(key);
+    _monthCache[key] = snapshot;
+    while (_monthCache.length > _maxMemoryMonths) {
+      _monthCache.remove(_monthCache.keys.first);
+    }
+    return snapshot;
+  }
 
   /// Every day of [year]/[month], for the monthly prayer-times screen — that
   /// reaches a month either side of today, well past the ±7-day window
@@ -371,33 +385,49 @@ class AppState extends ChangeNotifier {
   /// the settings they were fetched under, so paging back and forth costs
   /// nothing, reopening the screen on a later run costs nothing, and being
   /// offline only matters for a month never opened before.
-  Future<List<PrayerDay>> monthDays(int year, int month) async {
+  Future<List<PrayerDay>> monthDays(int year, int month) {
     final key = '$_cacheSignature|$year-$month';
-    final cached = _monthCache[key];
-    if (cached != null) return cached;
-
-    final stored = await _cache.loadMonth(key);
-    if (stored != null && stored.isNotEmpty) {
-      _monthCache[key] = stored;
-      return stored;
+    final cached = _monthCache.remove(key);
+    if (cached != null) {
+      _monthCache[key] = cached;
+      return Future.value(cached);
     }
-
-    final result = await _api.fetchMonth(
-      city: _selectedCity,
-      methodCode: _methodCode,
-      school: _school,
-      tune: _methodTune,
-      year: year,
-      month: month,
-    );
-    final days = result.days..sort((a, b) => a.date.compareTo(b.date));
-    _monthCache[key] = days;
-    unawaited(_cache.saveMonth(key: key, days: days));
-    return days;
+    // Snapshot settings before any disk await: a city change must never
+    // store the new city's response under the previous city's cache key.
+    final city = _selectedCity;
+    final methodCode = _methodCode;
+    final school = _school;
+    final tune = _methodTune;
+    return _monthRequests.putIfAbsent(key, () async {
+      try {
+        final stored = await _cache.loadMonth(key);
+        if (stored != null && stored.isNotEmpty) {
+          return _rememberMonth(key, stored);
+        }
+        final result = await _api.fetchMonth(
+          city: city,
+          methodCode: methodCode,
+          school: school,
+          tune: tune,
+          year: year,
+          month: month,
+        );
+        final days = List<PrayerDay>.of(result.days)
+          ..sort((a, b) => a.date.compareTo(b.date));
+        final snapshot = _rememberMonth(key, days);
+        unawaited(
+          _cache.saveMonth(key: key, days: snapshot).catchError((_) {}),
+        );
+        return snapshot;
+      } finally {
+        _monthRequests.remove(key);
+      }
+    });
   }
 
   Future<void> init() async {
     await _restore();
+    if (_disposed) return;
     // The home-screen widget writes the prayer log straight to disk, behind
     // this object's own in-memory copy (see HomeWidgetBridge) — so whatever
     // was marked from the widget while the app sat in the background is
@@ -440,7 +470,9 @@ class AppState extends ChangeNotifier {
       // Unknown stays as it was — see [notificationsAllowed] on why the
       // default is optimistic.
     }
-    if (allowed == null || allowed == _notificationsAllowed) return;
+    if (_disposed || allowed == null || allowed == _notificationsAllowed) {
+      return;
+    }
     _notificationsAllowed = allowed;
     notifyListeners();
     // iOS refuses to book anything while notifications are off, so
@@ -465,6 +497,10 @@ class AppState extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+    _requestGeneration++;
+    _monthCache.clear();
+    _notifications.onMarkDone = null;
     _lifecycle?.dispose();
     _rescheduleDebounce?.cancel();
     super.dispose();
@@ -472,6 +508,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> _restore() async {
     final prefs = await SharedPreferences.getInstance();
+    if (_disposed) return;
     final cityJson = prefs.getString(_kCityV2);
     if (cityJson != null) {
       try {
@@ -519,6 +556,7 @@ class AppState extends ChangeNotifier {
     // never been updated (an in-place update from an older version always
     // has been).
     final times = await _installTimes();
+    if (_disposed) return;
     _installedAtMs = times?.installed.millisecondsSinceEpoch;
     final setupInstall = prefs.getInt(_kOnboardingInstall);
     final restoredOntoNewInstall =
@@ -549,6 +587,7 @@ class AppState extends ChangeNotifier {
     _endReminders.addAll(_decodeEndReminders(prefs.getString(_kEndReminders)));
     _restoreEndRemindersOff(prefs.getString(_kEndRemindersOff));
     _restoreSounds(prefs);
+    if (_disposed) return;
     _restored = true;
     notifyListeners();
   }
@@ -560,6 +599,7 @@ class AppState extends ChangeNotifier {
   );
 
   Future<void> loadPrayerTimes() async {
+    if (_disposed) return;
     final generation = ++_requestGeneration;
     _isLoadingDays = true;
     _daysError = null;
@@ -698,13 +738,13 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> _rescheduleNow() async {
-    if (_days.isEmpty) return;
+    if (_disposed || _days.isEmpty) return;
     // The plugin is initialized in parallel with the first load (see
     // [init]); on the very first run this is what makes sure the alarms are
     // booked against a ready plugin. Once it has completed, awaiting it is
     // free.
     await _notificationsReady;
-    if (_days.isEmpty) return;
+    if (_disposed || _days.isEmpty) return;
     // Fire-and-forget, best-effort — a scheduling failure shouldn't
     // surface as an app-breaking error (see [init]).
     _notifications
@@ -983,6 +1023,7 @@ class AppState extends ChangeNotifier {
     // shared_preferences caches everything in Dart, and the widget's write
     // bypassed that cache entirely.
     await prefs.reload();
+    if (_disposed) return;
     final fresh = _decodeLog(prefs.getString(kPrayerLogPrefsKey));
     if (_sameLog(fresh, _prayerLog)) return;
     _prayerLog

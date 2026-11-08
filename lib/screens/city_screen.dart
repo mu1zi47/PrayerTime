@@ -1,5 +1,8 @@
+import '../widgets/app_tap.dart';
+import '../widgets/app_search_field.dart';
+import '../widgets/settings_widgets.dart';
+import '../widgets/ambient_surface.dart';
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -15,8 +18,6 @@ import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/edge_gesture_guard.dart';
 import '../widgets/screen_back_button.dart';
-
-const _searchBarReserve = 76.0;
 
 class CityScreen extends StatefulWidget {
   final AppState appState;
@@ -43,12 +44,14 @@ class _CityScreenState extends State<CityScreen> {
 
   @override
   void dispose() {
+    _geocoding.close();
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
   }
 
   void _onQueryChanged(String value) {
+    _searchGeneration++;
     setState(() => _query = value);
     _debounce?.cancel();
     if (value.trim().length < 2) {
@@ -178,7 +181,7 @@ class _CityScreenState extends State<CityScreen> {
     // back button/title row) should scroll edge-to-edge, under the
     // transparent status/navigation bars, not stop short of them.
     final padding = MediaQuery.paddingOf(context);
-    return Scaffold(
+    return AmbientScaffold(
       backgroundColor: AppColors.bg,
       body: Column(
         children: [
@@ -197,58 +200,38 @@ class _CityScreenState extends State<CityScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                InkWell(
-                  onTap: _locating ? null : _autoDetect,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 11,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent100,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
-                    child: Row(
-                      children: [
-                        // The badge is filled the other way round, since
-                        // the button itself is already soft gold.
-                        if (_locating)
-                          Container(
-                            width: 30,
-                            height: 30,
-                            padding: const EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: AppColors.accent700,
-                              shape: BoxShape.circle,
+                ActionGroup(
+                  children: [
+                    OptRow(
+                      onTap: _locating ? null : _autoDetect,
+                      child: Row(
+                        children: [
+                          if (_locating) ...[
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.accent,
+                              ),
                             ),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.accent100,
-                            ),
-                          )
-                        else
-                          IconBadge(
-                            Icons.my_location_rounded,
-                            size: 30,
-                            iconSize: 16,
-                            background: AppColors.accent700,
-                            foreground: AppColors.accent100,
-                          ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            _locating ? t.cityAutoDetecting : t.cityAutoDetect,
-                            style: AppTextStyles.body(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.accent700,
+                            const SizedBox(width: 12),
+                          ],
+                          Expanded(
+                            child: Text(
+                              _locating
+                                  ? t.cityAutoDetecting
+                                  : t.cityAutoDetect,
+                              style: AppTextStyles.body(
+                                fontSize: 15,
+                                color: AppColors.accent,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 if (_locationError != null) ...[
                   const SizedBox(height: 8),
@@ -284,33 +267,26 @@ class _CityScreenState extends State<CityScreen> {
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: Stack(
-              children: [
-                // Bottom is guarded here (scoped to just this scrolling
-                // content, not the search bar below) so swipe-up-to-minimize
-                // starting near the edge isn't read as list scrolling. No
-                // left/right guard needed — this list has no horizontal
-                // swipe to conflict with the OS back gesture, and a guard
-                // here would only risk swallowing taps near the edges (see
-                // RootShell's PageView for where left/right actually
-                // matters).
-                EdgeGestureGuard(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: GlassPanel(
+                child: EdgeGestureGuard(
                   bottom: true,
                   child: ListView(
-                    padding: EdgeInsets.fromLTRB(
-                      18,
-                      0,
-                      18,
-                      padding.bottom + _searchBarReserve,
-                    ),
+                    padding: EdgeInsets.zero,
                     children: [
-                      for (final c in cities)
-                        _CityRow(
-                          name: cityNameFor(t, c),
-                          country: cityCountryFor(t, c),
-                          selected: c.id == widget.appState.selectedCityId,
-                          onTap: () => _selectCity(c),
-                        ),
+                      Column(
+                        children: [
+                          for (final c in cities)
+                            _CityRow(
+                              showDivider: c != cities.last,
+                              name: cityNameFor(t, c),
+                              country: cityCountryFor(t, c),
+                              selected: c.id == widget.appState.selectedCityId,
+                              onTap: () => _selectCity(c),
+                            ),
+                        ],
+                      ),
                       if (_onlineResults.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Padding(
@@ -329,6 +305,7 @@ class _CityScreenState extends State<CityScreen> {
                         const SizedBox(height: 4),
                         for (final r in _onlineResults)
                           _CityRow(
+                            showDivider: r != _onlineResults.last,
                             name: r.city,
                             country: r.country,
                             selected:
@@ -354,24 +331,18 @@ class _CityScreenState extends State<CityScreen> {
                     ],
                   ),
                 ),
-                // Floats at the bottom of the screen, same spot as
-                // [FloatingTabBar] on the root tabs — this screen is pushed
-                // on top of that shell, so nothing else needs the space.
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SafeArea(
-                    top: false,
-                    minimum: const EdgeInsets.only(bottom: 16),
-                    child: _FloatingSearchBar(
-                      controller: _searchController,
-                      onChanged: _onQueryChanged,
-                      searching: _searching,
-                    ),
-                  ),
-                ),
-              ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SafeArea(
+            top: false,
+            minimum: const EdgeInsets.only(bottom: 16),
+            child: AppSearchField(
+              controller: _searchController,
+              hint: AppLocalizations.of(context)!.citySearchHint,
+              onChanged: _onQueryChanged,
+              loading: _searching,
             ),
           ),
         ],
@@ -380,108 +351,15 @@ class _CityScreenState extends State<CityScreen> {
   }
 }
 
-class _FloatingSearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final bool searching;
-
-  const _FloatingSearchBar({
-    required this.controller,
-    required this.onChanged,
-    required this.searching,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    AppColors.watch(context);
-    final t = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.85),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.neutral900.withValues(alpha: 0.18),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.search_rounded,
-                  size: 17,
-                  color: AppColors.text.withValues(alpha: 0.6),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    onChanged: onChanged,
-                    style: AppTextStyles.body(fontSize: 14),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      isCollapsed: true,
-                      border: InputBorder.none,
-                      hintText: t.citySearchHint,
-                      hintStyle: AppTextStyles.body(
-                        fontSize: 13,
-                        color: AppColors.text,
-                      ).copyWith(color: AppColors.text.withValues(alpha: 0.5)),
-                    ),
-                  ),
-                ),
-                if (searching)
-                  SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.text.withValues(alpha: 0.5),
-                    ),
-                  )
-                else if (controller.text.isNotEmpty)
-                  GestureDetector(
-                    onTap: () {
-                      controller.clear();
-                      onChanged('');
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 16,
-                        color: AppColors.text.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _CityRow extends StatelessWidget {
+  final bool showDivider;
   final String name;
   final String country;
   final bool selected;
   final VoidCallback onTap;
 
   const _CityRow({
+    this.showDivider = true,
     required this.name,
     required this.country,
     required this.selected,
@@ -491,24 +369,13 @@ class _CityRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return InkWell(
+    return AppTap(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+      child: PanelRow(
+        showDivider: showDivider,
+        selected: selected,
         child: Row(
           children: [
-            Container(
-              width: 3,
-              height: 32,
-              margin: const EdgeInsets.only(right: 11),
-              decoration: BoxDecoration(
-                color: selected ? AppColors.accent : Colors.transparent,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
             // The chosen city's badge is filled the other way round, so it
             // stands out from the rest of the list.
             IconBadge(

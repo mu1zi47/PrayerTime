@@ -287,6 +287,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get azanAndReminders => 'Notifications & reminders';
 
   @override
+  String get appSettingsKicker => 'App settings';
+
+  @override
   String get themeKicker => 'Theme';
 
   @override

@@ -1,3 +1,4 @@
+import '../widgets/app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -5,7 +6,6 @@ import '../models/notif_sound.dart';
 import '../services/notification_sounds_bridge.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
-import '../widgets/pill_button.dart';
 import '../widgets/settings_widgets.dart';
 
 /// The phone's sounds to pick the notifications' one from — its default
@@ -148,19 +148,32 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                           color: AppColors.accent,
                         ),
                       )
-                    : SingleChildScrollView(
-                        key: const ValueKey('sounds'),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: _rows(t, sounds),
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        child: SingleChildScrollView(
+                          key: const ValueKey('sounds'),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: _rows(t, sounds),
+                          ),
                         ),
                       ),
               ),
             ),
             const SizedBox(height: 12),
-            PillButton(
-              label: t.soundPickerDone,
-              onTap: () => Navigator.of(context).pop(_selected),
+            ActionGroup(
+              children: [
+                OptRow(
+                  onTap: () => Navigator.of(context).pop(_selected),
+                  child: Text(
+                    t.soundPickerDone,
+                    style: AppTextStyles.body(
+                      fontSize: 15,
+                      color: AppColors.accent,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -183,39 +196,37 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
     );
 
     return [
-      row(
-        const NotifSound.phoneDefault(),
-        t.soundDefault,
-        detail: _defaultTitle,
+      ActionGroup(
+        children: [
+          row(
+            const NotifSound.phoneDefault(),
+            t.soundDefault,
+            detail: _defaultTitle,
+          ),
+        ],
       ),
       if (sounds.isEmpty)
-        enter(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              t.soundListUnavailable,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(
-                fontSize: 13.5,
-                color: AppColors.text.withValues(alpha: 0.55),
-              ),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(t.soundListUnavailable),
         ),
       for (final kind in SystemSoundKind.values)
         if (sounds.any((s) => s.kind == kind)) ...[
-          enter(
-            Padding(
-              padding: const EdgeInsets.only(top: 14),
-              child: SectionKicker(switch (kind) {
-                SystemSoundKind.notification => t.soundKindNotification,
-                SystemSoundKind.ringtone => t.soundKindRingtone,
-                SystemSoundKind.alarm => t.soundKindAlarm,
-              }),
-            ),
+          const SizedBox(height: 16),
+          SectionKicker(switch (kind) {
+            SystemSoundKind.notification => t.soundKindNotification,
+            SystemSoundKind.ringtone => t.soundKindRingtone,
+            SystemSoundKind.alarm => t.soundKindAlarm,
+          }),
+          ActionGroup(
+            children: [
+              for (final sound in sounds.where((s) => s.kind == kind))
+                row(
+                  NotifSound(uri: sound.uri, title: sound.title),
+                  sound.title,
+                ),
+            ],
           ),
-          for (final sound in sounds.where((s) => s.kind == kind))
-            row(NotifSound(uri: sound.uri, title: sound.title), sound.title),
         ],
     ];
   }
@@ -305,17 +316,17 @@ class _PickerRow extends StatelessWidget {
     AppColors.watch(context);
     final fg = selected ? AppColors.accent700 : AppColors.text;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: InkWell(
+      padding: EdgeInsets.zero,
+      child: AppTap(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+
         child: AnimatedContainer(
           duration: _duration,
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: selected ? AppColors.accent100 : AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            gradient: selected ? AppColors.selectionGradient : null,
+            borderRadius: BorderRadius.zero,
           ),
           child: Row(
             children: [

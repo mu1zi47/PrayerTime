@@ -134,6 +134,11 @@ void main() {
   testWidgets('the month button opens a whole month of times', (tester) async {
     await _pumpApp(tester);
 
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
 
@@ -158,11 +163,15 @@ void main() {
     tester,
   ) async {
     await _pumpApp(tester);
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
 
-    // The month and its arrows scroll away with the list; the title bar and
-    // the headings above it don't.
+    // The month selector and column headings stay outside the table scroll.
     final monthLabel = find.textContaining('${DateTime.now().year}');
     expect(monthLabel, findsOneWidget);
     expect(find.text('Фаджр'), findsOneWidget);
@@ -170,50 +179,48 @@ void main() {
     await tester.drag(find.text('00:04').first, const Offset(0, -600));
     await tester.pumpAndSettle();
 
-    expect(monthLabel, findsNothing);
+    expect(monthLabel, findsOneWidget);
     expect(find.text('Фаджр'), findsOneWidget);
     expect(find.text('Времена намазов'), findsOneWidget);
   });
 
-  testWidgets(
-    'month arrows navigate backwards; right swipe returns to the previous screen',
-    (tester) async {
-      await _pumpApp(tester);
-      await tester.tap(find.text('Расписание на месяц'));
-      await tester.pumpAndSettle();
+  testWidgets('month arrows and swipes stay inside the monthly schedule', (
+    tester,
+  ) async {
+    await _pumpApp(tester);
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.tap(find.text('Расписание на месяц'));
+    await tester.pumpAndSettle();
 
-      final now = DateTime.now();
-      String label(DateTime month) => DateLabels.monthYearLabel(
-        lookupAppLocalizations(const Locale('ru')),
-        month,
-      );
+    final now = DateTime.now();
+    String label(DateTime month) => DateLabels.monthYearLabel(
+      lookupAppLocalizations(const Locale('ru')),
+      month,
+    );
 
-      expect(find.text(label(DateTime(now.year, now.month))), findsOneWidget);
+    expect(find.text(label(DateTime(now.year, now.month))), findsOneWidget);
 
-      // Left: the month ahead.
-      await tester.drag(find.byType(PageView), const Offset(-600, 0));
-      await tester.pumpAndSettle();
-      expect(
-        find.text(label(DateTime(now.year, now.month + 1))),
-        findsOneWidget,
-      );
+    // Left: the month ahead.
+    await tester.drag(find.byType(PageView), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+    expect(find.text(label(DateTime(now.year, now.month + 1))), findsOneWidget);
 
-      // Rightward swipes now mean back from anywhere inside a pushed screen.
-      // The previous-month arrow still reaches the other two months.
-      await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
-      await tester.pumpAndSettle();
-      expect(
-        find.text(label(DateTime(now.year, now.month - 1))),
-        findsOneWidget,
-      );
+    // Arrows reach both earlier months; a drag does not pop the screen.
+    await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.chevron_left_rounded).hitTestable());
+    await tester.pumpAndSettle();
+    expect(find.text(label(DateTime(now.year, now.month - 1))), findsOneWidget);
 
-      await tester.drag(find.byType(PageView), const Offset(600, 0));
-      await tester.pumpAndSettle();
-      expect(find.text('Расписание на месяц'), findsOneWidget);
-    },
-  );
+    await tester.drag(find.byType(PageView), const Offset(600, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Времена намазов'), findsOneWidget);
+    expect(find.text(label(DateTime(now.year, now.month - 1))), findsOneWidget);
+  });
 
   testWidgets('a month is fetched once and then read from cache', (
     tester,
@@ -221,6 +228,11 @@ void main() {
     final api = _CountingApi();
     await _pumpApp(tester, api);
 
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
@@ -228,6 +240,11 @@ void main() {
     // Leaving and coming back is served from memory.
     await tester.tap(find.byType(ScreenBackButton));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
@@ -246,8 +263,7 @@ void main() {
     expect(stored, hasLength(DateTime(now.year, now.month + 1, 0).day));
   });
 
-  // The month button's label is long enough to crowd the date beside it —
-  // this is what keeps that row from overflowing on a narrow phone.
+  // The month action sits after the prayer list, including on narrow phones.
   for (final width in [320.0, 360.0, 390.0]) {
     testWidgets('the home header fits at ${width.toInt()}dp', (tester) async {
       tester.view.devicePixelRatio = 1.0;
@@ -256,7 +272,17 @@ void main() {
 
       await _pumpApp(tester);
 
-      expect(find.text('Расписание на месяц'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Расписание на месяц'),
+        180,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text('Расписание на месяц').hitTestable(), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('Расписание на месяц')).dy,
+        greaterThan(tester.getBottomLeft(find.text('Иша')).dy),
+      );
+      expect(tester.takeException(), isNull);
     });
   }
 }

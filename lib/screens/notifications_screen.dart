@@ -97,8 +97,7 @@ class _NotificationsSheet extends StatelessWidget {
                           ),
                           const SizedBox(height: 18),
                         ],
-                        SettingsGroup(
-                          kicker: t.azanByPrayersKicker,
+                        ActionGroup(
                           children: [
                             for (final (key, kind) in [
                               if (appState.tahajjudEnabled)
@@ -132,9 +131,8 @@ class _NotificationsSheet extends StatelessWidget {
                               ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        SettingsGroup(
-                          kicker: t.endRemindersKicker,
+                        const SizedBox(height: 12),
+                        ActionGroup(
                           children: [
                             AnimatedOpacity(
                               duration: const Duration(milliseconds: 200),

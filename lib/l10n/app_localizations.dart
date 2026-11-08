@@ -642,6 +642,12 @@ abstract class AppLocalizations {
   /// **'Уведомления и напоминания'**
   String get azanAndReminders;
 
+  /// No description provided for @appSettingsKicker.
+  ///
+  /// In ru, this message translates to:
+  /// **'Настройки приложения'**
+  String get appSettingsKicker;
+
   /// No description provided for @themeKicker.
   ///
   /// In ru, this message translates to:

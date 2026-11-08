@@ -1,3 +1,5 @@
+import 'app_tap.dart';
+import 'ambient_surface.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -424,8 +426,8 @@ class _MapZoomStripState extends State<MapZoomStrip>
                 ),
                 ghost: _ghost.value,
                 screenWidth: screenWidth,
-                gauge: AppColors.accent,
-                track: AppColors.surface,
+                gauge: AppColors.accent.withValues(alpha: .5),
+                track: AppColors.surface.withValues(alpha: .62),
                 outline: AppColors.neutral500.withValues(alpha: 0.45),
               ),
             );
@@ -462,18 +464,8 @@ class _MapZoomStripState extends State<MapZoomStrip>
         );
       },
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(999),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.neutral900.withValues(alpha: 0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: GestureDetector(
+        decoration: glassDecoration(radius: AppRadius.lg),
+        child: AppTap(
           onTap: _moveToOtherSide,
           behavior: HitTestBehavior.opaque,
           child: Padding(

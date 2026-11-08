@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -140,10 +141,10 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
       top: false,
       minimum: const EdgeInsets.only(bottom: 16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Center(
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             child: BackdropFilter(
               // Real-time blur is one of the more expensive things a frame
               // can do (especially on Impeller, Android's default rendering
@@ -155,10 +156,10 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.78),
-                  borderRadius: BorderRadius.circular(999),
+                  color: AppColors.surface.withValues(alpha: 0.65),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: AppColors.text.withValues(alpha: 0.1),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -171,7 +172,7 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
                 child: Listener(
                   onPointerDown: (_) => HapticFeedback.lightImpact(),
                   onPointerCancel: (_) => _finishDrag(cancel: true),
-                  child: GestureDetector(
+                  child: AppTap(
                     onLongPressStart: (d) => _startDrag(d.globalPosition),
                     onLongPressMoveUpdate: (d) => _moveDrag(d.globalPosition),
                     onLongPressEnd: (_) => _finishDrag(),
@@ -189,8 +190,8 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
                               child: DecoratedBox(
                                 key: const ValueKey("tab-drag-capsule"),
                                 decoration: BoxDecoration(
-                                  color: AppColors.controlFill,
-                                  borderRadius: BorderRadius.circular(999),
+                                  gradient: AppColors.selectionGradient,
+                                  borderRadius: BorderRadius.circular(18),
                                 ),
                               ),
                             ),
@@ -247,9 +248,8 @@ class _FloatingTabButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     // Semantic colors interpolate across the reversed light/dark ramps.
-    final fill = AppColors.controlFill;
     final onFill = AppColors.onControlFill;
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
@@ -260,8 +260,8 @@ class _FloatingTabButton extends StatelessWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: selected && !dragging ? fill : Colors.transparent,
-          borderRadius: BorderRadius.circular(999),
+          gradient: selected && !dragging ? AppColors.selectionGradient : null,
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

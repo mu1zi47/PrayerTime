@@ -14,12 +14,12 @@ import uz.mu1zi47.prayertime.EndReminders
 import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
 
 /**
- * What all three prayer widgets are. They differ only in the size the picker
+ * What both prayer widgets are. They differ only in the size the picker
  * places them at — the shape each one draws follows the size it currently
  * has, so resizing one turns it into another, the way the stock clock and
  * weather widgets work.
  *
- * On Android 12 and up all three shapes are handed to the launcher at once
+ * On Android 12 and up both shapes are handed to the launcher at once
  * (see [responsiveViews]) and it picks per size without waking this process,
  * so a resize is instant. Below that there is no such API, so the shape is
  * chosen here from the size the host reports, and
@@ -105,14 +105,14 @@ abstract class BasePrayerWidgetProvider : AppWidgetProvider() {
 
         if (state is PrayerWidgetState.Ready) {
             // The first slot of the day to come is the earliest moment any of
-            // the three shapes goes stale, so one alarm covers whichever one
+            // the two shapes goes stale, so one alarm covers whichever one
             // the launcher happens to be showing.
             PrayerWidgets.scheduleNextChange(context, javaClass, state.nextChangeEpochMillis)
         }
     }
 
     /**
-     * All three shapes in one [RemoteViews]; the launcher draws the largest
+     * Both shapes in one [RemoteViews]; the launcher draws the largest
      * that fits the cell it has. The sizes are the smallest each shape is
      * legible at, not the size it's placed at.
      */
@@ -126,8 +126,6 @@ abstract class BasePrayerWidgetProvider : AppWidgetProvider() {
                 PrayerWidgetViews.build(context, javaClass, state, PrayerWidgets.Layout.COMPACT),
             SizeF(PrayerWidgets.Layout.WIDE_WIDTH, PrayerWidgets.Layout.SHORT_HEIGHT) to
                 PrayerWidgetViews.build(context, javaClass, state, PrayerWidgets.Layout.WIDE),
-            SizeF(PrayerWidgets.Layout.WIDE_WIDTH, PrayerWidgets.Layout.TALL_HEIGHT) to
-                PrayerWidgetViews.build(context, javaClass, state, PrayerWidgets.Layout.DAY),
         ),
     )
 }

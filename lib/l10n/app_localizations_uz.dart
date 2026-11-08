@@ -288,6 +288,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get azanAndReminders => 'Bildirishnomalar va eslatmalar';
 
   @override
+  String get appSettingsKicker => 'Ilova sozlamalari';
+
+  @override
   String get themeKicker => 'Mavzu';
 
   @override
@@ -1186,6 +1189,9 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get azanAndReminders => 'Билдиришномалар ва эслатмалар';
 
   @override
+  String get appSettingsKicker => 'Илова созламалари';
+
+  @override
   String get themeKicker => 'Мавзу';
 
   @override
@@ -2080,6 +2086,9 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get azanAndReminders => 'Bildirishnomalar va eslatmalar';
+
+  @override
+  String get appSettingsKicker => 'Ilova sozlamalari';
 
   @override
   String get themeKicker => 'Mavzu';

@@ -1,4 +1,7 @@
-import 'dart:ui';
+import '../widgets/app_tap.dart';
+import '../widgets/app_search_field.dart';
+import '../widgets/settings_widgets.dart';
+import '../widgets/ambient_surface.dart';
 
 import 'package:flutter/material.dart';
 
@@ -13,8 +16,6 @@ import '../widgets/edge_gesture_guard.dart';
 import '../widgets/screen_back_button.dart';
 import '../widgets/segmented_control.dart';
 import 'allah_name_detail_screen.dart';
-
-const _searchBarReserve = 76.0;
 
 class NamesScreen extends StatefulWidget {
   final AppState appState;
@@ -50,13 +51,19 @@ class _NamesScreenState extends State<NamesScreen> {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => _NoticeSheet(
-        icon: readsUzbek ? Icons.info_outline_rounded : Icons.translate_rounded,
-        title: readsUzbek ? t.namesDisclaimerTitle : t.namesNoticeTitle,
-        body: readsUzbek ? null : t.namesNoticeBody,
-        disclaimer: t.namesNoticeDisclaimer,
-        button: t.namesNoticeButton,
-        onDismiss: () => Navigator.of(sheetContext).pop(),
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheetContext) => SingleChildScrollView(
+        child: _NoticeSheet(
+          icon: readsUzbek
+              ? Icons.info_outline_rounded
+              : Icons.translate_rounded,
+          title: readsUzbek ? t.namesDisclaimerTitle : t.namesNoticeTitle,
+          body: readsUzbek ? null : t.namesNoticeBody,
+          disclaimer: t.namesNoticeDisclaimer,
+          button: t.namesNoticeButton,
+          onDismiss: () => Navigator.of(sheetContext).pop(),
+        ),
       ),
     );
   }
@@ -99,7 +106,7 @@ class _NamesScreenState extends State<NamesScreen> {
     // the back button/title row) should scroll edge-to-edge, under the
     // transparent status/navigation bars, not stop short of them.
     final padding = MediaQuery.paddingOf(context);
-    return Scaffold(
+    return AmbientScaffold(
       backgroundColor: AppColors.bg,
       body: AnimatedBuilder(
         animation: widget.appState,
@@ -167,16 +174,10 @@ class _NamesScreenState extends State<NamesScreen> {
               ),
               const SizedBox(height: 12),
               Expanded(
-                child: Stack(
-                  children: [
-                    // Scoped to just this PageView, not the back button/tab
-                    // row above or the search bar below — a touch starting
-                    // in the left/right strip Android reserves for its own
-                    // back gesture never reaches this PageView, so it can't
-                    // be mistaken for a tab swipe. Bottom guards against
-                    // swipe-up-to-minimize the same way, scoped to just the
-                    // scrolling content and not the search bar below.
-                    EdgeGestureGuard(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: GlassPanel(
+                    child: EdgeGestureGuard(
                       left: true,
                       right: true,
                       bottom: true,
@@ -190,7 +191,7 @@ class _NamesScreenState extends State<NamesScreen> {
                               navigationSource: AllahNames.all,
                               favorites: favorites,
                               appState: widget.appState,
-                              bottomPadding: padding.bottom + _searchBarReserve,
+                              bottomPadding: 0,
                               emptyMessage: hasQuery ? t.nothingFound : null,
                             ),
                           ),
@@ -203,7 +204,7 @@ class _NamesScreenState extends State<NamesScreen> {
                               navigationSource: favoriteSource,
                               favorites: favorites,
                               appState: widget.appState,
-                              bottomPadding: padding.bottom + _searchBarReserve,
+                              bottomPadding: 0,
                               emptyMessage: favoriteSource.isEmpty
                                   ? t.favoritesEmpty
                                   : (hasQuery ? t.nothingFound : null),
@@ -212,24 +213,17 @@ class _NamesScreenState extends State<NamesScreen> {
                         ],
                       ),
                     ),
-                    // Floats at the bottom of the screen, same spot as
-                    // [FloatingTabBar] on the root tabs — this screen is
-                    // pushed on top of that shell, so nothing else needs
-                    // the space.
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: SafeArea(
-                        top: false,
-                        minimum: const EdgeInsets.only(bottom: 16),
-                        child: _FloatingSearchBar(
-                          controller: _searchController,
-                          onChanged: (v) => setState(() => _query = v),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SafeArea(
+                top: false,
+                minimum: const EdgeInsets.only(bottom: 16),
+                child: AppSearchField(
+                  controller: _searchController,
+                  hint: AppLocalizations.of(context)!.namesSearchHint,
+                  onChanged: (v) => setState(() => _query = v),
                 ),
               ),
             ],
@@ -322,10 +316,7 @@ class _NoticeSheet extends StatelessWidget {
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
+            decoration: glassDecoration(radius: AppRadius.md),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -352,109 +343,21 @@ class _NoticeSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          GestureDetector(
-            onTap: onDismiss,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              height: 48,
-              alignment: Alignment.center,
-              // The app's icon colors (see IconBadge).
-              decoration: BoxDecoration(
-                color: AppColors.accent100,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                button,
-                style: AppTextStyles.body(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.accent700,
+          ActionGroup(
+            children: [
+              OptRow(
+                onTap: onDismiss,
+                child: Text(
+                  button,
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    color: AppColors.accent,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _FloatingSearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-
-  const _FloatingSearchBar({required this.controller, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    AppColors.watch(context);
-    final t = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.85),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.neutral900.withValues(alpha: 0.18),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.search_rounded,
-                  size: 17,
-                  color: AppColors.text.withValues(alpha: 0.6),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    onChanged: onChanged,
-                    style: AppTextStyles.body(fontSize: 14),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      isCollapsed: true,
-                      border: InputBorder.none,
-                      hintText: t.namesSearchHint,
-                      hintStyle: AppTextStyles.body(
-                        fontSize: 13,
-                        color: AppColors.text,
-                      ).copyWith(color: AppColors.text.withValues(alpha: 0.5)),
-                    ),
-                  ),
-                ),
-                if (controller.text.isNotEmpty)
-                  GestureDetector(
-                    onTap: () {
-                      controller.clear();
-                      onChanged('');
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 16,
-                        color: AppColors.text.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -497,16 +400,21 @@ class _NamesList extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(18, 0, 18, bottomPadding),
+      padding: EdgeInsets.only(bottom: bottomPadding),
       itemCount: names.length,
       itemBuilder: (context, i) {
         final name = names[i];
-        return _NameRow(
-          name: name,
-          navigationSource: navigationSource,
-          isFavorite: favorites.contains(name.number),
-          onToggleFavorite: () => appState.toggleFavoriteName(name.number),
-          appState: appState,
+        return Container(
+          padding: EdgeInsets.zero,
+
+          child: _NameRow(
+            showDivider: i < names.length - 1,
+            name: name,
+            navigationSource: navigationSource,
+            isFavorite: favorites.contains(name.number),
+            onToggleFavorite: () => appState.toggleFavoriteName(name.number),
+            appState: appState,
+          ),
         );
       },
     );
@@ -514,6 +422,7 @@ class _NamesList extends StatelessWidget {
 }
 
 class _NameRow extends StatelessWidget {
+  final bool showDivider;
   final AllahName name;
   final List<AllahName> navigationSource;
   final bool isFavorite;
@@ -521,6 +430,7 @@ class _NameRow extends StatelessWidget {
   final AppState appState;
 
   const _NameRow({
+    this.showDivider = true,
     required this.name,
     required this.navigationSource,
     required this.isFavorite,
@@ -531,7 +441,7 @@ class _NameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => AllahNameDetailScreen(
@@ -541,11 +451,8 @@ class _NameRow extends StatelessWidget {
           ),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+      child: PanelRow(
+        showDivider: showDivider,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -595,7 +502,7 @@ class _NameRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            GestureDetector(
+            AppTap(
               onTap: onToggleFavorite,
               behavior: HitTestBehavior.opaque,
               child: Padding(

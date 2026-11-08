@@ -1,3 +1,5 @@
+import 'app_tap.dart';
+import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -14,12 +16,12 @@ class SectionKicker extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 2),
       child: Text(
-        label.toUpperCase(),
+        label,
         style: AppTextStyles.body(
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: FontWeight.w800,
-          color: AppColors.accent,
-        ).copyWith(letterSpacing: 1.0),
+          color: AppColors.text.withValues(alpha: .55),
+        ).copyWith(letterSpacing: .1),
       ),
     );
   }
@@ -28,11 +30,13 @@ class SectionKicker extends StatelessWidget {
 class SettingsGroup extends StatelessWidget {
   final String kicker;
   final List<Widget> children;
+  final Widget? footer;
 
   const SettingsGroup({
     super.key,
     required this.kicker,
     required this.children,
+    this.footer,
   });
 
   @override
@@ -40,7 +44,18 @@ class SettingsGroup extends StatelessWidget {
     AppColors.watch(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [SectionKicker(kicker), ...children],
+      children: [
+        SectionKicker(kicker),
+        GlassPanel(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              GroupRows(children: children),
+              ?footer,
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -57,13 +72,10 @@ class OptRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return InkWell(
+    return AppTap(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 13),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(child: child),
@@ -89,10 +101,7 @@ class SettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 13),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.divider)),
-      ),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Expanded(child: child),
@@ -101,4 +110,52 @@ class SettingsRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Separators belong to the group, so its final row never draws a line.
+class GroupRows extends StatelessWidget {
+  final List<Widget> children;
+  const GroupRows({super.key, required this.children});
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      for (var i = 0; i < children.length; i++) ...[
+        if (i > 0) const PanelDivider(),
+        children[i],
+      ],
+    ],
+  );
+}
+
+class SettingsValue extends StatelessWidget {
+  final String label;
+  final String value;
+  const SettingsValue({super.key, required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Text(label, style: AppTextStyles.body(fontSize: 15)),
+      const SizedBox(width: 16),
+      Expanded(
+        child: Text(
+          value,
+          textAlign: TextAlign.end,
+          style: AppTextStyles.body(
+            fontSize: 14,
+            color: AppColors.text.withValues(alpha: .55),
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+    ],
+  );
+}
+
+/// One clipped surface for a sheet's actions, with inset separators.
+class ActionGroup extends StatelessWidget {
+  final List<Widget> children;
+  const ActionGroup({super.key, required this.children});
+  @override
+  Widget build(BuildContext context) =>
+      GlassPanel(child: GroupRows(children: children));
 }

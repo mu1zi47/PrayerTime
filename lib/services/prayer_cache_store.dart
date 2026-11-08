@@ -61,6 +61,7 @@ class PrayerCacheStore {
 
   Future<List<PrayerDay>?> loadMonth(String key) async {
     final prefs = await SharedPreferences.getInstance();
+    await (_monthWrites[prefs] ?? Future<void>.value());
     final raw = prefs.getString(_kMonths);
     if (raw == null) return null;
     try {
@@ -73,11 +74,27 @@ class PrayerCacheStore {
     }
   }
 
+  // Each write reads and replaces the same JSON map. Serialize them so
+  // simultaneous page loads cannot overwrite one another's cached months.
+  static final _monthWrites = Expando<Future<void>>();
+
   Future<void> saveMonth({
     required String key,
     required List<PrayerDay> days,
   }) async {
+    final snapshot = List<PrayerDay>.of(days);
     final prefs = await SharedPreferences.getInstance();
+    final previous = _monthWrites[prefs] ?? Future<void>.value();
+    final write = previous.then((_) => _saveMonth(prefs, key, snapshot));
+    _monthWrites[prefs] = write.catchError((_) {});
+    await write;
+  }
+
+  Future<void> _saveMonth(
+    SharedPreferences prefs,
+    String key,
+    List<PrayerDay> days,
+  ) async {
     var stored = <String, dynamic>{};
     final raw = prefs.getString(_kMonths);
     if (raw != null) {

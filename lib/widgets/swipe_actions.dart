@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'dart:math' show max;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
 
 import '../theme/app_text_styles.dart';
+import '../theme/app_colors.dart';
 
 /// One of the buttons [SwipeActionTile] reveals.
 class SwipeAction {
@@ -198,7 +200,7 @@ class _SwipeActionTileState extends State<SwipeActionTile>
                   ],
                 );
               },
-              child: GestureDetector(
+              child: AppTap(
                 behavior: HitTestBehavior.opaque,
                 onTap: _onTap,
                 onHorizontalDragStart: _onDragStart,
@@ -262,11 +264,12 @@ class _ActionButton extends StatelessWidget {
     // Stretched past its own width, the content stays by the tile's edge,
     // following the drag, as Telegram's does.
     final stretched = width > fullWidth;
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       child: Container(
         width: width,
         decoration: BoxDecoration(
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
           color: action.color,
           borderRadius: borderRadius,
         ),

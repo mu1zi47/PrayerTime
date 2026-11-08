@@ -1,3 +1,5 @@
+import 'app_tap.dart';
+import 'settings_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -82,14 +84,16 @@ class _ChoiceSheet extends StatelessWidget {
             style: AppTextStyles.heading(fontSize: 18),
           ),
           const SizedBox(height: 18),
-          for (var i = 0; i < options.length; i++) ...[
-            if (i > 0) const SizedBox(height: 10),
-            _ChoiceOption(
-              option: options[i],
-              selected: i == selectedIndex,
-              onTap: () => onSelect(i),
-            ),
-          ],
+          ActionGroup(
+            children: [
+              for (var i = 0; i < options.length; i++)
+                _ChoiceOption(
+                  option: options[i],
+                  selected: i == selectedIndex,
+                  onTap: () => onSelect(i),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -115,17 +119,17 @@ class _ChoiceOption extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final fg = selected ? AppColors.accent700 : AppColors.text;
-    return InkWell(
+    return AppTap(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 14,
+          horizontal: 16,
           vertical: option.icon != null ? 10 : 15,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent100 : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
+          gradient: selected ? AppColors.selectionGradient : null,
+          borderRadius: BorderRadius.zero,
         ),
         child: Row(
           children: [

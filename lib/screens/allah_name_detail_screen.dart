@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -47,182 +49,179 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
     AppColors.watch(context);
     final name = widget.names[_index];
     final padding = MediaQuery.paddingOf(context);
-    return Scaffold(
+    return AmbientScaffold(
       backgroundColor: AppColors.bg,
       body: AnimatedBuilder(
         animation: widget.appState,
         builder: (context, _) {
           final t = AppLocalizations.of(context)!;
           final isFavorite = widget.appState.isFavoriteName(name.number);
-          return ListView(
-            padding: EdgeInsets.fromLTRB(
+          return ScreenContentInset(
+            margin: EdgeInsets.fromLTRB(
               18,
               padding.top + 16,
               18,
               padding.bottom + 24,
             ),
-            children: [
-              Row(
-                children: [
-                  ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      t.allahNamesTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () =>
-                        widget.appState.toggleFavoriteName(name.number),
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isFavorite
-                            ? Icons.star_rounded
-                            : Icons.star_border_rounded,
-                        size: 20,
-                        color: isFavorite ? AppColors.accent : AppColors.text,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      final velocity = details.primaryVelocity ?? 0;
-                      if (velocity < -250) {
-                        _step(1);
-                      } else if (velocity > 250) {
-                        _step(-1);
-                      }
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 44,
-                        vertical: 32,
-                      ),
-                      // The app's icon colors (see IconBadge): soft gold,
-                      // deep gold text.
-                      decoration: BoxDecoration(
-                        color: AppColors.accent100,
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.accent200,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '${name.number}',
-                              style: AppTextStyles.body(
-                                fontSize: 13,
-                                color: AppColors.accent700,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            name.arabic,
-                            textDirection: TextDirection.rtl,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.heading(
-                              fontSize: 40,
-                              color: AppColors.accent700,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            name.transliteration,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.heading(
-                              fontSize: 22,
-                              color: AppColors.accent700,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            name.meaning,
-                            textAlign: TextAlign.center,
-                            style:
-                                AppTextStyles.body(
-                                  fontSize: 14,
-                                  color: AppColors.accent700,
-                                ).copyWith(
-                                  color: AppColors.accent700.withValues(
-                                    alpha: 0.85,
-                                  ),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 6,
-                    child: _NavArrowButton(
-                      icon: Icons.chevron_left_rounded,
-                      enabled: _index > 0,
-                      onTap: () => _step(-1),
-                    ),
-                  ),
-                  Positioned(
-                    right: 6,
-                    child: _NavArrowButton(
-                      icon: Icons.chevron_right_rounded,
-                      enabled: _index < widget.names.length - 1,
-                      onTap: () => _step(1),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Row(
                   children: [
-                    Text(
-                      t.descriptionLabel,
-                      style: AppTextStyles.heading(
-                        fontSize: 15,
-                      ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+                    ScreenBackButton(onTap: () => Navigator.of(context).pop()),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        t.allahNamesTitle,
+                        style: AppTextStyles.heading(fontSize: 22),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      name.description,
-                      style: AppTextStyles.body(
-                        fontSize: 15,
-                        color: AppColors.text,
-                      ).copyWith(height: 1.5),
+                    AppTap(
+                      onTap: () =>
+                          widget.appState.toggleFavoriteName(name.number),
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isFavorite
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          size: 20,
+                          color: isFavorite ? AppColors.accent : AppColors.text,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AppTap(
+                      onHorizontalDragEnd: (details) {
+                        final velocity = details.primaryVelocity ?? 0;
+                        if (velocity < -250) {
+                          _step(1);
+                        } else if (velocity > 250) {
+                          _step(-1);
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 44,
+                          vertical: 32,
+                        ),
+                        // The app's icon colors (see IconBadge): soft gold,
+                        // deep gold text.
+                        decoration: glassDecoration(radius: AppRadius.lg),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: AppColors.accent200,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '${name.number}',
+                                style: AppTextStyles.body(
+                                  fontSize: 13,
+                                  color: AppColors.accent700,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              name.arabic,
+                              textDirection: TextDirection.rtl,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.heading(
+                                fontSize: 40,
+                                color: AppColors.accent700,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              name.transliteration,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.heading(
+                                fontSize: 22,
+                                color: AppColors.accent700,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              name.meaning,
+                              textAlign: TextAlign.center,
+                              style:
+                                  AppTextStyles.body(
+                                    fontSize: 14,
+                                    color: AppColors.accent700,
+                                  ).copyWith(
+                                    color: AppColors.accent700.withValues(
+                                      alpha: 0.85,
+                                    ),
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 6,
+                      child: _NavArrowButton(
+                        icon: Icons.chevron_left_rounded,
+                        enabled: _index > 0,
+                        onTap: () => _step(-1),
+                      ),
+                    ),
+                    Positioned(
+                      right: 6,
+                      child: _NavArrowButton(
+                        icon: Icons.chevron_right_rounded,
+                        enabled: _index < widget.names.length - 1,
+                        onTap: () => _step(1),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  decoration: glassDecoration(radius: AppRadius.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.descriptionLabel,
+                        style: AppTextStyles.heading(fontSize: 15).copyWith(
+                          color: AppColors.text.withValues(alpha: 0.55),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        name.description,
+                        style: AppTextStyles.body(
+                          fontSize: 15,
+                          color: AppColors.text,
+                        ).copyWith(height: 1.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -244,7 +243,7 @@ class _NavArrowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: enabled ? onTap : null,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -256,6 +255,7 @@ class _NavArrowButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.accent700.withValues(alpha: enabled ? 1 : 0.25),
           shape: BoxShape.circle,
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
         ),
         child: Icon(
           icon,

@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -15,7 +16,7 @@ class PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedOpacity(
@@ -26,7 +27,8 @@ class PillButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: AppColors.accent100,
-            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+            borderRadius: BorderRadius.circular(AppRadius.inner),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../data/date_labels.dart';
@@ -99,77 +101,83 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
       builder: (context, _) {
         final t = AppLocalizations.of(context)!;
         final markable = _markablePrayers(_selectedDay);
-        return Scaffold(
+        return AmbientScaffold(
           backgroundColor: AppColors.bg,
-          body: ListView(
-            padding: EdgeInsets.fromLTRB(
+          body: ScreenContentInset(
+            margin: EdgeInsets.fromLTRB(
               18,
               padding.top + 16,
               18,
               padding.bottom + 18,
             ),
-            children: [
-              Row(
-                children: [
-                  ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                  const SizedBox(width: 12),
-                  Text(
-                    t.calendarScreenTitle,
-                    style: AppTextStyles.heading(fontSize: 22),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _MonthNavButton(
-                    icon: Icons.chevron_left_rounded,
-                    onTap: () => _shiftMonth(-1),
-                  ),
-                  Text(
-                    DateLabels.monthYearLabel(t, _visibleMonth),
-                    style: AppTextStyles.heading(fontSize: 16),
-                  ),
-                  _MonthNavButton(
-                    icon: Icons.chevron_right_rounded,
-                    onTap: _isCurrentMonth ? null : () => _shiftMonth(1),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _CalendarGrid(
-                appState: widget.appState,
-                month: _visibleMonth,
-                selected: _selectedDay,
-                onSelect: (date) => setState(() => _selectedDay = date),
-              ),
-              const SizedBox(height: 20),
-              if (markable.isNotEmpty) ...[
-                _DayLogPanel(
-                  appState: widget.appState,
-                  date: _selectedDay,
-                  prayers: markable,
-                  onEdit: _editPrayer,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Row(
+                  children: [
+                    ScreenBackButton(onTap: () => Navigator.of(context).pop()),
+                    const SizedBox(width: 12),
+                    Text(
+                      t.calendarScreenTitle,
+                      style: AppTextStyles.heading(fontSize: 22),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
-              ],
-              Wrap(
-                spacing: 16,
-                runSpacing: 8,
-                children: [
-                  _LegendItem(
-                    color: StatusColors.onTime,
-                    label: t.legendOnTime,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _MonthNavButton(
+                      icon: Icons.chevron_left_rounded,
+                      onTap: () => _shiftMonth(-1),
+                    ),
+                    Text(
+                      DateLabels.monthYearLabel(t, _visibleMonth),
+                      style: AppTextStyles.heading(fontSize: 16),
+                    ),
+                    _MonthNavButton(
+                      icon: Icons.chevron_right_rounded,
+                      onTap: _isCurrentMonth ? null : () => _shiftMonth(1),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                GlassPanel(
+                  padding: const EdgeInsets.all(16),
+                  child: _CalendarGrid(
+                    appState: widget.appState,
+                    month: _visibleMonth,
+                    selected: _selectedDay,
+                    onSelect: (date) => setState(() => _selectedDay = date),
                   ),
-                  _LegendItem(color: StatusColors.qada, label: t.legendQada),
-                  _LegendItem(
-                    color: AppColors.neutral300,
-                    label: t.legendMissed,
+                ),
+                const SizedBox(height: 20),
+                if (markable.isNotEmpty) ...[
+                  _DayLogPanel(
+                    appState: widget.appState,
+                    date: _selectedDay,
+                    prayers: markable,
+                    onEdit: _editPrayer,
                   ),
+                  const SizedBox(height: 20),
                 ],
-              ),
-            ],
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 8,
+                  children: [
+                    _LegendItem(
+                      color: StatusColors.onTime,
+                      label: t.legendOnTime,
+                    ),
+                    _LegendItem(color: StatusColors.qada, label: t.legendQada),
+                    _LegendItem(
+                      color: AppColors.neutral300,
+                      label: t.legendMissed,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -187,7 +195,7 @@ class _MonthNavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final enabled = onTap != null;
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -197,6 +205,7 @@ class _MonthNavButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           shape: BoxShape.circle,
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
         ),
         child: Icon(
           icon,
@@ -342,7 +351,7 @@ class _DayCell extends StatelessWidget {
         ? Border.all(color: AppColors.accent, width: 1.6)
         : null;
 
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Center(
@@ -394,29 +403,33 @@ class _DayLogPanel extends StatelessWidget {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
+      padding: EdgeInsets.zero,
+      decoration: glassDecoration(radius: AppRadius.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            DateLabels.fullLabel(t, date),
-            style: AppTextStyles.heading(fontSize: 17),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text(
+              DateLabels.fullLabel(t, date),
+              style: AppTextStyles.heading(fontSize: 17),
+            ),
           ),
           const SizedBox(height: 2),
-          Text(
-            t.calendarDayPanelKicker,
-            style: AppTextStyles.body(
-              fontSize: 12.5,
-              color: AppColors.text,
-            ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              t.calendarDayPanelKicker,
+              style: AppTextStyles.body(
+                fontSize: 12.5,
+                color: AppColors.text,
+              ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+            ),
           ),
           const SizedBox(height: 10),
           for (final (key, kind) in prayers)
             _PrayerLogRow(
+              showDivider: (key, kind) != prayers.last,
               label: nameForPrayer(t, kind),
               icon: iconForPrayer(kind),
               status: appState.prayerStatusFor(date, key),
@@ -429,12 +442,14 @@ class _DayLogPanel extends StatelessWidget {
 }
 
 class _PrayerLogRow extends StatelessWidget {
+  final bool showDivider;
   final String label;
   final IconData icon;
   final PrayerLogStatus? status;
   final VoidCallback? onTap;
 
   const _PrayerLogRow({
+    this.showDivider = true,
     required this.label,
     required this.icon,
     required this.status,
@@ -450,13 +465,10 @@ class _PrayerLogRow extends StatelessWidget {
       PrayerLogStatus.qada => (t.legendQada, StatusColors.qada),
       null => (t.calendarNotMarked, AppColors.text.withValues(alpha: 0.4)),
     };
-    return InkWell(
+    return AppTap(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.divider)),
-        ),
+      child: PanelRow(
+        showDivider: showDivider,
         child: Row(
           children: [
             IconBadge(icon, size: 32, iconSize: 16),

@@ -1,3 +1,4 @@
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../state/app_state.dart';
@@ -48,6 +49,7 @@ class _RootShellState extends State<RootShell> {
     _switching = true;
     setState(() {
       _tabIndex = index;
+      moveAmbientLight(AmbientNavigationObserver.positions[index]);
       // Put the current screen immediately beside the destination for this
       // animation. Stable keys preserve screen state when the order changes.
       if (shortcut) {
@@ -88,7 +90,7 @@ class _RootShellState extends State<RootShell> {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _goToTab(0);
       },
-      child: Scaffold(
+      child: AmbientScaffold(
         backgroundColor: AppColors.bg,
         body: Stack(
           children: [
@@ -120,7 +122,12 @@ class _RootShellState extends State<RootShell> {
                         : null,
                     onPageChanged: (i) {
                       if (!_switching) {
-                        setState(() => _tabIndex = _pageOrder[i]);
+                        setState(() {
+                          _tabIndex = _pageOrder[i];
+                          moveAmbientLight(
+                            AmbientNavigationObserver.positions[_tabIndex],
+                          );
+                        });
                       }
                     },
                     children: [

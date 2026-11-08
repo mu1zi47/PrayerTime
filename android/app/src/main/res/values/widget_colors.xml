@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The widget follows the theme picked *in the app* (System/Light/Dark),
-     not the phone's — so PrayerWidgetProvider paints every color itself from
-     the explicit `_light`/`_dark` pairs below, which never flip on their own.
-
-     The unsuffixed aliases at the bottom are only what the layout starts out
-     with: the widget picker's preview and the split second before the
-     provider's first draw. Those do follow the system, via values-night. -->
 <resources>
-    <!-- Slightly translucent, like One UI's own widget panels: the wallpaper
-         still shows through at the edges instead of a flat opaque card. -->
-    <color name="widget_bg_light">#F5F2F4F8</color>
-    <color name="widget_bg_dark">#F00D1526</color>
+    <color name="widget_bg_light">#CCFFFFFF</color>
+    <color name="widget_bg_dark">#CC192943</color>
 
     <color name="widget_text_light">#16213C</color>
     <color name="widget_text_dark">#F4EFE3</color>
@@ -18,26 +9,18 @@
     <color name="widget_text_muted_light">#8F16213C</color>
     <color name="widget_text_muted_dark">#8FF4EFE3</color>
 
-    <!-- The countdown: the app's deep gold, lifted in the dark theme so it
-         still reads on the navy panel. -->
     <color name="widget_accent2_light">#8C631A</color>
     <color name="widget_accent2_dark">#E0B152</color>
 
-    <!-- "Not marked yet": a quiet outline, so the filled state reads as a
-         real change rather than a color swap. -->
-    <color name="widget_button_bg_light">#FFFFFFFF</color>
-    <color name="widget_button_bg_dark">#17223C</color>
-    <color name="widget_button_stroke_light">#3D16213C</color>
-    <color name="widget_button_stroke_dark">#3DF4EFE3</color>
-    <color name="widget_button_text_light">#16213C</color>
-    <color name="widget_button_text_dark">#F4EFE3</color>
+    <color name="widget_button_bg_light">#00FFFFFF</color>
+    <color name="widget_button_bg_dark">#00192943</color>
+    <color name="widget_button_stroke_light">#408C631A</color>
+    <color name="widget_button_stroke_dark">#40E0B152</color>
+    <color name="widget_button_text_light">#8C631A</color>
+    <color name="widget_button_text_dark">#E0B152</color>
 
-    <!-- Logged: the mark button fills with the app's own "prayed on time"
-         gold (StatusColors.onTime) and its check goes dark, exactly like the
-         app's own button; the panel around it doesn't change. Identical in
-         both themes, so a logged prayer looks the same whichever one is on. -->
     <color name="widget_marked_bg">#E0B152</color>
-    <color name="widget_marked_text">#201404</color>
+    <color name="widget_marked_text">#E0B152</color>
 
     <color name="widget_bg">@color/widget_bg_light</color>
     <color name="widget_text">@color/widget_text_light</color>
@@ -46,4 +29,15 @@
     <color name="widget_button_text">@color/widget_button_text_light</color>
     <color name="widget_button_bg">@color/widget_button_bg_light</color>
     <color name="widget_button_stroke">@color/widget_button_stroke_light</color>
+    <color name="widget_border_light">#1416213C</color>
+    <color name="widget_border_dark">#1AF4EFE3</color>
+    <color name="widget_panel_top_light">#E6FFFFFF</color>
+    <color name="widget_panel_top_dark">#A6192943</color>
+    <color name="widget_divider_light">#2916213C</color>
+    <color name="widget_divider_dark">#29F4EFE3</color>
+<color name="widget_badge_light">#FAEBD1</color>
+<color name="widget_badge_dark">#3A2E15</color>
+<color name="widget_screen_bg_light">#F3F6FB</color>
+<color name="widget_screen_bg_dark">#0C182C</color>
+<color name="widget_screen_bg">@color/widget_screen_bg_light</color>
 </resources>

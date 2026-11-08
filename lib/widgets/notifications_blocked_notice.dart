@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -56,7 +57,7 @@ class NotificationsBlockedNotice extends StatelessWidget {
             ).copyWith(height: 1.4),
           ),
           const SizedBox(height: 14),
-          GestureDetector(
+          AppTap(
             onTap: onAllow,
             behavior: HitTestBehavior.opaque,
             child: Container(
@@ -64,8 +65,11 @@ class NotificationsBlockedNotice extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               alignment: Alignment.center,
               decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColors.text.withValues(alpha: .08),
+                ),
                 color: AppColors.accent100,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.inner),
               ),
               child: Text(
                 t.notifBlockedAllow,

@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../data/reference_data.dart';
@@ -62,6 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void dispose() {
+    _geocoding.close();
     _pageController.dispose();
     super.dispose();
   }
@@ -188,7 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       builder: (context, _) {
         final t = AppLocalizations.of(context)!;
         final isLast = _index == _Step.values.length - 1;
-        return Scaffold(
+        return AmbientScaffold(
           backgroundColor: AppColors.bg,
           body: Column(
             children: [
@@ -295,10 +298,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: AppColors.accent100,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
+          decoration: glassDecoration(radius: AppRadius.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -411,10 +411,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Container(
               padding: const EdgeInsets.fromLTRB(16, 10, 10, 10),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+              decoration: glassDecoration(radius: AppRadius.md),
               child: Row(
                 children: [
                   Icon(
@@ -599,16 +596,18 @@ class _OptionTile extends StatelessWidget {
     AppColors.watch(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
+      child: AppTap(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: 14,
             vertical: icon != null ? 10 : 15,
           ),
           decoration: BoxDecoration(
-            color: selected ? AppColors.accent100 : AppColors.surface,
+            border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+            color: selected ? null : AppColors.surface,
+            gradient: selected ? AppColors.selectionGradient : null,
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Row(
@@ -656,7 +655,7 @@ class _PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -664,6 +663,7 @@ class _PrimaryButton extends StatelessWidget {
         alignment: Alignment.center,
         // The app's icon colors (see IconBadge): soft gold, deep gold text.
         decoration: BoxDecoration(
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
           color: AppColors.accent100,
           borderRadius: BorderRadius.circular(999),
         ),
@@ -689,7 +689,7 @@ class _SecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(

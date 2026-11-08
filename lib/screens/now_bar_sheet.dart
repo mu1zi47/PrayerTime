@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -141,65 +143,87 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                 style: AppTextStyles.heading(fontSize: 18),
               ),
               const SizedBox(height: 10),
-              SettingsRow(
-                trailing: AppSwitch(value: _status.enabled, onChanged: _toggle),
-                child: _LabelWithInfo(
-                  label: _status.isNowBar
-                      ? t.nowBarSwitchLabel
-                      : t.persistentNotifSwitchLabel,
-                  info: _status.isNowBar
-                      ? t.nowBarDescription
-                      : t.persistentNotifDescription,
-                ),
-              ),
-              // The Now Bar's expanded card, or the plain notification's
-              // expanded form everywhere else. Each of these opens and
-              // folds away (see ExpandReveal), so the sheet grows and
-              // shrinks with them rather than jumping.
-              ExpandReveal(
-                visible: _status.enabled,
-                child: SettingsRow(
-                  trailing: AppSwitch(
-                    value: _status.showSchedule,
-                    onChanged: _toggleSchedule,
-                  ),
-                  child: _LabelWithInfo(
-                    label: t.nowBarScheduleLabel,
-                    info: _status.isNowBar
-                        ? t.nowBarScheduleDescription
-                        : t.nowBarScheduleDescriptionPlain,
-                  ),
-                ),
-              ),
-              ExpandReveal(
-                visible: showDeveloperSwitch,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: NowBarDeveloperSwitchCard(status: _status),
-                ),
-              ),
-              ExpandReveal(
-                visible: showNotificationsOff,
+              GlassPanel(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 14),
-                    Text(
-                      t.nowBarNotificationsOff,
-                      style: AppTextStyles.body(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: muted,
-                      ).copyWith(height: 1.4),
+                    SettingsRow(
+                      trailing: AppSwitch(
+                        value: _status.enabled,
+                        onChanged: _toggle,
+                      ),
+                      child: _LabelWithInfo(
+                        label: _status.isNowBar
+                            ? t.nowBarSwitchLabel
+                            : t.persistentNotifSwitchLabel,
+                        info: _status.isNowBar
+                            ? t.nowBarDescription
+                            : t.persistentNotifDescription,
+                      ),
                     ),
-                    OptRow(
-                      onTap: _bridge.openNotificationSettings,
-                      child: Text(
-                        t.nowBarOpenSettings,
-                        style: AppTextStyles.body(
-                          fontSize: 15,
-                          color: AppColors.accent,
-                        ),
+                    // The Now Bar's expanded card, or the plain notification's
+                    // expanded form everywhere else. Each of these opens and
+                    // folds away (see ExpandReveal), so the sheet grows and
+                    // shrinks with them rather than jumping.
+                    ExpandReveal(
+                      visible: _status.enabled,
+                      child: Column(
+                        children: [
+                          const PanelDivider(),
+                          SettingsRow(
+                            trailing: AppSwitch(
+                              value: _status.showSchedule,
+                              onChanged: _toggleSchedule,
+                            ),
+                            child: _LabelWithInfo(
+                              label: t.nowBarScheduleLabel,
+                              info: _status.isNowBar
+                                  ? t.nowBarScheduleDescription
+                                  : t.nowBarScheduleDescriptionPlain,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ExpandReveal(
+                      visible: showNotificationsOff,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const PanelDivider(),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              t.nowBarNotificationsOff,
+                              style: AppTextStyles.body(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: muted,
+                              ).copyWith(height: 1.4),
+                            ),
+                          ),
+                          OptRow(
+                            onTap: _bridge.openNotificationSettings,
+                            child: Text(
+                              t.nowBarOpenSettings,
+                              style: AppTextStyles.body(
+                                fontSize: 15,
+                                color: AppColors.accent,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ExpandReveal(
+                      visible: showDeveloperSwitch,
+                      child: Column(
+                        children: [
+                          const PanelDivider(),
+                          NowBarDeveloperSwitchCard(
+                            status: _status,
+                            embedded: true,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -363,7 +387,7 @@ class _InfoBubble extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.inner),
                 ),
                 child: Text(
                   text,
@@ -449,8 +473,13 @@ class _ArrowPainter extends CustomPainter {
 /// the next step is on.
 class NowBarDeveloperSwitchCard extends StatelessWidget {
   final NowBarStatus status;
+  final bool embedded;
 
-  const NowBarDeveloperSwitchCard({super.key, required this.status});
+  const NowBarDeveloperSwitchCard({
+    super.key,
+    required this.status,
+    this.embedded = false,
+  });
 
   static const _bridge = NowBarBridge();
 
@@ -477,11 +506,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.45)),
-      ),
+      decoration: embedded ? null : glassDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -543,7 +568,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 6),
-          GestureDetector(
+          AppTap(
             onTap: unlocked
                 ? _bridge.openDeveloperSettings
                 : _bridge.openDeviceInfo,
@@ -553,7 +578,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: badgeBg,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.inner),
               ),
               child: Text(
                 unlocked ? t.nowBarDevOpenDeveloper : t.nowBarDevOpenAbout,

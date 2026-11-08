@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/interior_back_transition.dart';
 
 import 'app_colors.dart';
 import 'app_text_styles.dart';
@@ -19,15 +18,27 @@ class AppTheme {
   static ThemeData _build(AppPalette palette, Brightness brightness) {
     return ThemeData(
       useMaterial3: true,
-      // Allow back swipes inside pushed pages while leaving OS edges free.
-      pageTransitionsTheme: const PageTransitionsTheme(
+      // Android owns back gestures; ordinary drags never pop a route.
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
-          TargetPlatform.android: InteriorBackTransitionsBuilder(),
-          TargetPlatform.iOS: InteriorBackTransitionsBuilder(),
-          TargetPlatform.macOS: InteriorBackTransitionsBuilder(),
-          TargetPlatform.windows: InteriorBackTransitionsBuilder(),
-          TargetPlatform.linux: InteriorBackTransitionsBuilder(),
-          TargetPlatform.fuchsia: InteriorBackTransitionsBuilder(),
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(
+            fallbackColor: palette.bg,
+          ),
+          TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(
+            backgroundColor: palette.bg,
+          ),
+          TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(
+            backgroundColor: palette.bg,
+          ),
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(
+            backgroundColor: palette.bg,
+          ),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(
+            backgroundColor: palette.bg,
+          ),
+          TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(
+            backgroundColor: palette.bg,
+          ),
         },
       ),
       brightness: brightness,
@@ -42,8 +53,9 @@ class AppTheme {
         bodyMedium: AppTextStyles.body(color: palette.text),
         bodyLarge: AppTextStyles.body(color: palette.text),
       ),
-      splashFactory: NoSplash.splashFactory,
-      highlightColor: Colors.transparent,
+      splashFactory: InkRipple.splashFactory,
+      splashColor: palette.accent.withValues(alpha: .12),
+      highlightColor: palette.accent.withValues(alpha: .06),
     );
   }
 }

@@ -57,35 +57,30 @@ class PrayerTimesApi {
     final start = centerDay.subtract(Duration(days: pastDays));
     final end = centerDay.add(Duration(days: futureDays));
 
-    var year = start.year;
-    var month = start.month;
-    var timeZone = '';
-    final collected = <PrayerDay>[];
-
-    Future<void> fetchAndTrackTimeZone(int y, int m) async {
-      final result = await fetchMonth(
-        city: city,
-        methodCode: methodCode,
-        school: school,
-        tune: tune,
-        year: y,
-        month: m,
+    // The date range determines the complete month set in advance. Fetch
+    // independent months together instead of adding a network round trip at
+    // each month/year boundary (and never loop on an empty API response).
+    final requests = <Future<PrayerFetchResult>>[];
+    var cursor = DateTime(start.year, start.month);
+    final lastMonth = DateTime(end.year, end.month);
+    while (!cursor.isAfter(lastMonth)) {
+      requests.add(
+        fetchMonth(
+          city: city,
+          methodCode: methodCode,
+          school: school,
+          tune: tune,
+          year: cursor.year,
+          month: cursor.month,
+        ),
       );
-      if (timeZone.isEmpty && result.timeZone.isNotEmpty) {
-        timeZone = result.timeZone;
-      }
-      collected.addAll(result.days);
+      cursor = DateTime(cursor.year, cursor.month + 1);
     }
-
-    await fetchAndTrackTimeZone(year, month);
-    while (collected.isEmpty || collected.last.date.isBefore(end)) {
-      month++;
-      if (month > 12) {
-        month = 1;
-        year++;
-      }
-      await fetchAndTrackTimeZone(year, month);
-    }
+    final results = await Future.wait(requests);
+    final collected = results.expand((result) => result.days);
+    final timeZone = results
+        .map((result) => result.timeZone)
+        .firstWhere((zone) => zone.isNotEmpty, orElse: () => '');
 
     final windowDays =
         collected
@@ -93,6 +88,9 @@ class PrayerTimesApi {
             .toList()
           ..sort((a, b) => a.date.compareTo(b.date));
 
+    if (windowDays.isEmpty) {
+      throw const PrayerApiException(PrayerApiError.parseFailed);
+    }
     return PrayerFetchResult(days: windowDays, timeZone: timeZone);
   }
 

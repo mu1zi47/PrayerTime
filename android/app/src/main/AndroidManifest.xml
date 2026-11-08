@@ -25,6 +25,7 @@
          can still switch promotion off per app in system settings. -->
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
+        android:enableOnBackInvokedCallback="true"
         android:label="Prayer times"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -97,21 +98,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/prayer_widget_info" />
-        </receiver>
-
-        <!-- The 4x2 widget: the whole day's prayers (see
-             PrayerDayWidgetProvider). Read-only, so nothing but the system's
-             own APPWIDGET_UPDATE and this app's explicit refresh reach it. -->
-        <receiver
-            android:name=".widget.PrayerDayWidgetProvider"
-            android:exported="false"
-            android:label="@string/widget_day_label">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/prayer_day_widget_info" />
         </receiver>
 
         <!-- The 2x1 widget: the countdown to the next prayer (see

@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -59,30 +61,37 @@ class MoreScreen extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
     final topInset = MediaQuery.paddingOf(context).top;
     final items = _items(appState, t);
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: EdgeInsets.fromLTRB(18, topInset + 16, 18, 16),
-          sliver: SliverToBoxAdapter(
-            child: Text(t.navMore, style: AppTextStyles.heading(fontSize: 22)),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(18, 0, 18, 130),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.1,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, i) => _MoreTile(spec: items[i]),
-              childCount: items.length,
+    return ScreenContentInset(
+      margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+      child: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 16),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                t.navMore,
+                style: AppTextStyles.heading(fontSize: 22),
+              ),
             ),
           ),
-        ),
-      ],
+          SliverPadding(
+            padding: EdgeInsets.zero,
+            sliver: SliverToBoxAdapter(
+              child: GlassPanel(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    for (var i = 0; i < items.length; i++) ...[
+                      if (i > 0) const PanelDivider(),
+                      _MoreTile(spec: items[i]),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -95,20 +104,16 @@ class _MoreTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return InkWell(
+    return AppTap(
       onTap: () => Navigator.of(
         context,
       ).push(MaterialPageRoute(builder: spec.screenBuilder)),
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
               width: 38,
@@ -120,7 +125,18 @@ class _MoreTile extends StatelessWidget {
               ),
               child: Icon(spec.icon, size: 19, color: AppColors.accent700),
             ),
-            Text(spec.label, style: AppTextStyles.heading(fontSize: 14)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                spec.label,
+                style: AppTextStyles.heading(fontSize: 16),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppColors.text.withValues(alpha: .4),
+            ),
           ],
         ),
       ),

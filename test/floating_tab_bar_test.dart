@@ -57,7 +57,11 @@ void main() {
     expect(tester.getTopLeft(find.text('Prayer')), label);
     expect(
       tester.widget<DecoratedBox>(capsule).decoration,
-      isA<BoxDecoration>().having((d) => d.color, 'colored fill', isNotNull),
+      isA<BoxDecoration>().having(
+        (d) => d.gradient,
+        'selection fill',
+        isNotNull,
+      ),
     );
     await drag.up();
     await tester.pumpAndSettle();

@@ -1,10 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- The logged state, drawn the way the app itself draws a prayer marked on
-     time: the button alone fills with StatusColors.onTime gold and the check
-     on it goes dark, while the panel around it stays the plain one. The
-     whole panel used to turn gold, which read as a different widget rather
-     than as a button that had been pressed. -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="@color/widget_marked_bg" />
-</shape>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+<corners android:radius="12dp" /><gradient android:angle="0" android:startColor="#33E0B152" android:endColor="#0DE0B152" />
+<stroke android:width="1dp" android:color="#66E0B152" /></shape>

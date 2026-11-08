@@ -1,3 +1,6 @@
+import '../widgets/app_tap.dart';
+import '../widgets/settings_widgets.dart';
+import '../widgets/ambient_surface.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -25,8 +28,6 @@ import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/map_zoom_strip.dart';
-import '../widgets/pill_button.dart';
-import '../widgets/screen_back_button.dart';
 
 // OpenStreetMap's own tile servers: keyless, and their usage policy allows
 // native apps that identify themselves (userAgentPackageName below), keep
@@ -675,7 +676,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
       status = null;
     }
 
-    return Scaffold(
+    return AmbientScaffold(
       backgroundColor: AppColors.bg,
       body: Stack(
         children: [
@@ -734,8 +735,16 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                   children: [
                     _Floating(
                       shape: BoxShape.circle,
-                      child: ScreenBackButton(
+                      child: AppTap(
                         onTap: () => Navigator.of(context).pop(),
+                        child: SizedBox.square(
+                          dimension: 38,
+                          child: Icon(
+                            Icons.arrow_back_rounded,
+                            size: 18,
+                            color: AppColors.text,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -807,7 +816,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
             bottom: padding.bottom + 16,
             child: _Floating(
               shape: BoxShape.circle,
-              child: GestureDetector(
+              child: AppTap(
                 onTap: _locateMe,
                 behavior: HitTestBehavior.opaque,
                 child: SizedBox.square(
@@ -1176,22 +1185,19 @@ class _Floating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        shape: shape,
-        borderRadius: shape == BoxShape.circle
-            ? null
-            : BorderRadius.circular(999),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.neutral900.withValues(alpha: 0.18),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(
+        shape == BoxShape.circle ? 999 : AppRadius.lg,
       ),
-      child: child,
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: DecoratedBox(
+          decoration: glassDecoration(
+            radius: shape == BoxShape.circle ? 999 : AppRadius.lg,
+          ),
+          child: child,
+        ),
+      ),
     );
   }
 }
@@ -1245,7 +1251,7 @@ class _Attribution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return GestureDetector(
+    return AppTap(
       onTap: () => launchUrl(
         Uri.parse(_copyrightUrl),
         mode: LaunchMode.externalApplication,
@@ -1253,7 +1259,8 @@ class _Attribution extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: AppColors.surface.withValues(alpha: 0.85),
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          color: AppColors.surface.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Text(
@@ -1432,10 +1439,22 @@ class _MosqueSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          PillButton(
-            label: t.mosqueDirections,
-            icon: Icons.directions_rounded,
-            onTap: () => _openDirections(context, title),
+          ActionGroup(
+            children: [
+              OptRow(
+                onTap: () => _openDirections(context, title),
+                child: Row(
+                  children: [
+                    Icon(Icons.directions_rounded, color: AppColors.accent),
+                    const SizedBox(width: 12),
+                    Text(
+                      t.mosqueDirections,
+                      style: AppTextStyles.body(fontSize: 15),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

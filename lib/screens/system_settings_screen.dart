@@ -1,3 +1,4 @@
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -29,157 +30,160 @@ class SystemSettingsScreen extends StatelessWidget {
       animation: appState,
       builder: (context, _) {
         final t = AppLocalizations.of(context)!;
-        return Scaffold(
+        return AmbientScaffold(
           backgroundColor: AppColors.bg,
-          body: ListView(
-            padding: EdgeInsets.fromLTRB(
+          body: ScreenContentInset(
+            margin: EdgeInsets.fromLTRB(
               18,
               padding.top + 16,
               18,
               padding.bottom + 18,
             ),
-            children: [
-              Row(
-                children: [
-                  ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                  const SizedBox(width: 12),
-                  Text(
-                    t.systemSettingsTitle,
-                    style: AppTextStyles.heading(fontSize: 22),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SettingsGroup(
-                kicker: t.notificationsScreenTitle,
-                children: [
-                  OptRow(
-                    onTap: () => showNotificationsSheet(context, appState),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            t.azanAndReminders,
-                            style: AppTextStyles.body(fontSize: 15),
-                          ),
-                        ),
-                        // The sheet says why and offers the fix; this is
-                        // only so it's noticed without opening it.
-                        if (!appState.notificationsAllowed) ...[
-                          Text(
-                            t.notifBlockedShort,
-                            style: AppTextStyles.body(
-                              fontSize: 14,
-                              color: AppColors.text.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                        ],
-                      ],
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Row(
+                  children: [
+                    ScreenBackButton(onTap: () => Navigator.of(context).pop()),
+                    const SizedBox(width: 12),
+                    Text(
+                      t.systemSettingsTitle,
+                      style: AppTextStyles.heading(fontSize: 22),
                     ),
-                  ),
-                  // The phone's own sounds are only an app's to use on
-                  // Android.
-                  if (NotificationSoundsBridge.supported)
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SettingsGroup(
+                  kicker: t.notificationsScreenTitle,
+                  footer: _NowBarRow(appState: appState),
+                  children: [
                     OptRow(
-                      onTap: () async {
-                        final picked = await showSoundPicker(
-                          context,
-                          title: t.soundRowTitle,
-                          current: appState.sharedSound,
-                        );
-                        if (picked != null) appState.setSharedSound(picked);
-                      },
+                      onTap: () => showNotificationsSheet(context, appState),
                       child: Row(
                         children: [
-                          Text(
-                            t.soundRowTitle,
-                            style: AppTextStyles.body(fontSize: 15),
-                          ),
-                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              appState.sharedSound.label(t),
-                              textAlign: TextAlign.end,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              t.azanAndReminders,
+                              style: AppTextStyles.body(fontSize: 15),
+                            ),
+                          ),
+                          // The sheet says why and offers the fix; this is
+                          // only so it's noticed without opening it.
+                          if (!appState.notificationsAllowed) ...[
+                            Text(
+                              t.notifBlockedShort,
                               style: AppTextStyles.body(
                                 fontSize: 14,
                                 color: AppColors.text.withValues(alpha: 0.5),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
+                            const SizedBox(width: 4),
+                          ],
                         ],
                       ),
                     ),
-                  _NowBarRow(appState: appState),
-                ],
-              ),
-              const SizedBox(height: 8),
-              SettingsGroup(
-                kicker: t.languageScreenTitle,
-                children: [
-                  OptRow(
-                    onTap: () => showChoiceSheet(
-                      context,
-                      title: t.languageScreenTitle,
-                      options: [
-                        for (final l in AppLocale.values)
-                          ChoiceSheetOption(label: l.label),
-                      ],
-                      selectedIndex: AppLocale.values.indexOf(appState.locale),
-                      onSelect: (i) => appState.setLocale(AppLocale.values[i]),
-                    ),
-                    child: Text(
-                      appState.locale.label,
-                      style: AppTextStyles.body(fontSize: 15),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              SettingsGroup(
-                kicker: t.themeKicker,
-                children: [
-                  OptRow(
-                    onTap: () => showChoiceSheet(
-                      context,
-                      title: t.themeKicker,
-                      options: [
-                        ChoiceSheetOption(
-                          label: t.themeLight,
-                          icon: Icons.light_mode_rounded,
+                    // The phone's own sounds are only an app's to use on
+                    // Android.
+                    if (NotificationSoundsBridge.supported)
+                      OptRow(
+                        onTap: () async {
+                          final picked = await showSoundPicker(
+                            context,
+                            title: t.soundRowTitle,
+                            current: appState.sharedSound,
+                          );
+                          if (picked != null) appState.setSharedSound(picked);
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              t.soundRowTitle,
+                              style: AppTextStyles.body(fontSize: 15),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                appState.sharedSound.label(t),
+                                textAlign: TextAlign.end,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.body(
+                                  fontSize: 14,
+                                  color: AppColors.text.withValues(alpha: 0.5),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
                         ),
-                        ChoiceSheetOption(
-                          label: t.themeDark,
-                          icon: Icons.dark_mode_rounded,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SettingsGroup(
+                  kicker: t.appSettingsKicker,
+                  children: [
+                    OptRow(
+                      onTap: () => showChoiceSheet(
+                        context,
+                        title: t.languageScreenTitle,
+                        options: [
+                          for (final l in AppLocale.values)
+                            ChoiceSheetOption(label: l.label),
+                        ],
+                        selectedIndex: AppLocale.values.indexOf(
+                          appState.locale,
                         ),
-                        ChoiceSheetOption(
-                          label: t.themeSystem,
-                          icon: Icons.brightness_auto_rounded,
-                        ),
-                      ],
-                      selectedIndex: switch (appState.themeMode) {
-                        ThemeMode.light => 0,
-                        ThemeMode.dark => 1,
-                        ThemeMode.system => 2,
-                      },
-                      onSelect: (i) => appState.setThemeMode(switch (i) {
-                        0 => ThemeMode.light,
-                        1 => ThemeMode.dark,
-                        _ => ThemeMode.system,
-                      }),
+                        onSelect: (i) =>
+                            appState.setLocale(AppLocale.values[i]),
+                      ),
+                      child: SettingsValue(
+                        label: t.languageScreenTitle,
+                        value: appState.locale.label,
+                      ),
                     ),
-                    child: Text(switch (appState.themeMode) {
-                      ThemeMode.light => t.themeLight,
-                      ThemeMode.dark => t.themeDark,
-                      ThemeMode.system => t.themeSystem,
-                    }, style: AppTextStyles.body(fontSize: 15)),
-                  ),
-                ],
-              ),
-            ],
+                    OptRow(
+                      onTap: () => showChoiceSheet(
+                        context,
+                        title: t.themeKicker,
+                        options: [
+                          ChoiceSheetOption(
+                            label: t.themeLight,
+                            icon: Icons.light_mode_rounded,
+                          ),
+                          ChoiceSheetOption(
+                            label: t.themeDark,
+                            icon: Icons.dark_mode_rounded,
+                          ),
+                          ChoiceSheetOption(
+                            label: t.themeSystem,
+                            icon: Icons.brightness_auto_rounded,
+                          ),
+                        ],
+                        selectedIndex: switch (appState.themeMode) {
+                          ThemeMode.light => 0,
+                          ThemeMode.dark => 1,
+                          ThemeMode.system => 2,
+                        },
+                        onSelect: (i) => appState.setThemeMode(switch (i) {
+                          0 => ThemeMode.light,
+                          1 => ThemeMode.dark,
+                          _ => ThemeMode.system,
+                        }),
+                      ),
+                      child: SettingsValue(
+                        label: t.themeKicker,
+                        value: switch (appState.themeMode) {
+                          ThemeMode.light => t.themeLight,
+                          ThemeMode.dark => t.themeDark,
+                          ThemeMode.system => t.themeSystem,
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -240,6 +244,7 @@ class _NowBarRowState extends State<_NowBarRow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const PanelDivider(),
         OptRow(
           onTap: () async {
             await showNowBarSheet(context, widget.appState, status);

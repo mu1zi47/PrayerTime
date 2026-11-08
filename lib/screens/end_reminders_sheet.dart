@@ -1,3 +1,6 @@
+import '../widgets/app_tap.dart';
+import '../widgets/settings_widgets.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPicker;
 import 'package:flutter/material.dart';
 
@@ -11,7 +14,6 @@ import '../theme/app_text_styles.dart';
 import '../theme/status_colors.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/icon_badge.dart';
-import '../widgets/pill_button.dart';
 import '../widgets/prayer_icon.dart';
 import '../widgets/swipe_actions.dart';
 
@@ -174,15 +176,19 @@ class _EndRemindersSheetState extends State<_EndRemindersSheet> {
                   ),
                 ],
                 const SizedBox(height: 18),
-                _PrayerSwitcher(
-                  selected: _selected,
-                  counts: [
-                    for (final (key, _) in _prayers)
-                      _appState.endRemindersFor(key).length,
+                ActionGroup(
+                  children: [
+                    _PrayerSwitcher(
+                      selected: _selected,
+                      counts: [
+                        for (final (key, _) in _prayers)
+                          _appState.endRemindersFor(key).length,
+                      ],
+                      onSelect: (i) => setState(() => _selected = i),
+                    ),
                   ],
-                  onSelect: (i) => setState(() => _selected = i),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 if (prayerOff) ...[
                   Text(
                     t.endRemindersPrayerOff,
@@ -196,84 +202,108 @@ class _EndRemindersSheetState extends State<_EndRemindersSheet> {
                   const SizedBox(height: 12),
                 ],
                 Flexible(
-                  child: AnimatedSize(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOutCubic,
-                    alignment: Alignment.topCenter,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (leads.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              child: Text(
-                                t.endRemindersEmpty,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.body(
-                                  fontSize: 14,
-                                  color: muted,
+                  child: GlassPanel(
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      alignment: Alignment.topCenter,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (leads.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
+                                child: Text(
+                                  t.endRemindersEmpty,
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.body(
+                                    fontSize: 14,
+                                    color: muted,
+                                  ),
                                 ),
                               ),
-                            ),
-                          if (leads.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 2,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                t.endRemindersListHeader,
-                                style: AppTextStyles.body(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: muted,
+                            if (leads.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 16,
+                                  right: 16,
+                                  top: 16,
+                                  bottom: 8,
+                                ),
+                                child: Text(
+                                  t.endRemindersListHeader,
+                                  style: AppTextStyles.body(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: muted,
+                                  ),
                                 ),
                               ),
-                            ),
-                          for (final lead in leads)
-                            _ReminderTile(
-                              key: ValueKey('$_prayerKey-$lead'),
-                              lead: lead,
-                              window: window,
-                              offToday: _appState.isEndReminderOffToday(
-                                _prayerKey,
-                                lead,
+                            for (final lead in leads) ...[
+                              if (lead != leads.first) const PanelDivider(),
+                              _ReminderTile(
+                                key: ValueKey('$_prayerKey-$lead'),
+                                lead: lead,
+                                window: window,
+                                offToday: _appState.isEndReminderOffToday(
+                                  _prayerKey,
+                                  lead,
+                                ),
+                                openTile: _openTile,
+                                onTap: () => _edit(lead),
+                                onDelete: () => _appState.removeEndReminder(
+                                  _prayerKey,
+                                  lead,
+                                ),
+                                onToggleToday: () =>
+                                    _appState.toggleEndReminderOffToday(
+                                      _prayerKey,
+                                      lead,
+                                    ),
                               ),
-                              openTile: _openTile,
-                              onTap: () => _edit(lead),
-                              onDelete: () =>
-                                  _appState.removeEndReminder(_prayerKey, lead),
-                              onToggleToday: () => _appState
-                                  .toggleEndReminderOffToday(_prayerKey, lead),
-                            ),
-                          // Swiping is the only way to these, so it's said
-                          // once, under the list.
-                          if (leads.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text(
-                                t.endRemindersSwipeHint,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.body(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.text.withValues(alpha: 0.4),
+                            ],
+                            // Swiping is the only way to these, so it's said
+                            // once, under the list.
+                            if (leads.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  t.endRemindersSwipeHint,
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.body(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.text.withValues(
+                                      alpha: 0.4,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                PillButton(
-                  label: full
-                      ? t.endRemindersLimit(kMaxEndReminders)
-                      : t.endReminderAdd,
-                  icon: full ? null : Icons.add_rounded,
-                  onTap: full ? null : _add,
+                const SizedBox(height: 12),
+                ActionGroup(
+                  children: [
+                    OptRow(
+                      onTap: full ? null : _add,
+                      child: Text(
+                        full
+                            ? t.endRemindersLimit(kMaxEndReminders)
+                            : t.endReminderAdd,
+                        style: AppTextStyles.body(
+                          fontSize: 15,
+                          color: AppColors.accent,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -305,19 +335,17 @@ class _PrayerSwitcher extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < _prayers.length; i++) ...[
-          if (i > 0) const SizedBox(width: 6),
+          if (i > 0) Container(width: .6, height: 40, color: AppColors.divider),
           Expanded(
-            child: GestureDetector(
+            child: AppTap(
               onTap: () => onSelect(i),
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: i == selected
-                      ? AppColors.accent100
-                      : AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  gradient: i == selected ? AppColors.selectionGradient : null,
+                  borderRadius: BorderRadius.zero,
                 ),
                 child: Column(
                   children: [
@@ -394,10 +422,10 @@ class _ReminderTile extends StatelessWidget {
     // but one set under another city's times could still be: it isn't
     // booked (see NotificationService.plan), so it shows no time either.
     final showsTime = window != null && !fire!.isBefore(window.start);
-    final radius = BorderRadius.circular(AppRadius.md);
+    final radius = BorderRadius.zero;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.zero,
       child: SwipeActionTile(
         openTile: openTile,
         borderRadius: radius,
@@ -419,9 +447,9 @@ class _ReminderTile extends StatelessWidget {
           ),
         ],
         child: Container(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Colors.transparent,
             borderRadius: radius,
           ),
           child: AnimatedOpacity(
@@ -484,8 +512,11 @@ Future<int?> showLeadPicker(
   return showModalBottomSheet<int>(
     context: context,
     backgroundColor: Colors.transparent,
-    builder: (_) =>
-        _LeadPickerSheet(initial: initial, max: max, window: window),
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => SingleChildScrollView(
+      child: _LeadPickerSheet(initial: initial, max: max, window: window),
+    ),
   );
 }
 
@@ -598,77 +629,88 @@ class _LeadPickerSheetState extends State<_LeadPickerSheet> {
             style: AppTextStyles.body(fontSize: 13.5, color: muted),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            height: _itemExtent * 4,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // One highlight across both wheels, so hours and minutes
-                // read as a single value, the way an alarm's time does.
-                Container(
-                  height: _itemExtent,
-                  decoration: BoxDecoration(
-                    color: AppColors.accent100,
-                    borderRadius: BorderRadius.circular(AppRadius.md),
+          GlassPanel(
+            child: SizedBox(
+              height: _itemExtent * 4,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // One highlight across both wheels, so hours and minutes
+                  // read as a single value, the way an alarm's time does.
+                  Container(
+                    height: _itemExtent,
+                    decoration: glassDecoration(radius: AppRadius.md),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // A prayer whose limit is under an hour has nothing for
-                    // an hours wheel to offer.
-                    if (_maxHours > 0) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // A prayer whose limit is under an hour has nothing for
+                      // an hours wheel to offer.
+                      if (_maxHours > 0) ...[
+                        SizedBox(
+                          width: 64,
+                          child: _Wheel(
+                            controller: _hoursController,
+                            count: _maxHours + 1,
+                            itemExtent: _itemExtent,
+                            label: (i) => '$i',
+                            style: wheelStyle,
+                            onChanged: _onHours,
+                          ),
+                        ),
+                        Text(t.wheelHoursLabel, style: labelStyle),
+                        const SizedBox(width: 20),
+                      ],
                       SizedBox(
                         width: 64,
                         child: _Wheel(
-                          controller: _hoursController,
-                          count: _maxHours + 1,
+                          controller: _minutesController,
+                          count: _minuteCount(_hours),
                           itemExtent: _itemExtent,
-                          label: (i) => '$i',
+                          label: (i) => (i * _step).toString().padLeft(2, '0'),
                           style: wheelStyle,
-                          onChanged: _onHours,
+                          onChanged: (i) =>
+                              setState(() => _minutes = i * _step),
                         ),
                       ),
-                      Text(t.wheelHoursLabel, style: labelStyle),
-                      const SizedBox(width: 20),
+                      Text(t.wheelMinutesLabel, style: labelStyle),
                     ],
-                    SizedBox(
-                      width: 64,
-                      child: _Wheel(
-                        controller: _minutesController,
-                        count: _minuteCount(_hours),
-                        itemExtent: _itemExtent,
-                        label: (i) => (i * _step).toString().padLeft(2, '0'),
-                        style: wheelStyle,
-                        onChanged: (i) => setState(() => _minutes = i * _step),
-                      ),
-                    ),
-                    Text(t.wheelMinutesLabel, style: labelStyle),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),
-          // Kept at a fixed height so the button below doesn't jump while
-          // the wheels pass through a value that can't be saved.
-          SizedBox(
-            height: 20,
-            child: valid && fire != null
-                ? Text(
-                    t.endReminderAt(formatClock(fire)),
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
-                : null,
+          GlassPanel(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              height: 20,
+              child: valid && fire != null
+                  ? Text(
+                      t.endReminderAt(formatClock(fire)),
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  : null,
+            ),
           ),
-          const SizedBox(height: 16),
-          PillButton(
-            label: t.endReminderSave,
-            onTap: valid ? () => Navigator.of(context).pop(_total) : null,
+          const SizedBox(height: 12),
+          ActionGroup(
+            children: [
+              OptRow(
+                onTap: valid ? () => Navigator.of(context).pop(_total) : null,
+                child: Text(
+                  t.endReminderSave,
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    color: AppColors.accent,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

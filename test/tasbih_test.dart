@@ -125,7 +125,8 @@ void main() {
         matching: find.text('Очистить'),
       ),
     );
-    expect(cancelPosition.dy, closeTo(clearPosition.dy, 1));
+    expect(cancelPosition.dy, greaterThan(clearPosition.dy));
+    expect(cancelPosition.dx, closeTo(clearPosition.dx, 1));
     await tester.tap(find.text('Отмена'));
     await tester.pumpAndSettle();
     expect(value('tasbih-total'), '34');

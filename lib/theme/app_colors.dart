@@ -116,21 +116,11 @@ class AppPalette {
   Color get divider => text.withValues(alpha: 0.16);
 }
 
-// A deep-navy / gold identity — the same ramp *shape* as the app's original
-// warm-terracotta palette (each step keeps its original saturation and
-// lightness), just rotated to a new set of hues, so every screen that
-// already leans on a specific shade (accent700 for readable label text,
-// neutral300 for a subtle border, etc.) keeps the same relative contrast it
-// always had.
-//
-// accent2 is a second, deeper gold rather than a hue of its own: it marks
-// the one "done / now" state (a prayer logged on time, the prayer that's on
-// right now), so it's kept dark enough in both themes to carry light text
-// and to read apart from accent's brighter gold (a late, "qada" mark).
+// Gold accents in both themes.
 const _light = AppPalette(
   controlFill: Color(0xFF8C631A),
   onControlFill: Color(0xFFFAEBD1),
-  bg: Color(0xFFF2F4F8),
+  bg: Color(0xFFF3F6FB),
   surface: Color(0xFFFFFFFF),
   text: Color(0xFF16213C),
   accent: Color(0xFFB27509),
@@ -171,8 +161,8 @@ const _light = AppPalette(
 const _dark = AppPalette(
   controlFill: Color(0xFF3A2E15),
   onControlFill: Color(0xFFE0B152),
-  bg: Color(0xFF0D1526),
-  surface: Color(0xFF17223C),
+  bg: Color(0xFF0C182C),
+  surface: Color(0xFF192943),
   text: Color(0xFFF4EFE3),
   accent: Color(0xFFE7B248),
   accent2: Color(0xFF8A6A2C),
@@ -222,8 +212,13 @@ class AppColors {
     context.dependOnInheritedWidgetOfExactType<AppPaletteScope>();
   }
 
+  /// One selection treatment across prayer rows, pickers, and controls.
+  static LinearGradient get selectionGradient => LinearGradient(
+    colors: [accent.withValues(alpha: .12), accent.withValues(alpha: .02)],
+  );
+  static Color get selectionFill => accent.withValues(alpha: .12);
   static Color get controlFill => _active.controlFill;
-  static Color get onControlFill => _active.onControlFill;
+  static Color get onControlFill => accent700;
 
   static Color get bg => _active.bg;
   static Color get surface => _active.surface;
@@ -263,15 +258,14 @@ class AppColors {
   static Color get accent2_900 => _active.accent2_900;
 }
 
-// Flatter, less "bubbly" than the original scale — matches the corner
-// language HomeScreen's own panels/rows settled on (10-12px), rather than
-// the very round 16/28 the rest of the app inherited from before.
+// Shared corners for controls, inner surfaces, and grouped panels.
 class AppRadius {
   AppRadius._();
 
-  static const sm = 8.0;
+  static const sm = 12.0;
   static const md = 12.0;
-  static const lg = 16.0;
+  static const inner = 8.0;
+  static const lg = 24.0;
 }
 
 /// Covers the Navigator too, so sheets and pushed routes recolor together.

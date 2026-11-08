@@ -3,7 +3,7 @@
     "short_name": "Prayer times",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0D1526",
+    "background_color": "#0C182C",
     "theme_color": "#E7B248",
     "description": "A new Flutter project.",
     "orientation": "portrait-primary",

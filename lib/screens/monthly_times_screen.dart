@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../data/date_labels.dart';
@@ -35,6 +37,9 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) moveAmbientLight(const Alignment(-.65, -.8));
+    });
     final now = widget.appState.cityNow;
     _months = [
       DateTime(now.year, now.month - 1),
@@ -60,18 +65,19 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.bg,
+    return AmbientScaffold(
+      backgroundColor: Colors.transparent,
       // A real app bar rather than a pinned SliverAppBar: it stays put over
       // all three month pages, which each scroll on their own.
       appBar: AppBar(
-        backgroundColor: AppColors.bg,
+        forceMaterialTransparency: true,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        toolbarHeight: 62,
+        toolbarHeight: 76,
         leadingWidth: 56,
-        titleSpacing: 14,
+        titleSpacing: 12,
         leading: Padding(
           padding: const EdgeInsets.only(left: 18),
           child: ScreenBackButton(onTap: () => Navigator.of(context).pop()),
@@ -82,14 +88,14 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
           children: [
             Text(
               t.monthlyTimesTitle,
-              style: AppTextStyles.heading(fontSize: 19),
+              style: AppTextStyles.heading(fontSize: 22),
             ),
             Text(
               widget.appState.cityLabel(t),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.body(
-                fontSize: 11.5,
+                fontSize: 13,
                 color: AppColors.text,
               ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
             ),
@@ -197,25 +203,27 @@ class _MonthPageState extends State<_MonthPage>
     final days = _days;
     final styles = _RowStyles.of();
 
-    // The month and its arrows scroll away with the days — they belong to
-    // the month being read. The column headings above the rows don't: a
-    // month of bare times loses its labels the moment they scroll off.
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 2, 18, 14),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18, 8, 18, padding.bottom + 18),
+      child: Column(
+        children: [
+          GlassPanel(
+            padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _MonthNavButton(
                   icon: Icons.chevron_left_rounded,
                   onTap: widget.onPrev,
                 ),
-                Text(
-                  DateLabels.monthYearLabel(t, widget.month),
-                  style: AppTextStyles.heading(fontSize: 16),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    DateLabels.monthYearLabel(t, widget.month),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.heading(fontSize: 17),
+                  ),
                 ),
+                const SizedBox(width: 12),
                 _MonthNavButton(
                   icon: Icons.chevron_right_rounded,
                   onTap: widget.onNext,
@@ -223,63 +231,55 @@ class _MonthPageState extends State<_MonthPage>
               ],
             ),
           ),
-        ),
-        if (days != null)
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _ColumnHeadingsHeader(
-              // Built here, so the delegate has nothing to build while the
-              // days scroll under it.
-              child: _HeaderRow(showTahajjud: showTahajjud),
-            ),
-          ),
-        if (_loading)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 60),
-              child: Center(
-                child: CircularProgressIndicator(color: AppColors.accent),
+          const SizedBox(height: 16),
+          Expanded(
+            child: GlassPanel(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    child: _HeaderRow(showTahajjud: showTahajjud),
+                  ),
+                  const PanelDivider(),
+                  Expanded(
+                    child: _loading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.accent,
+                            ),
+                          )
+                        : _error != null
+                        ? Center(
+                            child: _ErrorBlock(
+                              message: _error!,
+                              onRetry: _load,
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            itemCount: days?.length ?? 0,
+                            itemBuilder: (context, i) {
+                              final day = days![i];
+                              return _DayRow(
+                                day: day,
+                                showTahajjud: showTahajjud,
+                                isToday: DateUtils.isSameDay(day.date, today),
+                                styles: styles,
+                                weekday: DateLabels.shortWeekday(t, day.date),
+                                showDivider: i < days.length - 1,
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
             ),
-          )
-        else if (_error != null)
-          SliverToBoxAdapter(
-            child: _ErrorBlock(message: _error!, onRetry: _load),
-          )
-        else if (days != null)
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(18, 0, 18, padding.bottom + 24),
-            // Every row is the same height, so one prototype is measured and
-            // the rest are placed from it — the list never lays a child out
-            // just to learn how tall it is, which is what a month of rows
-            // scrolling under a pinned header would otherwise pay for on
-            // every frame. A prototype rather than a hard-coded extent, so
-            // the row still grows with the system text size.
-            sliver: SliverPrototypeExtentList.builder(
-              prototypeItem: _DayRow(
-                day: days.first,
-                showTahajjud: showTahajjud,
-                isToday: false,
-                styles: styles,
-                weekday: '',
-              ),
-              itemCount: days.length,
-              itemBuilder: (context, i) {
-                final d = days[i];
-                return _DayRow(
-                  day: d,
-                  showTahajjud: showTahajjud,
-                  isToday:
-                      d.date.year == today.year &&
-                      d.date.month == today.month &&
-                      d.date.day == today.day,
-                  styles: styles,
-                  weekday: DateLabels.shortWeekday(t, d.date),
-                );
-              },
-            ),
           ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -306,72 +306,33 @@ class _RowStyles {
     time: AppTextStyles.body(
       fontSize: 12.5,
       fontWeight: FontWeight.w600,
-      color: AppColors.text.withValues(alpha: 0.8),
+      color: AppColors.text.withValues(alpha: 0.85),
     ),
     timeToday: AppTextStyles.body(
       fontSize: 12.5,
       fontWeight: FontWeight.w800,
-      color: AppColors.text,
+      color: AppColors.accent700,
     ),
     day: AppTextStyles.body(
-      fontSize: 13.5,
+      fontSize: 15,
       fontWeight: FontWeight.w800,
       color: AppColors.text,
     ),
     dayToday: AppTextStyles.body(
-      fontSize: 13.5,
+      fontSize: 15,
       fontWeight: FontWeight.w800,
       color: AppColors.accent,
     ),
     weekday: AppTextStyles.body(
-      fontSize: 10,
+      fontSize: 11,
       color: AppColors.text.withValues(alpha: 0.45),
     ),
   );
 }
 
-/// Keeps the column headings under the title bar while the days scroll past
-/// them — without it, a month's worth of bare times loses its labels as soon
-/// as it moves.
-class _ColumnHeadingsHeader extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  const _ColumnHeadingsHeader({required this.child});
-
-  static const _height = 40.0;
-
-  @override
-  double get minExtent => _height;
-
-  @override
-  double get maxExtent => _height;
-
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlaps) {
-    return Container(
-      // Opaque so the rows pass behind it rather than through it.
-      color: AppColors.bg,
-      padding: const EdgeInsets.fromLTRB(18, 0, 18, 6),
-      child: Container(
-        height: _height - 6,
-        padding: const EdgeInsets.symmetric(horizontal: 9),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        child: child,
-      ),
-    );
-  }
-
-  @override
-  bool shouldRebuild(_ColumnHeadingsHeader oldDelegate) =>
-      oldDelegate.child != child;
-}
-
 /// Column widths are shared by the header and every row so the times line up
 /// as a table without a Table widget's sizing pass on a 31-row list.
-const _dayColumnWidth = 44.0;
+const _dayColumnWidth = 36.0;
 
 class _HeaderRow extends StatelessWidget {
   final bool showTahajjud;
@@ -421,6 +382,7 @@ class _HeaderRow extends StatelessWidget {
 }
 
 class _DayRow extends StatelessWidget {
+  final bool showDivider;
   final PrayerDay day;
   final bool showTahajjud;
   final bool isToday;
@@ -431,6 +393,7 @@ class _DayRow extends StatelessWidget {
   final String weekday;
 
   const _DayRow({
+    this.showDivider = true,
     required this.day,
     required this.showTahajjud,
     required this.isToday,
@@ -444,23 +407,18 @@ class _DayRow extends StatelessWidget {
     final timeStyle = isToday ? styles.timeToday : styles.time;
 
     Widget time(String value) => Expanded(
-      child: Center(child: Text(value, style: timeStyle)),
-    );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
-      decoration: BoxDecoration(
-        color: isToday ? AppColors.surface : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        // Same width either way: a border insets its own box, so a thicker
-        // one on today's row alone would make that row a hair shorter than
-        // the rest — and the list sizes every row from one prototype.
-        border: Border.all(
-          color: isToday ? AppColors.accent : AppColors.divider,
-          width: 1.4,
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(value, style: timeStyle),
         ),
       ),
+    );
+
+    return PanelRow(
+      showDivider: showDivider,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      selected: isToday,
       child: Row(
         children: [
           SizedBox(
@@ -499,16 +457,17 @@ class _MonthNavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final enabled = onTap != null;
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 34,
-        height: 34,
+        width: 38,
+        height: 38,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          shape: BoxShape.circle,
+          color: AppColors.text.withValues(alpha: .04),
+          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Icon(
           icon,

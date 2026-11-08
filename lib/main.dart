@@ -1,3 +1,4 @@
+import 'widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -31,6 +32,7 @@ class PrayerTimeApp extends StatefulWidget {
 }
 
 class _PrayerTimeAppState extends State<PrayerTimeApp> {
+  final _ambientObserver = AmbientNavigationObserver();
   late final AppState _appState = widget.appState ?? AppState();
 
   // MaterialApp only cares about these two. Tracking them by hand — rather
@@ -75,7 +77,9 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
     // of the recolor that change already causes.
     return MaterialApp(
       navigatorKey: navigatorKey,
+      navigatorObservers: [_ambientObserver],
       title: 'Prayer times',
+      scrollBehavior: const StableScrollBehavior(),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
@@ -89,7 +93,12 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
           ThemeMode.system =>
             MediaQuery.platformBrightnessOf(context) == Brightness.dark,
         },
-        child: child!,
+        child: Stack(
+          children: [
+            const Positioned.fill(child: _NavigatorBackground()),
+            Positioned.fill(child: child!),
+          ],
+        ),
       ),
       locale: _locale.localeValue,
       localizationsDelegates: const [
@@ -183,5 +192,16 @@ class _EntryState extends State<_Entry> {
       return OnboardingScreen(appState: widget.appState);
     }
     return RootShell(appState: widget.appState);
+  }
+}
+
+// Routes already paint their own atmosphere. Keep only an opaque theme-aware
+// fallback here, instead of animating another full-screen glow behind them.
+class _NavigatorBackground extends StatelessWidget {
+  const _NavigatorBackground();
+  @override
+  Widget build(BuildContext context) {
+    AppColors.watch(context);
+    return ColoredBox(color: AppColors.bg);
   }
 }

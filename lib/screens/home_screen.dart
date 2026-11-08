@@ -1,3 +1,5 @@
+import '../widgets/app_tap.dart';
+import '../widgets/ambient_surface.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -203,153 +205,157 @@ class _HomeScreenState extends State<HomeScreen> {
     // tappable near the screen edges, rather than any padding or special
     // layout here.
     //
-    // The Container fills the whole page with AppColors.bg — this screen
-    // carries its own color scheme (see home_palette.dart) independent of
-    // the shared AppColors the rest of the app still uses, since this
-    // restyle is scoped to HomeScreen only for now.
     final topInset = MediaQuery.paddingOf(context).top;
     return Container(
-      color: AppColors.bg,
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CityScreen(appState: appState),
+      color: Colors.transparent,
+      child: ScreenContentInset(
+        margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Row(
+              children: [
+                AppTap(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => CityScreen(appState: appState),
+                    ),
+                  ),
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        size: 13,
+                        color: _textMuted,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        appState.cityLabel(t),
+                        style: AppTextStyles.body(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.text,
+                        ),
+                      ),
+                      Icon(
+                        Icons.expand_more_rounded,
+                        size: 16,
+                        color: _textFaint,
+                      ),
+                    ],
                   ),
                 ),
-                behavior: HitTestBehavior.opaque,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on_rounded,
-                      size: 13,
-                      color: _textMuted,
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selectedDay.weekdayFullCapitalized(t),
+                        style: AppTextStyles.body(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.accent,
+                        ).copyWith(letterSpacing: 0.8),
+                      ),
+                      const SizedBox(height: 2),
+                      // Scales down rather than clipping: the month button
+                      // beside it carries a long label, and on the narrowest
+                      // phones a slightly smaller date beats a cut one.
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          selectedDay.dateLabel(t),
+                          maxLines: 1,
+                          style: AppTextStyles.heading(
+                            fontSize: 24,
+                            color: AppColors.text,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Always visible, regardless of which day is being browsed below —
+            // this is "what's actually coming up right now" in real time, not
+            // tied to selectedDay.
+            if (next != null)
+              _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
+            const SizedBox(height: 16),
+            GlassPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < rows.length; i++)
+                    _ScheduleRow(
+                      spec: rows[i],
+                      showDivider: i < rows.length - 1,
                     ),
-                    const SizedBox(width: 5),
-                    Text(
-                      appState.cityLabel(t),
-                      style: AppTextStyles.body(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.text,
+                  if (next != null && nextIsTomorrow) ...[
+                    const SizedBox(height: 14),
+                    _Kicker(
+                      t.nextPrayerTomorrowLabel(
+                        DateLabels.dateLabel(t, next.date),
                       ),
                     ),
-                    Icon(
-                      Icons.expand_more_rounded,
-                      size: 16,
-                      color: _textFaint,
+                    _ScheduleRow(
+                      spec: _RowSpec(
+                        kind: next.kind,
+                        time: next.time,
+                        active: true,
+                      ),
                     ),
                   ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      selectedDay.weekdayFullCapitalized(t),
-                      style: AppTextStyles.body(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.accent,
-                      ).copyWith(letterSpacing: 0.8),
+                  if (current != null && current.isFromPreviousDay) ...[
+                    const SizedBox(height: 14),
+                    _Kicker(
+                      t.yesterdayCurrentLabel(
+                        DateLabels.dateLabel(t, current.date),
+                      ),
                     ),
-                    const SizedBox(height: 2),
-                    // Scales down rather than clipping: the month button
-                    // beside it carries a long label, and on the narrowest
-                    // phones a slightly smaller date beats a cut one.
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        selectedDay.dateLabel(t),
-                        maxLines: 1,
-                        style: AppTextStyles.heading(
-                          fontSize: 24,
-                          color: AppColors.text,
+                    _ScheduleRow(
+                      spec: _RowSpec(
+                        kind: PrayerKind.isha,
+                        time: current.time,
+                        current: true,
+                        logStatus: appState.prayerStatusFor(
+                          current.date,
+                          'isha',
+                        ),
+                        onTapLog: _logTapFor(
+                          context,
+                          appState,
+                          days[todayIndex - 1],
+                          PrayerKind.isha,
+                          'isha',
                         ),
                       ),
                     ),
                   ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            _MonthLink(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MonthlyTimesScreen(appState: appState),
                 ),
               ),
-              _MonthLink(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => MonthlyTimesScreen(appState: appState),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          // Always visible, regardless of which day is being browsed below —
-          // this is "what's actually coming up right now" in real time, not
-          // tied to selectedDay.
-          if (next != null)
-            _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
-          Divider(color: AppColors.divider, height: 41),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var i = 0; i < rows.length; i++)
-                _ScheduleRow(
-                  spec: rows[i],
-                  showDivider:
-                      i < rows.length - 1 &&
-                      !rows[i].current &&
-                      !rows[i + 1].current,
-                ),
-              if (next != null && nextIsTomorrow) ...[
-                const SizedBox(height: 14),
-                _Kicker(
-                  t.nextPrayerTomorrowLabel(DateLabels.dateLabel(t, next.date)),
-                ),
-                _ScheduleRow(
-                  spec: _RowSpec(
-                    kind: next.kind,
-                    time: next.time,
-                    active: true,
-                  ),
-                ),
-              ],
-              if (current != null && current.isFromPreviousDay) ...[
-                const SizedBox(height: 14),
-                _Kicker(
-                  t.yesterdayCurrentLabel(
-                    DateLabels.dateLabel(t, current.date),
-                  ),
-                ),
-                _ScheduleRow(
-                  spec: _RowSpec(
-                    kind: PrayerKind.isha,
-                    time: current.time,
-                    current: true,
-                    logStatus: appState.prayerStatusFor(current.date, 'isha'),
-                    onTapLog: _logTapFor(
-                      context,
-                      appState,
-                      days[todayIndex - 1],
-                      PrayerKind.isha,
-                      'isha',
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -415,11 +421,7 @@ class _NextPrayerPanel extends StatelessWidget {
         ? t.nextPrayerTomorrowLabel(DateLabels.dateLabel(t, info.date))
         : t.nextPrayerLabel;
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border(left: BorderSide(color: AppColors.accent, width: 5)),
-      ),
+      decoration: glassDecoration(),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -554,10 +556,10 @@ class _ScheduleRow extends StatelessWidget {
 
     final row = Container(
       decoration: BoxDecoration(
-        color: current ? AppColors.accent100 : Colors.transparent,
-        borderRadius: current ? BorderRadius.circular(12) : null,
+        gradient: current ? AppColors.selectionGradient : null,
+        borderRadius: BorderRadius.zero,
       ),
-      padding: EdgeInsets.symmetric(horizontal: current ? 10 : 0, vertical: 9),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           // On the current row's soft gold the badge steps one shade up, or
@@ -566,7 +568,9 @@ class _ScheduleRow extends StatelessWidget {
             iconForPrayer(spec.kind),
             size: 32,
             iconSize: 16,
-            background: current ? AppColors.accent200 : null,
+            background: current
+                ? AppColors.accent.withValues(alpha: .18)
+                : null,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -574,10 +578,30 @@ class _ScheduleRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  nameForPrayer(t, spec.kind),
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.heading(fontSize: 15, color: nameColor),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        nameForPrayer(t, spec.kind),
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.heading(
+                          fontSize: 15,
+                          color: nameColor,
+                        ),
+                      ),
+                    ),
+                    if (current) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: AppColors.accent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 Text(
                   arabicForPrayer(spec.kind),
@@ -617,12 +641,7 @@ class _ScheduleRow extends StatelessWidget {
         : row;
 
     if (!showDivider) return content;
-    return Column(
-      children: [
-        content,
-        Divider(color: AppColors.divider, height: 1),
-      ],
-    );
+    return Column(children: [content, const PanelDivider()]);
   }
 }
 
@@ -809,13 +828,13 @@ class _SwipeToLogState extends State<_SwipeToLog>
             },
           ),
         ),
-        GestureDetector(
+        AppTap(
           onTap: widget.onLog,
           onHorizontalDragUpdate: _onDragUpdate,
           onHorizontalDragEnd: _onDragEnd,
           child: ValueListenableBuilder<double>(
             valueListenable: _dragX,
-            child: Container(color: AppColors.bg, child: widget.child),
+            child: Container(color: Colors.transparent, child: widget.child),
             builder: (context, dragX, child) =>
                 Transform.translate(offset: Offset(dragX, 0), child: child),
           ),
@@ -837,32 +856,36 @@ class _MonthLink extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
-    return GestureDetector(
+    return AppTap(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
+        padding: const EdgeInsets.all(16),
+        decoration: glassDecoration(),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.calendar_month_rounded,
-              size: 14,
+              size: 20,
               color: AppColors.accent,
             ),
-            const SizedBox(width: 6),
-            Text(
-              t.monthlyTimesButton,
-              maxLines: 1,
-              style: AppTextStyles.body(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w800,
-                color: AppColors.accent,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                t.monthlyTimesButton,
+                maxLines: 1,
+                style: AppTextStyles.body(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.accent,
+                ),
               ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppColors.accent,
             ),
           ],
         ),
@@ -878,7 +901,7 @@ class _LoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Container(
-      color: AppColors.bg,
+      color: Colors.transparent,
       child: Center(child: CircularProgressIndicator(color: AppColors.accent)),
     );
   }
@@ -895,7 +918,7 @@ class _ErrorView extends StatelessWidget {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Container(
-      color: AppColors.bg,
+      color: Colors.transparent,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -910,7 +933,7 @@ class _ErrorView extends StatelessWidget {
                 style: AppTextStyles.body(fontSize: 14, color: AppColors.text),
               ),
               const SizedBox(height: 16),
-              GestureDetector(
+              AppTap(
                 onTap: onRetry,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -918,8 +941,11 @@ class _ErrorView extends StatelessWidget {
                     vertical: 11,
                   ),
                   decoration: BoxDecoration(
+                    border: Border.all(
+                      color: AppColors.text.withValues(alpha: .08),
+                    ),
                     color: AppColors.accent100,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                   child: Text(
                     t.retryButton,

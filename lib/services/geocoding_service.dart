@@ -27,6 +27,8 @@ class GeocodingService {
 
   final http.Client _client;
 
+  void close() => _client.close();
+
   // Nominatim's usage policy requires a descriptive User-Agent identifying
   // the app rather than a generic HTTP client string.
   static const _userAgent = 'PrayerTimeApp (Flutter prayer times app)';

@@ -11,10 +11,10 @@ import android.widget.RemoteViews
 import uz.mu1zi47.prayertime.R
 
 /**
- * The three shapes a prayer widget can take, and how each one is drawn.
+ * The two shapes a prayer widget can take, and how each one is drawn.
  *
  * Which one a placed widget wears follows its size, not which of the three
- * providers it came from — resize any of them and it turns into the shape
+ * providers it came from — resize either of them and it turns into the shape
  * that fits, the way the stock clock and weather widgets do. See
  * [PrayerWidgets.Layout] for the breakpoints and [BasePrayerWidgetProvider]
  * for how the host is given all three at once.
@@ -34,7 +34,6 @@ object PrayerWidgetViews {
     ): RemoteViews = when (layout) {
         PrayerWidgets.Layout.COMPACT -> compact(context, state)
         PrayerWidgets.Layout.WIDE -> wide(context, provider, state)
-        PrayerWidgets.Layout.DAY -> day(context, provider, state)
     }
 
     /**
@@ -112,91 +111,13 @@ object PrayerWidgetViews {
     }
 
     /**
-     * 4x2: [wide]'s header — mark button, current prayer, countdown — on a
-     * card that carries on downward with the whole day under it: every
-     * prayer with its time, the one that's on now picked out, and a check
-     * against the ones already logged.
-     *
-     * The header drops the "next prayer" line the 4x1 carries; down here the
-     * list says what comes next by itself. The rows are read-only — marking
-     * is the button's job, and six tappable rows are easy to hit by accident.
-     */
-    private fun day(
-        context: Context,
-        provider: Class<out AppWidgetProvider>,
-        state: PrayerWidgetState,
-    ): RemoteViews {
-        val palette = PrayerWidgets.Palette(context, state.dark)
-        return RemoteViews(context.packageName, R.layout.prayer_day_widget).apply {
-            openApp(context, R.id.day_widget_root)
-            setInt(R.id.day_widget_root, "setBackgroundResource", palette.panel)
-            setTextColor(R.id.day_widget_title, palette.text)
-            setTextColor(R.id.day_widget_countdown, palette.countdown)
-            removeAllViews(R.id.day_widget_list)
-
-            when (state) {
-                is PrayerWidgetState.Empty -> {
-                    setTextViewText(R.id.day_widget_title, state.message)
-                    setViewVisibility(R.id.day_widget_countdown, View.GONE)
-                    setViewVisibility(R.id.day_widget_mark_button, View.GONE)
-                }
-
-                is PrayerWidgetState.Ready -> {
-                    setTextViewText(R.id.day_widget_title, state.currentName)
-                    setViewVisibility(R.id.day_widget_countdown, View.VISIBLE)
-                    countdown(R.id.day_widget_countdown, state.untilWindowEndMillis)
-                    markButton(
-                        context,
-                        provider,
-                        R.id.day_widget_mark_button,
-                        state,
-                        palette,
-                    )
-
-                    for (entry in state.today) {
-                        val row = RemoteViews(
-                            context.packageName,
-                            R.layout.prayer_day_widget_row,
-                        )
-                        row.setTextViewText(R.id.day_widget_row_name, entry.name)
-                        row.setTextViewText(R.id.day_widget_row_time, entry.time)
-                        // The slot that's on now is the only one at full
-                        // strength; the rest are dimmed.
-                        val color = if (entry.current) palette.text else palette.muted
-                        row.setTextColor(R.id.day_widget_row_name, color)
-                        row.setTextColor(R.id.day_widget_row_time, color)
-                        if (entry.current) {
-                            row.setInt(
-                                R.id.day_widget_row,
-                                "setBackgroundResource",
-                                R.drawable.widget_row_current,
-                            )
-                        }
-                        if (entry.marked) {
-                            row.setViewVisibility(R.id.day_widget_row_check, View.VISIBLE)
-                            row.setInt(
-                                R.id.day_widget_row_check,
-                                "setColorFilter",
-                                palette.marked,
-                            )
-                        } else {
-                            row.setViewVisibility(R.id.day_widget_row_check, View.GONE)
-                        }
-                        addView(R.id.day_widget_list, row)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * The button that logs the prayer that's on now, shared by the shapes
      * that carry one. No open prayer (sunrise has closed Fajr's window, Zuhr
      * hasn't arrived) means nothing to log, so it disappears instead of
      * offering to log a Fajr whose time has run out.
      *
-     * A toggle: a check to log the prayer, a double check ("prayed") once it
-     * is, and tapping it again clears the mark. Only the button changes when
+     * A toggle: the glyph stays the same and the button fills once logged.
+     * Tapping it again clears the mark. Only the button changes when
      * a prayer is logged — the panel around it stays as it is, the way the
      * app marks a prayed prayer (see StatusColors.onTime).
      */
@@ -218,7 +139,7 @@ object PrayerWidgetViews {
         setContentDescription(viewId, state.markLabel)
         setImageViewResource(
             viewId,
-            if (marked) R.drawable.ic_widget_checked else R.drawable.ic_widget_check,
+            R.drawable.ic_widget_check,
         )
         setInt(
             viewId,
@@ -229,7 +150,7 @@ object PrayerWidgetViews {
                 else -> R.drawable.widget_button_light
             },
         )
-        setInt(viewId, "setColorFilter", if (marked) palette.markedInk else palette.muted)
+        setInt(viewId, "setColorFilter", palette.countdown)
         setOnClickPendingIntent(
             viewId,
             markPendingIntent(context, provider, dateKey, prayerKey),

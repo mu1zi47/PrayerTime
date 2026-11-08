@@ -1,3 +1,4 @@
+import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -60,72 +61,85 @@ class SettingsScreen extends StatelessWidget {
     // edge-to-edge, under the transparent status bar, not stop short of it.
     final topInset = MediaQuery.paddingOf(context).top;
     final t = AppLocalizations.of(context)!;
-    return ListView(
-      padding: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
-      children: [
-        Text(t.settingsScreenTitle, style: AppTextStyles.heading(fontSize: 22)),
-        const SizedBox(height: 16),
-        OptRow(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => PrayerSettingsScreen(appState: appState),
-            ),
+    return ScreenContentInset(
+      margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Text(
+            t.settingsScreenTitle,
+            style: AppTextStyles.heading(fontSize: 22),
           ),
-          child: Row(
-            children: [
-              const IconBadge(Icons.access_time_rounded),
-              const SizedBox(width: 12),
-              Text(
-                t.prayerSettingsTitle,
-                style: AppTextStyles.body(fontSize: 15),
-              ),
-            ],
-          ),
-        ),
-        OptRow(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => SystemSettingsScreen(appState: appState),
-            ),
-          ),
-          child: Row(
-            children: [
-              const IconBadge(Icons.tune_rounded),
-              const SizedBox(width: 12),
-              Text(
-                t.systemSettingsTitle,
-                style: AppTextStyles.body(fontSize: 15),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        SettingsGroup(
-          kicker: t.feedbackKicker,
-          children: [
-            _ContactRow(
-              icon: Icons.mail_outline_rounded,
-              label: t.feedbackEmail,
-              onTap: () => _open(context, [
-                Uri(
-                  scheme: 'mailto',
-                  path: _feedbackEmail,
-                  queryParameters: const {'subject': 'Prayer times'},
+          const SizedBox(height: 16),
+          GlassPanel(
+            padding: EdgeInsets.zero,
+            child: GroupRows(
+              children: [
+                OptRow(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PrayerSettingsScreen(appState: appState),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const IconBadge(Icons.access_time_rounded),
+                      const SizedBox(width: 12),
+                      Text(
+                        t.prayerSettingsTitle,
+                        style: AppTextStyles.body(fontSize: 15),
+                      ),
+                    ],
+                  ),
                 ),
-              ], _feedbackEmail),
+                OptRow(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SystemSettingsScreen(appState: appState),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const IconBadge(Icons.tune_rounded),
+                      const SizedBox(width: 12),
+                      Text(
+                        t.systemSettingsTitle,
+                        style: AppTextStyles.body(fontSize: 15),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            _ContactRow(
-              icon: Icons.send_rounded,
-              label: t.feedbackTelegram,
-              onTap: () => _open(context, [
-                Uri.parse(_feedbackContactsUrl),
-              ], _feedbackContactsUrl),
-            ),
-          ],
-        ),
-        const SizedBox(height: 28),
-        const _AppVersion(),
-      ],
+          ),
+          const SizedBox(height: 20),
+          SettingsGroup(
+            kicker: t.feedbackKicker,
+            children: [
+              _ContactRow(
+                icon: Icons.mail_outline_rounded,
+                label: t.feedbackEmail,
+                onTap: () => _open(context, [
+                  Uri(
+                    scheme: 'mailto',
+                    path: _feedbackEmail,
+                    queryParameters: const {'subject': 'Prayer times'},
+                  ),
+                ], _feedbackEmail),
+              ),
+              _ContactRow(
+                icon: Icons.send_rounded,
+                label: t.feedbackTelegram,
+                onTap: () => _open(context, [
+                  Uri.parse(_feedbackContactsUrl),
+                ], _feedbackContactsUrl),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+          const _AppVersion(),
+        ],
+      ),
     );
   }
 }

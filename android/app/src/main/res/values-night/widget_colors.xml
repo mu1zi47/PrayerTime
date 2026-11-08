@@ -10,4 +10,5 @@
     <color name="widget_button_text">@color/widget_button_text_dark</color>
     <color name="widget_button_bg">@color/widget_button_bg_dark</color>
     <color name="widget_button_stroke">@color/widget_button_stroke_dark</color>
+<color name="widget_screen_bg">@color/widget_screen_bg_dark</color>
 </resources>

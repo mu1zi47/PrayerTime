@@ -287,6 +287,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get azanAndReminders => 'Уведомления и напоминания';
 
   @override
+  String get appSettingsKicker => 'Настройки приложения';
+
+  @override
   String get themeKicker => 'Тема';
 
   @override

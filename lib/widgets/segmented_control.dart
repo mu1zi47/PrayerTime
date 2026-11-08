@@ -1,3 +1,4 @@
+import 'app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -27,7 +28,7 @@ class SegmentedControl extends StatelessWidget {
       children: [
         for (var i = 0; i < options.length; i++) ...[
           if (i > 0) const SizedBox(width: 24),
-          GestureDetector(
+          AppTap(
             onTap: () => onSelect(i),
             behavior: HitTestBehavior.opaque,
             child: Column(

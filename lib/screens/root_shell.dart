@@ -22,8 +22,14 @@ class _RootShellState extends State<RootShell> {
   int _tabIndex = 0;
   late final PageController _pageController;
   final _pageKeys = List.generate(3, (_) => GlobalKey());
+  late final _tabs = <Widget>[
+    HomeScreen(appState: widget.appState),
+    MoreScreen(appState: widget.appState),
+    SettingsScreen(appState: widget.appState),
+  ];
   List<int> _pageOrder = [0, 1, 2];
   bool _switching = false;
+  bool _reordering = false;
   int? _pendingTab;
 
   @override
@@ -49,10 +55,10 @@ class _RootShellState extends State<RootShell> {
     _switching = true;
     setState(() {
       _tabIndex = index;
-      moveAmbientLight(AmbientNavigationObserver.positions[index]);
       // Put the current screen immediately beside the destination for this
       // animation. Stable keys preserve screen state when the order changes.
       if (shortcut) {
+        _reordering = true;
         _pageOrder = index > source ? [1, 0, 2] : [0, 2, 1];
       }
     });
@@ -60,6 +66,7 @@ class _RootShellState extends State<RootShell> {
       _pageController.jumpToPage(_pageOrder.indexOf(source));
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
+      setState(() => _reordering = false);
     }
     await _pageController.animateToPage(
       _pageOrder.indexOf(index),
@@ -68,12 +75,18 @@ class _RootShellState extends State<RootShell> {
     );
     if (!mounted) return;
     if (shortcut) {
-      setState(() => _pageOrder = [0, 1, 2]);
+      setState(() {
+        _reordering = true;
+        _pageOrder = [0, 1, 2];
+      });
       _pageController.jumpToPage(index);
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
     }
-    setState(() => _switching = false);
+    setState(() {
+      _reordering = false;
+      _switching = false;
+    });
     final pending = _pendingTab;
     _pendingTab = null;
     if (pending != null && pending != _tabIndex) _goToTab(pending);
@@ -82,7 +95,6 @@ class _RootShellState extends State<RootShell> {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    final appState = widget.appState;
     return PopScope(
       // On "Ещё"/"Настройки", back should land on "Намаз" first, like a
       // normal bottom-nav — only exit the app once already there.
@@ -115,32 +127,30 @@ class _RootShellState extends State<RootShell> {
                 bottom: true,
                 topExclusion: MediaQuery.paddingOf(context).top + 70,
                 child: RepaintBoundary(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: _switching
-                        ? const NeverScrollableScrollPhysics()
-                        : null,
-                    onPageChanged: (i) {
-                      if (!_switching) {
-                        setState(() {
-                          _tabIndex = _pageOrder[i];
-                          moveAmbientLight(
-                            AmbientNavigationObserver.positions[_tabIndex],
-                          );
-                        });
-                      }
-                    },
-                    children: [
+                  child: AmbientPageMotion(
+                    shouldTrack: () => !_reordering,
+                    anchorToCurrent: false,
+                    positions: [
                       for (final i in _pageOrder)
-                        KeyedSubtree(
-                          key: _pageKeys[i],
-                          child: switch (i) {
-                            0 => HomeScreen(appState: appState),
-                            1 => MoreScreen(appState: appState),
-                            _ => SettingsScreen(appState: appState),
-                          },
-                        ),
+                        AmbientNavigationObserver.positions[i],
                     ],
+                    child: PageView(
+                      controller: _pageController,
+                      physics: _switching
+                          ? const NeverScrollableScrollPhysics()
+                          : null,
+                      onPageChanged: (i) {
+                        if (!_switching) {
+                          setState(() {
+                            _tabIndex = _pageOrder[i];
+                          });
+                        }
+                      },
+                      children: [
+                        for (final i in _pageOrder)
+                          KeyedSubtree(key: _pageKeys[i], child: _tabs[i]),
+                      ],
+                    ),
                   ),
                 ),
               ),

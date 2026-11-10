@@ -1,3 +1,4 @@
+import '../widgets/app_modal_sheet.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/ambient_surface.dart';
@@ -46,7 +47,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
   }
 
   Future<void> _clear() async {
-    final confirmed = await showModalBottomSheet<bool>(
+    final confirmed = await showAppModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
@@ -121,6 +122,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                         selected: counter.limit == limit,
                                         button: true,
                                         child: AppTap(
+                                          feedbackOnChild: false,
                                           behavior: HitTestBehavior.opaque,
                                           onTap: () => counter.setLimit(limit),
                                           child: Padding(
@@ -128,26 +130,30 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                             padding: const EdgeInsets.symmetric(
                                               vertical: 12,
                                             ),
-                                            child: AnimatedDefaultTextStyle(
-                                              duration: const Duration(
-                                                milliseconds: 200,
-                                              ),
-                                              style: AppTextStyles.body(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w700,
-                                                color: counter.limit == limit
-                                                    ? AppColors.onControlFill
-                                                    : AppColors.text.withValues(
-                                                        alpha: 0.5,
-                                                      ),
-                                              ),
-                                              child: Text(
-                                                limit == 0
-                                                    ? t.tasbihUnlimited
-                                                    : '$limit',
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                            child: AppPressContent(
+                                              child: AnimatedDefaultTextStyle(
+                                                duration: const Duration(
+                                                  milliseconds: 200,
+                                                ),
+                                                style: AppTextStyles.body(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: counter.limit == limit
+                                                      ? AppColors.onControlFill
+                                                      : AppColors.text
+                                                            .withValues(
+                                                              alpha: 0.5,
+                                                            ),
+                                                ),
+                                                child: Text(
+                                                  limit == 0
+                                                      ? t.tasbihUnlimited
+                                                      : '$limit',
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -299,65 +305,59 @@ class _ClearTasbihSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(999),
                 ),
               ),
-              const SizedBox(height: 18),
-              Text(
-                t.tasbihClearTitle,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.heading(fontSize: 18),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              t.tasbihClearTitle,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.heading(fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              t.tasbihClearBody,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(
+                fontSize: 14,
+                color: AppColors.text.withValues(alpha: 0.65),
               ),
-              const SizedBox(height: 12),
-              Text(
-                t.tasbihClearBody,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  color: AppColors.text.withValues(alpha: 0.65),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ActionGroup(
-                children: [
-                  OptRow(
-                    onTap: () => Navigator.pop(context, true),
-                    child: Text(
-                      t.tasbihClear,
-                      style: AppTextStyles.body(
-                        color: AppColors.accent,
-                        fontWeight: FontWeight.w700,
-                      ),
+            ),
+            const SizedBox(height: 24),
+            ActionGroup(
+              children: [
+                OptRow(
+                  onTap: () => Navigator.pop(context, true),
+                  child: Text(
+                    t.tasbihClear,
+                    style: AppTextStyles.body(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  OptRow(
-                    onTap: () => Navigator.pop(context, false),
-                    child: Text(t.tasbihCancel, style: AppTextStyles.body()),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+                OptRow(
+                  onTap: () => Navigator.pop(context, false),
+                  child: Text(t.tasbihCancel, style: AppTextStyles.body()),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -434,7 +434,7 @@ class _AnimatedTasbihRingState extends State<_AnimatedTasbihRing> {
           strokeWidth: 4,
           strokeCap: StrokeCap.round,
           color: AppColors.accent,
-          backgroundColor: AppColors.accent100,
+          backgroundColor: AppColors.text.withValues(alpha: .08),
         ),
       ),
     );

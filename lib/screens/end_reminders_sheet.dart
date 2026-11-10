@@ -1,3 +1,4 @@
+import '../widgets/app_modal_sheet.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/ambient_surface.dart';
@@ -11,7 +12,6 @@ import '../models/notif_mode.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
-import '../theme/status_colors.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/prayer_icon.dart';
@@ -43,7 +43,7 @@ const _deleteColor = Color(0xFFC4523F);
 /// with when it would go off today, one tap to change one and another to
 /// remove it, and a button for one more.
 Future<void> showEndRemindersSheet(BuildContext context, AppState appState) {
-  return showModalBottomSheet(
+  return showAppModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
@@ -144,13 +144,7 @@ class _EndRemindersSheetState extends State<_EndRemindersSheet> {
             maxHeight: MediaQuery.sizeOf(context).height * 0.85,
           ),
           child: Container(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-            decoration: BoxDecoration(
-              color: AppColors.bg,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.lg),
-              ),
-            ),
+            padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -338,6 +332,7 @@ class _PrayerSwitcher extends StatelessWidget {
           if (i > 0) Container(width: .6, height: 40, color: AppColors.divider),
           Expanded(
             child: AppTap(
+              feedbackOnChild: false,
               onTap: () => onSelect(i),
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
@@ -347,40 +342,42 @@ class _PrayerSwitcher extends StatelessWidget {
                   gradient: i == selected ? AppColors.selectionGradient : null,
                   borderRadius: BorderRadius.zero,
                 ),
-                child: Column(
-                  children: [
-                    Icon(
-                      iconForPrayer(_prayers[i].$2),
-                      size: 18,
-                      color: i == selected
-                          ? AppColors.accent700
-                          : AppColors.text.withValues(alpha: 0.55),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      nameForPrayer(t, _prayers[i].$2),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                child: AppPressContent(
+                  child: Column(
+                    children: [
+                      Icon(
+                        iconForPrayer(_prayers[i].$2),
+                        size: 18,
                         color: i == selected
                             ? AppColors.accent700
-                            : AppColors.text.withValues(alpha: 0.7),
+                            : AppColors.text.withValues(alpha: 0.55),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${counts[i]}',
-                      style: AppTextStyles.body(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: i == selected
-                            ? AppColors.accent700.withValues(alpha: 0.75)
-                            : AppColors.text.withValues(alpha: 0.4),
+                      const SizedBox(height: 4),
+                      Text(
+                        nameForPrayer(t, _prayers[i].$2),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.body(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: i == selected
+                              ? AppColors.accent700
+                              : AppColors.text.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        '${counts[i]}',
+                        style: AppTextStyles.body(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: i == selected
+                              ? AppColors.accent700.withValues(alpha: 0.75)
+                              : AppColors.text.withValues(alpha: 0.4),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -435,14 +432,14 @@ class _ReminderTile extends StatelessWidget {
             icon: Icons.delete_outline_rounded,
             label: t.endReminderDelete,
             color: _deleteColor,
-            foreground: Colors.white,
+            foreground: _deleteColor,
             onPressed: onDelete,
           ),
           SwipeAction(
             icon: offToday ? Icons.alarm_on_rounded : Icons.alarm_off_rounded,
             label: offToday ? t.endReminderOnToday : t.endReminderOffToday,
-            color: StatusColors.onTime,
-            foreground: StatusColors.onOnTime,
+            color: AppColors.accent,
+            foreground: AppColors.accent700,
             onPressed: onToggleToday,
           ),
         ],
@@ -455,42 +452,44 @@ class _ReminderTile extends StatelessWidget {
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 200),
             opacity: offToday ? 0.55 : 1,
-            child: Row(
-              children: [
-                IconBadge(
-                  offToday ? Icons.alarm_off_rounded : Icons.alarm_rounded,
-                  size: 34,
-                  iconSize: 17,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.endReminderLead(formatLeadTime(t, lead)),
-                        style: AppTextStyles.body(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (offToday || showsTime) ...[
-                        const SizedBox(height: 2),
+            child: AppPressContent(
+              child: Row(
+                children: [
+                  IconBadge(
+                    offToday ? Icons.alarm_off_rounded : Icons.alarm_rounded,
+                    size: 34,
+                    iconSize: 17,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          offToday
-                              ? t.endReminderOffTodayStatus
-                              : t.endReminderAtShort(formatClock(fire!)),
+                          t.endReminderLead(formatLeadTime(t, lead)),
                           style: AppTextStyles.body(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: muted,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
+                        if (offToday || showsTime) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            offToday
+                                ? t.endReminderOffTodayStatus
+                                : t.endReminderAtShort(formatClock(fire!)),
+                            style: AppTextStyles.body(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: muted,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -509,7 +508,7 @@ Future<int?> showLeadPicker(
   required int max,
   ({DateTime start, DateTime end})? window,
 }) {
-  return showModalBottomSheet<int>(
+  return showAppModalBottomSheet<int>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
@@ -605,11 +604,7 @@ class _LeadPickerSheetState extends State<_LeadPickerSheet> {
     );
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
+      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

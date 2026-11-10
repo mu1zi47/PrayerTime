@@ -6,7 +6,6 @@ import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
 
 import '../theme/app_text_styles.dart';
-import '../theme/app_colors.dart';
 
 /// One of the buttons [SwipeActionTile] reveals.
 class SwipeAction {
@@ -28,8 +27,8 @@ class SwipeAction {
 /// A tile that slides left to reveal [actions] behind it, the way Telegram's
 /// chat list does: let go past halfway and it stays open on them; keep
 /// dragging and the last action — the one at the edge — stretches over the
-/// rest, and runs on its own once let go. The actions are separate buttons
-/// rounded like the tile, with a small gap between each and the tile.
+/// rest, and runs on its own once let go. Flat translucent actions meet
+/// edge to edge; the surrounding group clips their outside corners.
 class SwipeActionTile extends StatefulWidget {
   /// Left to right as they sit behind the tile; the last one is what a full
   /// swipe runs.
@@ -59,7 +58,7 @@ class _SwipeActionTileState extends State<SwipeActionTile>
   static const _actionWidth = 84.0;
 
   /// Between the actions, and between the first of them and the tile.
-  static const _gap = 8.0;
+  static const _gap = 0.0;
 
   /// How far across the tile a drag has to reach before letting go runs the
   /// last action instead of just leaving the actions open.
@@ -201,6 +200,7 @@ class _SwipeActionTileState extends State<SwipeActionTile>
                 );
               },
               child: AppTap(
+                feedbackOnChild: false,
                 behavior: HitTestBehavior.opaque,
                 onTap: _onTap,
                 onHorizontalDragStart: _onDragStart,
@@ -220,6 +220,7 @@ class _SwipeActionTileState extends State<SwipeActionTile>
   /// others keep theirs and the last one takes the rest — all of it, once
   /// armed.
   List<Widget> _actionButtons(double reveal) {
+    if (reveal <= 0) return const [];
     final count = widget.actions.length;
     final slot = _actionWidth + _gap;
     final base = reveal <= _actionsWidth ? reveal / count : slot;
@@ -265,52 +266,65 @@ class _ActionButton extends StatelessWidget {
     // following the drag, as Telegram's does.
     final stretched = width > fullWidth;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
-      child: Container(
-        width: width,
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-          color: action.color,
-          borderRadius: borderRadius,
-        ),
-        child: ClipRRect(
-          borderRadius: borderRadius,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                bottom: 0,
-                left: stretched ? 0 : (width - fullWidth) / 2,
-                width: fullWidth,
-                child: Opacity(
-                  opacity: (width / fullWidth).clamp(0.0, 1.0),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(action.icon, size: 20, color: action.foreground),
-                        const SizedBox(height: 4),
-                        Text(
-                          action.label,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.body(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: action.foreground,
-                          ).copyWith(height: 1.15),
+      child: width <= 0
+          ? const SizedBox.shrink()
+          : Container(
+              width: width,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    action.color.withValues(alpha: .16),
+                    action.color.withValues(alpha: .06),
+                  ],
+                ),
+                borderRadius: BorderRadius.zero,
+              ),
+              child: ClipRRect(
+                borderRadius: borderRadius,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      left: stretched ? 0 : (width - fullWidth) / 2,
+                      width: fullWidth,
+                      child: Opacity(
+                        opacity: (width / fullWidth).clamp(0.0, 1.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: AppPressContent(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  action.icon,
+                                  size: 20,
+                                  color: action.foreground,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  action.label,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.body(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: action.foreground,
+                                  ).copyWith(height: 1.15),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

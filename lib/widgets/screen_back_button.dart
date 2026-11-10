@@ -15,6 +15,7 @@ class ScreenBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Center(
@@ -28,10 +29,12 @@ class ScreenBackButton extends StatelessWidget {
               height: 38,
               alignment: Alignment.center,
               decoration: glassDecoration(radius: 999),
-              child: Icon(
-                Icons.arrow_back_rounded,
-                size: 18,
-                color: AppColors.text,
+              child: AppPressContent(
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  size: 18,
+                  color: AppColors.text,
+                ),
               ),
             ),
           ),

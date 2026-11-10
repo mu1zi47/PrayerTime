@@ -1,4 +1,6 @@
 import '../widgets/app_tap.dart';
+import '../widgets/app_chevron.dart';
+import '../widgets/root_tab_content.dart';
 import '../widgets/ambient_surface.dart';
 import 'dart:async';
 
@@ -17,8 +19,10 @@ import '../widgets/log_prayer_sheet.dart';
 import '../theme/status_colors.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/prayer_icon.dart';
+import '../widgets/prayer_mark_indicator.dart';
 import 'city_screen.dart';
 import 'monthly_times_screen.dart';
+import 'prayer_calendar_screen.dart';
 
 bool _isSameDate(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
@@ -124,9 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Which prayer (if any) is highlighted on today's own rows. Across
     // midnight, `current`/`next` can belong to yesterday or tomorrow's own
     // record (see computeCurrentPrayer/computeNextPrayer's cross-midnight
-    // handling), so these match on the actual date those carry — at 00:01
-    // nothing below is marked current, and the Isha callout further down
-    // covers it instead.
+    // handling), so these match on the actual date those carry. Before
+    // today's first prayer, yesterday's Isha doesn't highlight today's row.
     final currentKindOnSelectedDay =
         current != null && _isSameDate(current.date, selectedDay.date)
         ? current.kind
@@ -205,51 +208,53 @@ class _HomeScreenState extends State<HomeScreen> {
     // tappable near the screen edges, rather than any padding or special
     // layout here.
     //
-    final topInset = MediaQuery.paddingOf(context).top;
     return Container(
       color: Colors.transparent,
-      child: ScreenContentInset(
-        margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+      child: RootTabContent(
         child: ListView(
-          padding: EdgeInsets.zero,
+          padding: RootTabContent.scrollPadding(context),
           children: [
             Row(
               children: [
-                AppTap(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => CityScreen(appState: appState),
+                Flexible(
+                  child: AppTap(
+                    feedbackOnChild: false,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CityScreen(appState: appState),
+                      ),
                     ),
-                  ),
-                  behavior: HitTestBehavior.opaque,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.location_on_rounded,
-                        size: 13,
-                        color: _textMuted,
+                    behavior: HitTestBehavior.opaque,
+                    child: AppPressContent(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              appState.cityLabel(t),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.body(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.text,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.expand_more_rounded,
+                            size: 16,
+                            color: _textFaint,
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        appState.cityLabel(t),
-                        style: AppTextStyles.body(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      Icon(
-                        Icons.expand_more_rounded,
-                        size: 16,
-                        color: _textFaint,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -266,9 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ).copyWith(letterSpacing: 0.8),
                       ),
                       const SizedBox(height: 2),
-                      // Scales down rather than clipping: the month button
-                      // beside it carries a long label, and on the narrowest
-                      // phones a slightly smaller date beats a cut one.
+                      // Keep long localized dates within narrow screens.
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
@@ -294,6 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
             const SizedBox(height: 16),
             GlassPanel(
+              key: const ValueKey('today-prayers-panel'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -302,56 +306,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       spec: rows[i],
                       showDivider: i < rows.length - 1,
                     ),
-                  if (next != null && nextIsTomorrow) ...[
-                    const SizedBox(height: 14),
-                    _Kicker(
-                      t.nextPrayerTomorrowLabel(
-                        DateLabels.dateLabel(t, next.date),
-                      ),
-                    ),
-                    _ScheduleRow(
-                      spec: _RowSpec(
-                        kind: next.kind,
-                        time: next.time,
-                        active: true,
-                      ),
-                    ),
-                  ],
-                  if (current != null && current.isFromPreviousDay) ...[
-                    const SizedBox(height: 14),
-                    _Kicker(
-                      t.yesterdayCurrentLabel(
-                        DateLabels.dateLabel(t, current.date),
-                      ),
-                    ),
-                    _ScheduleRow(
-                      spec: _RowSpec(
-                        kind: PrayerKind.isha,
-                        time: current.time,
-                        current: true,
-                        logStatus: appState.prayerStatusFor(
-                          current.date,
-                          'isha',
-                        ),
-                        onTapLog: _logTapFor(
-                          context,
-                          appState,
-                          days[todayIndex - 1],
-                          PrayerKind.isha,
-                          'isha',
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            _MonthLink(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MonthlyTimesScreen(appState: appState),
-                ),
+            GlassPanel(
+              key: const ValueKey('home-schedule-actions'),
+              child: Column(
+                children: [
+                  _ScheduleLink(
+                    label: t.monthlyTimesButton,
+                    icon: Icons.calendar_month_rounded,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MonthlyTimesScreen(appState: appState),
+                      ),
+                    ),
+                  ),
+                  const PanelDivider(),
+                  _ScheduleLink(
+                    key: const ValueKey('home-prayer-calendar'),
+                    label: t.calendarScreenTitle,
+                    icon: Icons.event_available_rounded,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PrayerCalendarScreen(appState: appState),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -360,10 +344,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Only a prayer that has actually happened can be marked: on today
-  // that's the ones whose time has arrived, and on the past day the
-  // yesterday-Isha callout passes in, all of them. Filling in the rest of
-  // the past is the calendar screen's job.
+  // Only a prayer that has actually happened can be marked. Filling in
+  // past days is the calendar screen's job.
   //
   // Returns null for the rest, which disables both the tap and the swipe —
   // see _ScheduleRow/_SwipeToLog.
@@ -478,28 +460,6 @@ class _NextPrayerPanel extends StatelessWidget {
   }
 }
 
-class _Kicker extends StatelessWidget {
-  final String label;
-
-  const _Kicker(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    AppColors.watch(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        label.toUpperCase(),
-        style: AppTextStyles.body(
-          fontSize: 10,
-          fontWeight: FontWeight.w800,
-          color: AppColors.accent,
-        ).copyWith(letterSpacing: 1.0),
-      ),
-    );
-  }
-}
-
 /// One line of a prayer's data, independent of how [_ScheduleRow] renders
 /// it — lets the schedule be built as a plain list and mapped over (for
 /// inter-row dividers) instead of six near-identical widgets typed out by
@@ -560,79 +520,81 @@ class _ScheduleRow extends StatelessWidget {
         borderRadius: BorderRadius.zero,
       ),
       padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          // On the current row's soft gold the badge steps one shade up, or
-          // it would disappear into the row.
-          IconBadge(
-            iconForPrayer(spec.kind),
-            size: 32,
-            iconSize: 16,
-            background: current
-                ? AppColors.accent.withValues(alpha: .18)
-                : null,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        nameForPrayer(t, spec.kind),
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.heading(
-                          fontSize: 15,
-                          color: nameColor,
-                        ),
-                      ),
-                    ),
-                    if (current) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                Text(
-                  arabicForPrayer(spec.kind),
-                  textDirection: TextDirection.rtl,
-                  style: AppTextStyles.body(
-                    fontSize: 10.5,
-                    color: current
-                        ? AppColors.accent700.withValues(alpha: 0.7)
-                        : _textFaint,
-                  ),
-                ),
-              ],
+      child: AppPressContent(
+        child: Row(
+          children: [
+            // On the current row's soft gold the badge steps one shade up, or
+            // it would disappear into the row.
+            IconBadge(
+              iconForPrayer(spec.kind),
+              size: 32,
+              iconSize: 16,
+              background: current
+                  ? AppColors.accent.withValues(alpha: .18)
+                  : null,
             ),
-          ),
-          Text(
-            spec.time,
-            style: AppTextStyles.heading(
-              fontSize: 16,
-              color: fg,
-            ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
-          ),
-          // Shown whenever there's a status to show, not just when the row
-          // is loggable — a future day still shows whatever it somehow has
-          // on record, it just can't be changed (spec.onTapLog is null
-          // there, so _SwipeToLog below is skipped and this dot is the only
-          // trace).
-          if (spec.onTapLog != null || spec.logStatus != null) ...[
-            const SizedBox(width: 8),
-            _StatusDot(status: spec.logStatus, onFill: current),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          nameForPrayer(t, spec.kind),
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.heading(
+                            fontSize: 15,
+                            color: nameColor,
+                          ),
+                        ),
+                      ),
+                      if (current) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 5,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: AppColors.accent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  Text(
+                    arabicForPrayer(spec.kind),
+                    textDirection: TextDirection.rtl,
+                    style: AppTextStyles.body(
+                      fontSize: 10.5,
+                      color: current
+                          ? AppColors.accent700.withValues(alpha: 0.7)
+                          : _textFaint,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              spec.time,
+              style: AppTextStyles.heading(
+                fontSize: 16,
+                color: fg,
+              ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+            ),
+            // Shown whenever there's a status to show, not just when the row
+            // is loggable — a future day still shows whatever it somehow has
+            // on record, it just can't be changed (spec.onTapLog is null
+            // there, so _SwipeToLog below is skipped and this dot is the only
+            // trace).
+            if (spec.onTapLog != null || spec.logStatus != null) ...[
+              const SizedBox(width: 8),
+              _StatusDot(status: spec.logStatus, onFill: current),
+            ],
           ],
-        ],
+        ),
       ),
     );
 
@@ -778,26 +740,6 @@ class _SwipeToLogState extends State<_SwipeToLog>
     // Mirrors _StatusDot's own color logic — the button previews whatever
     // swiping it will actually open, not a generic "mark done" checkmark
     // regardless of what's already logged.
-    final (bg, border, icon, iconColor) = switch (widget.status) {
-      PrayerLogStatus.onTime => (
-        StatusColors.onTime,
-        Colors.transparent,
-        Icons.check_rounded,
-        StatusColors.onOnTime,
-      ),
-      PrayerLogStatus.qada => (
-        StatusColors.qada,
-        Colors.transparent,
-        Icons.history_toggle_off_rounded,
-        StatusColors.onQada,
-      ),
-      null => (
-        AppColors.surface,
-        AppColors.text.withValues(alpha: 0.3),
-        Icons.check_rounded,
-        AppColors.text.withValues(alpha: 0.55),
-      ),
-    };
     return Stack(
       alignment: Alignment.centerRight,
       children: [
@@ -805,30 +747,18 @@ class _SwipeToLogState extends State<_SwipeToLog>
           padding: const EdgeInsets.only(right: 14),
           child: ValueListenableBuilder<double>(
             valueListenable: _dragX,
-            child: Icon(icon, color: iconColor, size: 17),
+            child: PrayerMarkIndicator(status: widget.status),
             builder: (context, dragX, child) {
               final reveal = (dragX.abs() / _triggerDrag).clamp(0.0, 1.0);
               return Transform.scale(
                 scale: 0.4 + reveal * 0.6,
-                child: Opacity(
-                  opacity: reveal,
-                  child: Container(
-                    width: 34,
-                    height: 34,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: bg,
-                      border: Border.all(color: border, width: 1.6),
-                    ),
-                    child: child,
-                  ),
-                ),
+                child: Opacity(opacity: reveal, child: child),
               );
             },
           ),
         ),
         AppTap(
+          feedbackOnChild: false,
           onTap: widget.onLog,
           onHorizontalDragUpdate: _onDragUpdate,
           onHorizontalDragEnd: _onDragEnd,
@@ -847,47 +777,47 @@ class _SwipeToLogState extends State<_SwipeToLog>
 /// Where the day strip's "Today" button used to sit — now the way into the
 /// month-at-a-time table of prayer times (see [MonthlyTimesScreen]), since
 /// this screen itself only ever shows today.
-class _MonthLink extends StatelessWidget {
+class _ScheduleLink extends StatelessWidget {
+  final String label;
+  final IconData icon;
   final VoidCallback onTap;
 
-  const _MonthLink({required this.onTap});
+  const _ScheduleLink({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    final t = AppLocalizations.of(context)!;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: glassDecoration(),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.calendar_month_rounded,
-              size: 20,
-              color: AppColors.accent,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                t.monthlyTimesButton,
-                maxLines: 1,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.accent,
+        child: AppPressContent(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: AppColors.accent),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.accent,
+                  ),
                 ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: AppColors.accent,
-            ),
-          ],
+              const AppChevron(),
+            ],
+          ),
         ),
       ),
     );
@@ -934,6 +864,7 @@ class _ErrorView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               AppTap(
+                feedbackOnChild: false,
                 onTap: onRetry,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -944,15 +875,17 @@ class _ErrorView extends StatelessWidget {
                     border: Border.all(
                       color: AppColors.text.withValues(alpha: .08),
                     ),
-                    color: AppColors.accent100,
+                    gradient: AppColors.selectionGradient,
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
-                  child: Text(
-                    t.retryButton,
-                    style: AppTextStyles.body(
-                      fontSize: 14,
-                      color: AppColors.accent700,
-                      fontWeight: FontWeight.w700,
+                  child: AppPressContent(
+                    child: Text(
+                      t.retryButton,
+                      style: AppTextStyles.body(
+                        fontSize: 14,
+                        color: AppColors.accent700,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),

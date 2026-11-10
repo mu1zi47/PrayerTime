@@ -423,5 +423,7 @@
   "tasbihClearTitle": "Clear tasbih?",
   "tasbihClearBody": "The current round and total taps will be reset to zero.",
   "tasbihCancel": "Cancel",
-  "tasbihClear": "Clear"
+  "tasbihClear": "Clear",
+  "onboardingSkip": "Skip",
+  "onboardingNowBarBody": "Show the current prayer and remaining time in a persistent notification or Now Bar. Off by default. Enable it now or later in settings."
 }

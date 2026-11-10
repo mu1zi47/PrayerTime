@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 /// What the Now Bar settings need to know — see [NowBarBridge.status].
 class NowBarStatus {
-  /// Whether the user wants the notification at all (on by default).
+  /// Whether the user wants the notification at all (off by default).
   final bool enabled;
 
   /// Whether the expanded Now Bar shows all of today's prayers (off by

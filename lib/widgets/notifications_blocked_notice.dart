@@ -1,4 +1,5 @@
 import 'app_tap.dart';
+import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -21,13 +22,8 @@ class NotificationsBlockedNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.45)),
-      ),
+    return GlassPanel(
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,6 +54,7 @@ class NotificationsBlockedNotice extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           AppTap(
+            feedbackOnChild: false,
             onTap: onAllow,
             behavior: HitTestBehavior.opaque,
             child: Container(
@@ -68,16 +65,18 @@ class NotificationsBlockedNotice extends StatelessWidget {
                 border: Border.all(
                   color: AppColors.text.withValues(alpha: .08),
                 ),
-                color: AppColors.accent100,
+                gradient: AppColors.selectionGradient,
                 borderRadius: BorderRadius.circular(AppRadius.inner),
               ),
-              child: Text(
-                t.notifBlockedAllow,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.accent700,
+              child: AppPressContent(
+                child: Text(
+                  t.notifBlockedAllow,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.accent700,
+                  ),
                 ),
               ),
             ),

@@ -1,4 +1,5 @@
 import '../widgets/app_tap.dart';
+import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
+import '../widgets/edge_gesture_guard.dart';
 
 /// A month-at-a-time table of prayer times, reachable from the home screen.
 /// Unlike [PrayerCalendarScreen] nothing is marked here — it's a lookup: one
@@ -37,9 +39,6 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) moveAmbientLight(const Alignment(-.65, -.8));
-    });
     final now = widget.appState.cityNow;
     _months = [
       DateTime(now.year, now.month - 1),
@@ -105,17 +104,33 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
       // A PageView builds only the page on screen, so opening the screen
       // fetches one month; a neighbour starts loading as the swipe brings it
       // into view, and [AppState.monthDays] caches it from then on.
-      body: PageView.builder(
-        controller: _controller,
-        itemCount: _months.length,
-        itemBuilder: (context, i) => _MonthPage(
-          appState: widget.appState,
-          month: _months[i],
-          // Disabled at the ends rather than hidden, so the arrows stay
-          // where the eye expects them — and they agree with what the swipe
-          // can reach.
-          onPrev: i > 0 ? () => _goToPage(i - 1) : null,
-          onNext: i < _months.length - 1 ? () => _goToPage(i + 1) : null,
+      body: ValueListenableBuilder<bool>(
+        valueListenable: Navigator.of(context).userGestureInProgressNotifier,
+        builder: (context, systemBack, _) => EdgeGestureGuard(
+          left: true,
+          right: true,
+          bottom: true,
+          child: AmbientPageMotion(
+            positions: const [
+              Alignment(.75, -.5),
+              Alignment(-.65, -.8),
+              Alignment(.65, .6),
+            ],
+            child: PageView.builder(
+              controller: _controller,
+              physics: systemBack ? const NeverScrollableScrollPhysics() : null,
+              itemCount: _months.length,
+              itemBuilder: (context, i) => _MonthPage(
+                appState: widget.appState,
+                month: _months[i],
+                // Disabled at the ends rather than hidden, so the arrows stay
+                // where the eye expects them — and they agree with what the swipe
+                // can reach.
+                onPrev: i > 0 ? () => _goToPage(i - 1) : null,
+                onNext: i < _months.length - 1 ? () => _goToPage(i + 1) : null,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -458,6 +473,7 @@ class _MonthNavButton extends StatelessWidget {
     AppColors.watch(context);
     final enabled = onTap != null;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -469,12 +485,8 @@ class _MonthNavButton extends StatelessWidget {
           border: Border.all(color: AppColors.text.withValues(alpha: .08)),
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: enabled
-              ? AppColors.text
-              : AppColors.text.withValues(alpha: 0.25),
+        child: AppPressContent(
+          child: AppChevron(icon: icon, enabled: enabled),
         ),
       ),
     );

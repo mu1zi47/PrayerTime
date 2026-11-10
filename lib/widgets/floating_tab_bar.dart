@@ -1,5 +1,6 @@
 import 'app_tap.dart';
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +26,34 @@ List<_TabSpec> _tabs(AppLocalizations t) => [
 /// detached from the screen edge, glassy/blurred, with a filled capsule
 /// that morphs to the selected tab instead of a fixed underline/bar.
 class FloatingTabBar extends StatefulWidget {
+  static const surfaceKey = ValueKey('floating-tab-bar-surface');
+  static const _buttonVerticalPadding = 12.0;
+  static const _surfacePadding = 6.0;
+  static const _borderWidth = 1.0;
+  static const _minimumBottom = 16.0;
+  static const _iconSize = 20.0;
+
+  /// Includes the actual label height at the user's text size, safe area,
+  /// and the same 16px gap used between the app's panels.
+  static double contentBottomInset(BuildContext context) {
+    final label = TextPainter(
+      text: TextSpan(
+        text: ' ',
+        style: DefaultTextStyle.of(context).style.merge(
+          AppTextStyles.body(fontSize: 13, fontWeight: FontWeight.w700),
+        ),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final rowHeight = math.max(_iconSize, label.height);
+    label.dispose();
+    return rowHeight +
+        2 * (_buttonVerticalPadding + _surfacePadding + _borderWidth) +
+        math.max(_minimumBottom, MediaQuery.paddingOf(context).bottom) +
+        16;
+  }
+
   final int index;
   final ValueChanged<int> onSelect;
 
@@ -139,7 +168,7 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
     final tabs = _tabs(AppLocalizations.of(context)!);
     return SafeArea(
       top: false,
-      minimum: const EdgeInsets.only(bottom: 16),
+      minimum: const EdgeInsets.only(bottom: FloatingTabBar._minimumBottom),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Center(
@@ -152,14 +181,16 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
               // content that's constantly changing during tab transitions —
               // a much smaller sigma keeps the glassy look while cutting
               // that per-frame cost substantially.
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
               child: Container(
-                padding: const EdgeInsets.all(6),
+                key: FloatingTabBar.surfaceKey,
+                padding: const EdgeInsets.all(FloatingTabBar._surfacePadding),
                 decoration: BoxDecoration(
                   color: AppColors.surface.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                   border: Border.all(
                     color: AppColors.text.withValues(alpha: 0.1),
+                    width: FloatingTabBar._borderWidth,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -173,6 +204,7 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
                   onPointerDown: (_) => HapticFeedback.lightImpact(),
                   onPointerCancel: (_) => _finishDrag(cancel: true),
                   child: AppTap(
+                    feedbackOnChild: false,
                     onLongPressStart: (d) => _startDrag(d.globalPosition),
                     onLongPressMoveUpdate: (d) => _moveDrag(d.globalPosition),
                     onLongPressEnd: (_) => _finishDrag(),
@@ -196,24 +228,26 @@ class _FloatingTabBarState extends State<FloatingTabBar> {
                               ),
                             ),
                           ),
-                        Row(
-                          key: _rowKey,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            for (var i = 0; i < tabs.length; i++)
-                              _FloatingTabButton(
-                                key: _tabKeys[i],
-                                spec: tabs[i],
-                                selected:
-                                    i ==
-                                    (_targets != null
-                                        ? _layoutIndex
-                                        : widget.index),
-                                dragging: _targets != null,
-                                highlighted: i == (_target ?? widget.index),
-                                onTap: () => widget.onSelect(i),
-                              ),
-                          ],
+                        AppPressContent(
+                          child: Row(
+                            key: _rowKey,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (var i = 0; i < tabs.length; i++)
+                                _FloatingTabButton(
+                                  key: _tabKeys[i],
+                                  spec: tabs[i],
+                                  selected:
+                                      i ==
+                                      (_targets != null
+                                          ? _layoutIndex
+                                          : widget.index),
+                                  dragging: _targets != null,
+                                  highlighted: i == (_target ?? widget.index),
+                                  onTap: () => widget.onSelect(i),
+                                ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -250,6 +284,7 @@ class _FloatingTabButton extends StatelessWidget {
     // Semantic colors interpolate across the reversed light/dark ramps.
     final onFill = AppColors.onControlFill;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
@@ -257,40 +292,42 @@ class _FloatingTabButton extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
           horizontal: selected ? 20 : 16,
-          vertical: 12,
+          vertical: FloatingTabBar._buttonVerticalPadding,
         ),
         decoration: BoxDecoration(
           gradient: selected && !dragging ? AppColors.selectionGradient : null,
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              spec.icon,
-              size: 20,
-              color: highlighted
-                  ? onFill
-                  : AppColors.text.withValues(alpha: 0.55),
-            ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 320),
-              curve: Curves.easeOutCubic,
-              child: selected
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        spec.label,
-                        style: AppTextStyles.body(
-                          fontSize: 13,
-                          color: highlighted ? onFill : AppColors.text,
-                          fontWeight: FontWeight.w700,
+        child: AppPressContent(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                spec.icon,
+                size: 20,
+                color: highlighted
+                    ? onFill
+                    : AppColors.text.withValues(alpha: 0.55),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.easeOutCubic,
+                child: selected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          spec.label,
+                          style: AppTextStyles.body(
+                            fontSize: 13,
+                            color: highlighted ? onFill : AppColors.text,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                    )
-                  : const SizedBox(height: 20),
-            ),
-          ],
+                      )
+                    : const SizedBox(height: 20),
+              ),
+            ],
+          ),
         ),
       ),
     );

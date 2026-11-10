@@ -1,4 +1,5 @@
 import 'app_tap.dart';
+import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -17,6 +18,7 @@ class PillButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedOpacity(
@@ -25,27 +27,27 @@ class PillButton extends StatelessWidget {
         child: Container(
           height: 50,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.accent100,
-            border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-            borderRadius: BorderRadius.circular(AppRadius.inner),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: 19, color: AppColors.accent700),
-                const SizedBox(width: 6),
-              ],
-              Text(
-                label,
-                style: AppTextStyles.body(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.accent700,
+          decoration: glassDecoration(
+            radius: AppRadius.inner,
+          ).copyWith(gradient: AppColors.selectionGradient),
+          child: AppPressContent(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, size: 19, color: AppColors.accent700),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.accent700,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

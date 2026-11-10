@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:prayertime/screens/prayer_calendar_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -139,6 +141,7 @@ void main() {
       180,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
 
@@ -156,6 +159,7 @@ void main() {
       // The month's own vertical scroll, not the pager around it.
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     expect(find.text('$lastDay'), findsOneWidget);
   });
 
@@ -168,6 +172,7 @@ void main() {
       180,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
 
@@ -193,6 +198,7 @@ void main() {
       180,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
 
@@ -222,6 +228,99 @@ void main() {
     expect(find.text(label(DateTime(now.year, now.month - 1))), findsOneWidget);
   });
 
+  testWidgets('edge and predictive back gestures never change the month', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 700);
+    tester.view.systemGestureInsets = const FakeViewPadding(
+      left: 24,
+      right: 24,
+    );
+    addTearDown(tester.view.reset);
+    await _pumpApp(tester);
+    await tester.scrollUntilVisible(
+      find.text('Расписание на месяц'),
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Расписание на месяц'));
+    await tester.pumpAndSettle();
+    final now = DateTime.now();
+    final label = DateLabels.monthYearLabel(
+      lookupAppLocalizations(const Locale('ru')),
+      DateTime(now.year, now.month),
+    );
+    await tester.dragFrom(const Offset(2, 350), const Offset(600, 0));
+    await tester.pumpAndSettle();
+    expect(find.text(label), findsOneWidget);
+    await tester.dragFrom(const Offset(798, 350), const Offset(-600, 0));
+    await tester.pumpAndSettle();
+    expect(find.text(label), findsOneWidget);
+
+    Future<void> backGesture(String method, [double? progress]) async {
+      await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+        'flutter/backgesture',
+        const StandardMethodCodec().encodeMethodCall(
+          MethodCall(
+            method,
+            progress == null
+                ? null
+                : {
+                    'touchOffset': <double>[5 + progress * 200, 350],
+                    'progress': progress,
+                    'swipeEdge': 0,
+                  },
+          ),
+        ),
+        (_) {},
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await backGesture('startBackGesture', 0);
+    expect(
+      tester.widget<PageView>(find.byType(PageView)).physics,
+      isA<NeverScrollableScrollPhysics>(),
+    );
+    await tester.dragFrom(
+      tester.getCenter(find.byType(PageView)),
+      const Offset(-500, 0),
+    );
+    await tester.pumpAndSettle();
+    await backGesture('updateBackGestureProgress', .4);
+    await backGesture('cancelBackGesture');
+    expect(find.text(label), findsOneWidget);
+    expect(tester.widget<PageView>(find.byType(PageView)).physics, isNull);
+    await backGesture('startBackGesture', 0);
+    await backGesture('updateBackGestureProgress', .6);
+    await backGesture('commitBackGesture');
+    expect(find.text('Времена намазов'), findsNothing);
+  });
+
+  testWidgets(
+    'home calendar action is below the monthly schedule and opens the calendar',
+    (tester) async {
+      await _pumpApp(tester);
+      final calendar = find.byKey(const ValueKey('home-prayer-calendar'));
+      await tester.scrollUntilVisible(
+        calendar,
+        180,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.pumpAndSettle();
+      expect(
+        tester.getTopLeft(calendar).dy,
+        greaterThan(tester.getBottomLeft(find.text('Расписание на месяц')).dy),
+      );
+      await tester.tap(calendar);
+      await tester.pumpAndSettle();
+      expect(find.byType(PrayerCalendarScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('a month is fetched once and then read from cache', (
     tester,
   ) async {
@@ -233,6 +332,7 @@ void main() {
       180,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
@@ -245,6 +345,7 @@ void main() {
       180,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Расписание на месяц'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
@@ -277,6 +378,7 @@ void main() {
         180,
         scrollable: find.byType(Scrollable).last,
       );
+      await tester.pumpAndSettle();
       expect(find.text('Расписание на месяц').hitTestable(), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('Расписание на месяц')).dy,

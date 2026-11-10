@@ -900,4 +900,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tasbihClear => 'Очистить';
+
+  @override
+  String get onboardingSkip => 'Пропустить';
+
+  @override
+  String get onboardingNowBarBody =>
+      'Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках.';
 }

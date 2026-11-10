@@ -466,28 +466,31 @@ class _MapZoomStripState extends State<MapZoomStrip>
       child: DecoratedBox(
         decoration: glassDecoration(radius: AppRadius.lg),
         child: AppTap(
+          feedbackOnChild: false,
           onTap: _moveToOtherSide,
           behavior: HitTestBehavior.opaque,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  onLeft ? Icons.east_rounded : Icons.west_rounded,
-                  size: 18,
-                  color: AppColors.accent700,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  onLeft ? t.zoomBarMoveRight : t.zoomBarMoveLeft,
-                  style: AppTextStyles.body(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+            child: AppPressContent(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    onLeft ? Icons.east_rounded : Icons.west_rounded,
+                    size: 18,
                     color: AppColors.accent700,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    onLeft ? t.zoomBarMoveRight : t.zoomBarMoveLeft,
+                    style: AppTextStyles.body(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.accent700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

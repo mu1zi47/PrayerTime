@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:prayertime/widgets/app_switch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +12,8 @@ import 'package:prayertime/services/notification_service.dart';
 import 'package:prayertime/services/prayer_times_api.dart';
 import 'package:prayertime/state/app_state.dart';
 import 'package:prayertime/widgets/notif_mode_selector.dart';
+import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:prayertime/widgets/settings_widgets.dart';
 
 class _InstantFakeApi extends PrayerTimesApi {
   @override
@@ -92,12 +96,12 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    // Six steps: language, theme, city, method, madhab, notifications.
-    for (var i = 0; i < 5; i++) {
+    // Seven steps, with an optional persistent notification at the end.
+    for (var i = 0; i < 6; i++) {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
     }
-    await tester.tap(find.text('Done'));
+    await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
 
     expect(find.text('Prayer'), findsOneWidget);
@@ -116,11 +120,23 @@ void main() {
     }
 
     expect(find.text('Allow notifications'), findsOneWidget);
+    final prayersPanel = find.byKey(
+      const ValueKey('setup-notification-prayers'),
+    );
+    expect(
+      find.descendant(
+        of: prayersPanel,
+        matching: find.byType(NotifModeSelector),
+      ),
+      findsNWidgets(5),
+    );
 
     final fajrSilent = find.descendant(
       of: find.byType(NotifModeSelector).first,
       matching: find.byIcon(Icons.volume_off_rounded),
     );
+    await tester.ensureVisible(fajrSilent);
+    await tester.pumpAndSettle();
     await tester.tap(fajrSilent);
     // The toast's overlay goes in on this frame, the toast itself on the
     // next — see AppToast.show.
@@ -134,6 +150,160 @@ void main() {
     // Lets the toast run out rather than leaving its timer pending.
     await tester.pump(const Duration(seconds: 10));
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('language changes and grouped city actions fit a small screen', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 640);
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    for (final label in ['Русский', "O'zbekcha (lotin)", 'English']) {
+      await tester.tap(find.text(label));
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(tester.takeException(), isNull);
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('Next'));
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(tester.takeException(), isNull);
+    await tester.pumpAndSettle();
+    expect(find.text('Back'), findsOneWidget);
+    final backPanel = find.ancestor(
+      of: find.text('Back'),
+      matching: find.byType(GlassPanel),
+    );
+    expect(
+      tester.getCenter(find.text('Back')).dy,
+      closeTo(tester.getCenter(backPanel).dy, .1),
+    );
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    final city = find.byKey(const ValueKey('setup-selected-city'));
+    expect(city, findsOneWidget);
+    expect(
+      find.descendant(of: city, matching: find.text('Detect automatically')),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: city, matching: find.text('Choose manually')),
+      findsNothing,
+    );
+    final detectPanel = find.ancestor(
+      of: find.text('Detect automatically'),
+      matching: find.byType(GlassPanel),
+    );
+    final manualPanel = find.ancestor(
+      of: find.text('Choose manually'),
+      matching: find.byType(GlassPanel),
+    );
+    expect(detectPanel, findsOneWidget);
+    expect(manualPanel, findsOneWidget);
+    expect(tester.element(detectPanel), same(tester.element(manualPanel)));
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final height in [640.0, 1000.0]) {
+    testWidgets(
+      'option panels wrap content within available height at ${height.toInt()}px',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(390, height);
+        addTearDown(tester.view.reset);
+        SharedPreferences.setMockInitialValues({});
+        await tester.pumpWidget(_app());
+        await tester.pumpAndSettle();
+        for (var step = 0; step < 5; step++) {
+          if ([0, 1, 3, 4].contains(step)) {
+            final panel = find
+                .byKey(const ValueKey('setup-options-panel'))
+                .hitTestable();
+            expect(panel, findsOneWidget);
+            final rows = find.descendant(
+              of: panel,
+              matching: find.byType(GroupRows),
+            );
+            final contentHeight = tester.getSize(rows).height;
+            final panelHeight = tester.getSize(panel).height;
+            expect(panelHeight, lessThanOrEqualTo(contentHeight + .1));
+            if (height == 1000) expect(panelHeight, closeTo(contentHeight, .1));
+            if (contentHeight > panelHeight) {
+              final list = find.descendant(
+                of: panel,
+                matching: find.byType(ListView),
+              );
+              await tester.drag(list, const Offset(0, -150));
+              await tester.pumpAndSettle();
+              final scrollable = find.descendant(
+                of: list,
+                matching: find.byType(Scrollable),
+              );
+              expect(
+                tester.state<ScrollableState>(scrollable).position.pixels,
+                greaterThan(0),
+              );
+            }
+          }
+          expect(tester.takeException(), isNull);
+          if (step < 4) {
+            await tester.tap(find.text('Next'));
+            await tester.pumpAndSettle();
+          }
+        }
+      },
+    );
+  }
+
+  testWidgets('step seven stays off until explicitly enabled', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    var enabled = false;
+    final writes = <bool>[];
+    const channel = MethodChannel('uz.mu1zi47.prayertime/now_bar');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+      call,
+    ) async {
+      if (call.method == 'setEnabled') {
+        enabled = call.arguments as bool;
+        writes.add(enabled);
+        return null;
+      }
+      if (call.method == 'status') {
+        return <String, Object?>{
+          'enabled': enabled,
+          'isNowBar': true,
+          'notificationsAllowed': true,
+          'promotionAllowed': true,
+          'liveForAllApps': true,
+        };
+      }
+      return null;
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        null,
+      ),
+    );
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Now Bar'), findsOneWidget);
+    expect(find.text('Skip'), findsOneWidget);
+    expect(writes, isEmpty);
+    expect(tester.widget<AppSwitch>(find.byType(AppSwitch)).value, isFalse);
+    await tester.tap(find.byType(AppSwitch));
+    await tester.pumpAndSettle();
+    expect(writes, [true]);
+    expect(find.text('Done'), findsOneWidget);
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Prayer'), findsOneWidget);
   });
 
   testWidgets('an install that predates setup is left alone', (tester) async {

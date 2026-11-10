@@ -134,12 +134,74 @@ void main() {
     await tester.pumpAndSettle();
     final before = tester.getRect(find.text('Готово'));
     await tester.drag(
-      find.byType(SingleChildScrollView),
+      find.byKey(const ValueKey('sounds')),
       const Offset(0, -1200),
     );
     await tester.pumpAndSettle();
     expect(tester.getRect(find.text('Готово')), before);
-    expect(find.byType(GlassPanel), findsNWidgets(4));
+    expect(find.byType(DecoratedSliver), findsWidgets);
+    expect(find.byType(SliverFixedExtentList), findsWidgets);
+    expect(find.byType(BackdropFilter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'a large sound catalogue stays lazy and reveals a saved late item',
+    (tester) async {
+      const channel = MethodChannel('uz.mu1zi47.prayertime/sounds');
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+        call,
+      ) async {
+        if (call.method == 'list') {
+          return [
+            for (final kind in ['notification', 'ringtone'])
+              for (var i = 0; i < 200; i++)
+                {'title': '$kind $i', 'uri': 'sound:$kind:$i', 'kind': kind},
+          ];
+        }
+        return null;
+      });
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          channel,
+          null,
+        ),
+      );
+      NotifSound? result;
+      await tester.pumpWidget(
+        app(
+          Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () async {
+                  result = await showSoundPicker(
+                    context,
+                    title: 'Sounds',
+                    current: const NotifSound(
+                      uri: 'sound:ringtone:190',
+                      title: 'ringtone 190',
+                    ),
+                  );
+                },
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(find.text('ringtone 190').hitTestable(), findsOneWidget);
+      expect(
+        find.byIcon(Icons.music_note_rounded).evaluate().length,
+        lessThan(30),
+      );
+      expect(find.text('notification 1'), findsNothing);
+      await tester.tap(find.text('ringtone 189'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Готово'));
+      await tester.pumpAndSettle();
+      expect(result?.uri, 'sound:ringtone:189');
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

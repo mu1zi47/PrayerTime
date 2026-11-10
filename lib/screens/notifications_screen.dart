@@ -1,3 +1,4 @@
+import '../widgets/app_modal_sheet.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -18,7 +19,7 @@ import 'end_reminders_sheet.dart';
 /// screen of its own (same idea as showChoiceSheet, just for a denser
 /// group of settings instead of a single pick-one list).
 Future<void> showNotificationsSheet(BuildContext context, AppState appState) {
-  return showModalBottomSheet(
+  return showAppModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
@@ -58,13 +59,7 @@ class _NotificationsSheet extends StatelessWidget {
             maxHeight: MediaQuery.sizeOf(context).height * 0.85,
           ),
           child: Container(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-            decoration: BoxDecoration(
-              color: AppColors.bg,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.lg),
-              ),
-            ),
+            padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,

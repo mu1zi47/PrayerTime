@@ -19,26 +19,39 @@ void main() {
           ),
         ),
       );
-      Color badgeColor() =>
-          (tester
-                      .widget<Container>(
-                        find.descendant(
-                          of: find.byType(IconBadge),
-                          matching: find.byType(Container),
-                        ),
-                      )
-                      .decoration!
-                  as BoxDecoration)
-              .color!;
+      Color badgeColor() {
+        final container = tester.widget<Container>(
+          find.descendant(
+            of: find.byType(IconBadge),
+            matching: find.byType(Container),
+          ),
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        expect(decoration.color, isNull);
+        expect(decoration.border, isNotNull);
+        return (decoration.gradient! as LinearGradient).colors.first;
+      }
 
-      expect(badgeColor(), AppColors.lightPalette.accent100);
+      expect(
+        badgeColor(),
+        AppColors.lightPalette.surface.withValues(alpha: .38),
+      );
       dark.value = true;
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 175));
-      expect(badgeColor(), isNot(AppColors.lightPalette.accent100));
-      expect(badgeColor(), isNot(AppColors.darkPalette.accent100));
+      expect(
+        badgeColor(),
+        isNot(AppColors.lightPalette.surface.withValues(alpha: .38)),
+      );
+      expect(
+        badgeColor(),
+        isNot(AppColors.darkPalette.surface.withValues(alpha: .38)),
+      );
       await tester.pumpAndSettle();
-      expect(badgeColor(), AppColors.darkPalette.accent100);
+      expect(
+        badgeColor(),
+        AppColors.darkPalette.surface.withValues(alpha: .38),
+      );
       expect(
         tester.widget<Icon>(find.byType(Icon)).color,
         AppColors.darkPalette.accent700,
@@ -46,7 +59,10 @@ void main() {
 
       dark.value = false;
       await tester.pumpAndSettle();
-      expect(badgeColor(), AppColors.lightPalette.accent100);
+      expect(
+        badgeColor(),
+        AppColors.lightPalette.surface.withValues(alpha: .38),
+      );
       expect(
         tester.widget<Icon>(find.byType(Icon)).color,
         AppColors.lightPalette.accent700,

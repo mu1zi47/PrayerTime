@@ -1,5 +1,8 @@
+import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
+import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
+import '../widgets/root_tab_content.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -9,7 +12,6 @@ import '../theme/app_text_styles.dart';
 import 'mosque_map_screen.dart';
 import 'names_screen.dart';
 import 'tasbih_screen.dart';
-import 'prayer_calendar_screen.dart';
 
 class _MoreItemSpec {
   final IconData icon;
@@ -28,11 +30,6 @@ List<_MoreItemSpec> _items(AppState appState, AppLocalizations t) => [
     icon: Icons.auto_awesome_rounded,
     label: t.allahNamesTitle,
     screenBuilder: (_) => NamesScreen(appState: appState),
-  ),
-  _MoreItemSpec(
-    icon: Icons.calendar_month_rounded,
-    label: t.calendarScreenTitle,
-    screenBuilder: (_) => PrayerCalendarScreen(appState: appState),
   ),
   _MoreItemSpec(
     icon: Icons.mosque_rounded,
@@ -59,12 +56,11 @@ class MoreScreen extends StatelessWidget {
     // than stop short of it. CustomScrollView (instead of ListView) so the
     // title and the grid share one scroll position.
     final t = AppLocalizations.of(context)!;
-    final topInset = MediaQuery.paddingOf(context).top;
     final items = _items(appState, t);
-    return ScreenContentInset(
-      margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+    return RootTabContent(
       child: CustomScrollView(
         slivers: [
+          SliverPadding(padding: RootTabContent.scrollPadding(context)),
           SliverPadding(
             padding: const EdgeInsets.only(bottom: 16),
             sliver: SliverToBoxAdapter(
@@ -105,39 +101,35 @@ class _MoreTile extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: () => Navigator.of(
         context,
       ).push(MaterialPageRoute(builder: spec.screenBuilder)),
 
       child: Container(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.accent100,
-                shape: BoxShape.circle,
+        child: AppPressContent(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                alignment: Alignment.center,
+                decoration: iconBadgeDecoration(),
+                child: Icon(spec.icon, size: 19, color: AppColors.accent700),
               ),
-              child: Icon(spec.icon, size: 19, color: AppColors.accent700),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                spec.label,
-                style: AppTextStyles.heading(fontSize: 16),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  spec.label,
+                  style: AppTextStyles.heading(fontSize: 16),
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: AppColors.text.withValues(alpha: .4),
-            ),
-          ],
+              const AppChevron(),
+            ],
+          ),
         ),
       ),
     );

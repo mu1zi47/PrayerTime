@@ -70,7 +70,7 @@ object PrayerStatusNotifier {
     }
 
     fun isEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(ENABLED_KEY, true)
+        prefs(context).getBoolean(ENABLED_KEY, false)
 
     fun setEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(ENABLED_KEY, enabled).commit()

@@ -1739,6 +1739,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Очистить'**
   String get tasbihClear;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пропустить'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNowBarBody.
+  ///
+  /// In ru, this message translates to:
+  /// **'Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках.'**
+  String get onboardingNowBarBody;
 }
 
 class _AppLocalizationsDelegate

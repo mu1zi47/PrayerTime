@@ -900,4 +900,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tasbihClear => 'Clear';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingNowBarBody =>
+      'Show the current prayer and remaining time in a persistent notification or Now Bar. Off by default. Enable it now or later in settings.';
 }

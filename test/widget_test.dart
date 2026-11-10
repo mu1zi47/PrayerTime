@@ -11,6 +11,7 @@ import 'package:prayertime/services/connectivity_service.dart';
 import 'package:prayertime/services/notification_service.dart';
 import 'package:prayertime/services/prayer_times_api.dart';
 import 'package:prayertime/state/app_state.dart';
+import 'package:prayertime/widgets/ambient_surface.dart';
 
 class _InstantFakeApi extends PrayerTimesApi {
   @override
@@ -106,6 +107,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Настройки'), findsWidgets);
+    expect(ambientPosition.value, AmbientNavigationObserver.positions[2]);
     await tester.tap(find.byIcon(Icons.home_rounded));
     await tester.pump();
     await tester.pump();
@@ -121,10 +123,12 @@ void main() {
     expect(find.byType(MoreScreen), findsNothing);
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.byType(HomeScreen)).dx, 0);
+    expect(ambientPosition.value, AmbientNavigationObserver.positions[0]);
 
     // Normal swiping still follows the original tab order after the shortcut.
     await tester.dragFrom(const Offset(700, 70), const Offset(-600, 0));
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.byType(MoreScreen)).dx, 0);
+    expect(ambientPosition.value, AmbientNavigationObserver.positions[1]);
   });
 }

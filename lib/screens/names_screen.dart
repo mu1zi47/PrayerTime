@@ -1,3 +1,5 @@
+import '../widgets/app_modal_sheet.dart';
+import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_search_field.dart';
 import '../widgets/settings_widgets.dart';
@@ -48,7 +50,7 @@ class _NamesScreenState extends State<NamesScreen> {
   Future<void> _showNotice() {
     final t = AppLocalizations.of(context)!;
     final readsUzbek = widget.appState.locale == AppLocale.uzCyrillic;
-    return showModalBottomSheet(
+    return showAppModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
@@ -181,36 +183,42 @@ class _NamesScreenState extends State<NamesScreen> {
                       left: true,
                       right: true,
                       bottom: true,
-                      child: PageView(
-                        controller: _pageController,
-                        onPageChanged: (i) => setState(() => _tabIndex = i),
-                        children: [
-                          RepaintBoundary(
-                            child: _NamesList(
-                              names: allFiltered,
-                              navigationSource: AllahNames.all,
-                              favorites: favorites,
-                              appState: widget.appState,
-                              bottomPadding: 0,
-                              emptyMessage: hasQuery ? t.nothingFound : null,
-                            ),
-                          ),
-                          RepaintBoundary(
-                            child: _NamesList(
-                              names: favFiltered,
-                              // Back/Forward inside a name pushed from here
-                              // stays within favorites — not the full list,
-                              // and not narrowed further by any search text.
-                              navigationSource: favoriteSource,
-                              favorites: favorites,
-                              appState: widget.appState,
-                              bottomPadding: 0,
-                              emptyMessage: favoriteSource.isEmpty
-                                  ? t.favoritesEmpty
-                                  : (hasQuery ? t.nothingFound : null),
-                            ),
-                          ),
+                      child: AmbientPageMotion(
+                        positions: const [
+                          Alignment(-.6, .65),
+                          Alignment(.8, -.2),
                         ],
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (i) => setState(() => _tabIndex = i),
+                          children: [
+                            RepaintBoundary(
+                              child: _NamesList(
+                                names: allFiltered,
+                                navigationSource: AllahNames.all,
+                                favorites: favorites,
+                                appState: widget.appState,
+                                bottomPadding: 0,
+                                emptyMessage: hasQuery ? t.nothingFound : null,
+                              ),
+                            ),
+                            RepaintBoundary(
+                              child: _NamesList(
+                                names: favFiltered,
+                                // Back/Forward inside a name pushed from here
+                                // stays within favorites — not the full list,
+                                // and not narrowed further by any search text.
+                                navigationSource: favoriteSource,
+                                favorites: favorites,
+                                appState: widget.appState,
+                                bottomPadding: 0,
+                                emptyMessage: favoriteSource.isEmpty
+                                    ? t.favoritesEmpty
+                                    : (hasQuery ? t.nothingFound : null),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -262,12 +270,8 @@ class _NoticeSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -288,10 +292,7 @@ class _NoticeSheet extends StatelessWidget {
               width: 46,
               height: 46,
               alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.accent100,
-                shape: BoxShape.circle,
-              ),
+              decoration: iconBadgeDecoration(),
               child: Icon(icon, size: 22, color: AppColors.accent700),
             ),
           ),
@@ -442,6 +443,7 @@ class _NameRow extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => AllahNameDetailScreen(
@@ -453,70 +455,61 @@ class _NameRow extends StatelessWidget {
       ),
       child: PanelRow(
         showDivider: showDivider,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.accent100,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                '${name.number}',
-                style: AppTextStyles.body(
-                  fontSize: 12,
-                  color: AppColors.accent700,
-                  fontWeight: FontWeight.w700,
+        child: AppPressContent(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              NumberBadge(name.number, size: 32, fontSize: 12),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.transliteration,
+                      style: AppTextStyles.heading(fontSize: 14),
+                    ),
+                    Text(
+                      name.meaning,
+                      style: AppTextStyles.body(
+                        fontSize: 12,
+                        color: AppColors.text,
+                      ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name.transliteration,
-                    style: AppTextStyles.heading(fontSize: 14),
-                  ),
-                  Text(
-                    name.meaning,
-                    style: AppTextStyles.body(
-                      fontSize: 12,
-                      color: AppColors.text,
-                    ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              name.arabic,
-              textDirection: TextDirection.rtl,
-              style: AppTextStyles.heading(
-                fontSize: 18,
-                color: AppColors.accent,
-              ),
-            ),
-            const SizedBox(width: 4),
-            AppTap(
-              onTap: onToggleFavorite,
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.all(6),
-                child: Icon(
-                  isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-                  size: 22,
-                  color: isFavorite
-                      ? AppColors.accent
-                      : AppColors.text.withValues(alpha: 0.35),
+              const SizedBox(width: 8),
+              Text(
+                name.arabic,
+                textDirection: TextDirection.rtl,
+                style: AppTextStyles.heading(
+                  fontSize: 18,
+                  color: AppColors.accent,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 4),
+              AppTap(
+                feedbackOnChild: false,
+                onTap: onToggleFavorite,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: AppPressContent(
+                    child: Icon(
+                      isFavorite
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      size: 22,
+                      color: isFavorite
+                          ? AppColors.accent
+                          : AppColors.text.withValues(alpha: 0.35),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

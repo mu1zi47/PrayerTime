@@ -69,6 +69,29 @@ void main() {
     expect(tester.getTopLeft(find.text('reminder')).dx, rest);
   });
 
+  testWidgets('swipe actions paint no hidden borders and meet without gaps', (
+    tester,
+  ) async {
+    await tester.pumpWidget(tile());
+    expect(find.byIcon(Icons.delete_outline_rounded), findsNothing);
+    await tester.drag(find.text('reminder'), const Offset(-120, 0));
+    await tester.pumpAndSettle();
+    final surfaces = find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration! as BoxDecoration).gradient != null,
+    );
+    expect(surfaces, findsNWidgets(2));
+    expect(
+      tester.getRect(surfaces.at(0)).right,
+      closeTo(tester.getRect(surfaces.at(1)).left, .01),
+    );
+    for (final surface in tester.widgetList<Container>(surfaces)) {
+      expect((surface.decoration! as BoxDecoration).border, isNull);
+    }
+  });
+
   testWidgets('a nudge springs back without doing anything', (tester) async {
     await tester.pumpWidget(tile());
     final rest = tester.getTopLeft(find.text('reminder')).dx;

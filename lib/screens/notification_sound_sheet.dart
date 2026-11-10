@@ -1,3 +1,5 @@
+import '../widgets/app_modal_sheet.dart';
+import '../widgets/ambient_surface.dart';
 import '../widgets/app_tap.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,7 @@ Future<NotifSound?> showSoundPicker(
   required String title,
   required NotifSound current,
 }) {
-  return showModalBottomSheet<NotifSound>(
+  return showAppModalBottomSheet<NotifSound>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
@@ -46,13 +48,16 @@ class _SoundPickerSheet extends StatefulWidget {
 class _SoundPickerSheetState extends State<_SoundPickerSheet> {
   static const _bridge = NotificationSoundsBridge();
 
-  late NotifSound _selected = widget.current;
+  late final _selected = ValueNotifier<NotifSound>(widget.current);
+  final _scroll = ScrollController();
+  double? _selectedOffset;
+  Object? _metricsKey;
+  _SoundMetrics? _metrics;
   List<SystemSound>? _sounds;
   String? _defaultTitle;
 
   /// On the row picked when the sheet opened, so the list can glide there
   /// rather than leave it somewhere among a few dozen sounds.
-  final _currentKey = GlobalKey();
 
   @override
   void initState() {
@@ -67,6 +72,8 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
   @override
   void dispose() {
     _bridge.stop();
+    _scroll.dispose();
+    _selected.dispose();
     super.dispose();
   }
 
@@ -81,18 +88,19 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
     // Once the rows have started coming in, not before — scrolling an
     // empty list would go nowhere.
     await Future<void>.delayed(const Duration(milliseconds: 250));
-    final row = _currentKey.currentContext;
-    if (!mounted || row == null || !row.mounted) return;
-    Scrollable.ensureVisible(
-      row,
-      alignment: 0.35,
+    if (!mounted || !_scroll.hasClients || _selectedOffset == null) return;
+    _scroll.animateTo(
+      (_selectedOffset! - _scroll.position.viewportDimension * .35).clamp(
+        0.0,
+        _scroll.position.maxScrollExtent,
+      ),
       duration: const Duration(milliseconds: 550),
       curve: Curves.easeOutCubic,
     );
   }
 
   void _select(NotifSound sound) {
-    setState(() => _selected = sound);
+    _selected.value = sound;
     _bridge.play(sound.uri);
   }
 
@@ -108,13 +116,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * 0.85,
       child: Container(
-        padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-        decoration: BoxDecoration(
-          color: AppColors.bg,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.lg),
-          ),
-        ),
+        padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -140,6 +142,20 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                 duration: const Duration(milliseconds: 280),
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
+                layoutBuilder: (current, previous) =>
+                    current ?? const SizedBox.shrink(),
+                transitionBuilder: (child, animation) =>
+                    child.key == const ValueKey('loading')
+                    ? FadeTransition(opacity: animation, child: child)
+                    : SlideTransition(
+                        position: animation.drive(
+                          Tween<Offset>(
+                            begin: const Offset(0, .025),
+                            end: Offset.zero,
+                          ),
+                        ),
+                        child: child,
+                      ),
                 child: sounds == null
                     ? Center(
                         key: const ValueKey('loading'),
@@ -150,11 +166,12 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                       )
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(AppRadius.lg),
-                        child: SingleChildScrollView(
-                          key: const ValueKey('sounds'),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: _rows(t, sounds),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => _soundList(
+                            context,
+                            t,
+                            sounds,
+                            constraints.maxWidth,
                           ),
                         ),
                       ),
@@ -164,7 +181,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
             ActionGroup(
               children: [
                 OptRow(
-                  onTap: () => Navigator.of(context).pop(_selected),
+                  onTap: () => Navigator.of(context).pop(_selected.value),
                   child: Text(
                     t.soundPickerDone,
                     style: AppTextStyles.body(
@@ -181,115 +198,170 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
     );
   }
 
-  List<Widget> _rows(AppLocalizations t, List<SystemSound> sounds) {
-    var index = 0;
-    Widget enter(Widget child) => _Entrance(index: index++, child: child);
-
-    Widget row(NotifSound sound, String label, {String? detail}) => enter(
-      _PickerRow(
-        key: sound == widget.current ? _currentKey : null,
-        label: label,
-        detail: detail,
-        selected: sound == _selected,
-        onTap: () => _select(sound),
-      ),
+  Widget _soundList(
+    BuildContext context,
+    AppLocalizations t,
+    List<SystemSound> sounds,
+    double width,
+  ) {
+    final key = (
+      width,
+      MediaQuery.textScalerOf(context),
+      t.localeName,
+      _defaultTitle,
     );
-
-    return [
-      ActionGroup(
-        children: [
-          row(
-            const NotifSound.phoneDefault(),
-            t.soundDefault,
-            detail: _defaultTitle,
-          ),
-        ],
+    if (key != _metricsKey) {
+      _metricsKey = key;
+      _metrics = _SoundMetrics(context, width, t, _defaultTitle != null);
+    }
+    final metrics = _metrics!;
+    double offset = metrics.defaultHeight;
+    _selectedOffset = widget.current.isDefault ? 0 : null;
+    final slivers = <Widget>[
+      SliverToBoxAdapter(
+        child: ActionGroup(
+          children: [
+            SizedBox(
+              height: metrics.defaultHeight,
+              child: _row(
+                const NotifSound.phoneDefault(),
+                t.soundDefault,
+                detail: _defaultTitle,
+              ),
+            ),
+          ],
+        ),
       ),
       if (sounds.isEmpty)
-        Padding(
+        SliverPadding(
           padding: const EdgeInsets.all(16),
-          child: Text(t.soundListUnavailable),
+          sliver: SliverToBoxAdapter(child: Text(t.soundListUnavailable)),
         ),
-      for (final kind in SystemSoundKind.values)
-        if (sounds.any((s) => s.kind == kind)) ...[
-          const SizedBox(height: 16),
-          SectionKicker(switch (kind) {
-            SystemSoundKind.notification => t.soundKindNotification,
-            SystemSoundKind.ringtone => t.soundKindRingtone,
-            SystemSoundKind.alarm => t.soundKindAlarm,
-          }),
-          ActionGroup(
-            children: [
-              for (final sound in sounds.where((s) => s.kind == kind))
-                row(
-                  NotifSound(uri: sound.uri, title: sound.title),
-                  sound.title,
-                ),
-            ],
-          ),
-        ],
     ];
-  }
-}
-
-/// Fades a row in and lifts it into place, each one a beat after the one
-/// above — the list arrives as a cascade rather than all at once. Only the
-/// first rows are staggered; the rest are off screen by then and simply
-/// come in with the last of them.
-class _Entrance extends StatefulWidget {
-  final int index;
-  final Widget child;
-
-  const _Entrance({required this.index, required this.child});
-
-  @override
-  State<_Entrance> createState() => _EntranceState();
-}
-
-class _EntranceState extends State<_Entrance>
-    with SingleTickerProviderStateMixin {
-  static const _staggered = 14;
-  static const _step = Duration(milliseconds: 28);
-
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 380),
-  );
-  late final _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOutCubic,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    final delay = _step * widget.index.clamp(0, _staggered);
-    Future<void>.delayed(delay, () {
-      if (mounted) _controller.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _animation.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    AppColors.watch(context);
-    return FadeTransition(
-      opacity: _animation,
-      child: SlideTransition(
-        position: Tween(
-          begin: const Offset(0, 0.35),
-          end: Offset.zero,
-        ).animate(_animation),
-        child: widget.child,
-      ),
+    for (final kind in SystemSoundKind.values) {
+      final section = sounds.where((s) => s.kind == kind).toList();
+      if (section.isEmpty) continue;
+      final title = switch (kind) {
+        SystemSoundKind.notification => t.soundKindNotification,
+        SystemSoundKind.ringtone => t.soundKindRingtone,
+        SystemSoundKind.alarm => t.soundKindAlarm,
+      };
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: SectionKicker(title),
+          ),
+        ),
+      );
+      offset += metrics.headerHeight(title);
+      final selectedIndex = section.indexWhere(
+        (sound) => sound.uri == widget.current.uri,
+      );
+      if (selectedIndex >= 0) {
+        _selectedOffset = offset + selectedIndex * metrics.rowExtent;
+      }
+      slivers.add(
+        DecoratedSliver(
+          decoration: glassDecoration().copyWith(
+            border: Border.fromBorderSide(BorderSide.none),
+            boxShadow: const [],
+          ),
+          sliver: DecoratedSliver(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+            ),
+            sliver: SliverFixedExtentList(
+              itemExtent: metrics.rowExtent,
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final sound = section[index];
+                final radius = BorderRadius.vertical(
+                  top: index == 0
+                      ? const Radius.circular(AppRadius.lg)
+                      : Radius.zero,
+                  bottom: index == section.length - 1
+                      ? const Radius.circular(AppRadius.lg)
+                      : Radius.zero,
+                );
+                return ClipRRect(
+                  borderRadius: radius,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: _row(
+                          NotifSound(uri: sound.uri, title: sound.title),
+                          sound.title,
+                        ),
+                      ),
+                      if (index < section.length - 1)
+                        const PanelDivider()
+                      else
+                        const SizedBox(height: 1),
+                    ],
+                  ),
+                );
+              }, childCount: section.length),
+            ),
+          ),
+        ),
+      );
+      offset += section.length * metrics.rowExtent;
+    }
+    return CustomScrollView(
+      key: const ValueKey('sounds'),
+      controller: _scroll,
+      slivers: slivers,
     );
   }
+
+  Widget _row(NotifSound sound, String label, {String? detail}) =>
+      ValueListenableBuilder<NotifSound>(
+        valueListenable: _selected,
+        builder: (context, selected, _) => _PickerRow(
+          label: label,
+          detail: detail,
+          selected: sound == selected,
+          onTap: () => _select(sound),
+        ),
+      );
+}
+
+class _SoundMetrics {
+  final BuildContext context;
+  final double width;
+  final Map<String, double> _headers = {};
+  late final double rowExtent = 32 + _line(15, FontWeight.w700) + 1;
+  late final double defaultHeight =
+      rowExtent - 1 + (hasDetail ? _line(12.5, FontWeight.w500) : 0);
+  final bool hasDetail;
+  _SoundMetrics(this.context, this.width, AppLocalizations t, this.hasDetail);
+  double _line(
+    double size,
+    FontWeight weight, {
+    String text = ' ',
+    double maxWidth = double.infinity,
+  }) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: DefaultTextStyle.of(
+          context,
+        ).style.merge(AppTextStyles.body(fontSize: size, fontWeight: weight)),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: maxWidth);
+    final height = painter.height;
+    painter.dispose();
+    return height;
+  }
+
+  double headerHeight(String title) => _headers.putIfAbsent(
+    title,
+    () => 16 + 8 + _line(13, FontWeight.w800, text: title, maxWidth: width - 2),
+  );
 }
 
 /// A sound in the picker, styled like the app's other pickers (see
@@ -302,7 +374,6 @@ class _PickerRow extends StatelessWidget {
   final VoidCallback onTap;
 
   const _PickerRow({
-    super.key,
     required this.label,
     required this.detail,
     required this.selected,
@@ -318,6 +389,7 @@ class _PickerRow extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.zero,
       child: AppTap(
+        feedbackOnChild: false,
         onTap: onTap,
 
         child: AnimatedContainer(
@@ -328,66 +400,78 @@ class _PickerRow extends StatelessWidget {
             gradient: selected ? AppColors.selectionGradient : null,
             borderRadius: BorderRadius.zero,
           ),
-          child: Row(
-            children: [
-              // The note turns into a speaker on the one playing, with a
-              // small pop.
-              AnimatedSwitcher(
-                duration: _duration,
-                transitionBuilder: (child, animation) => ScaleTransition(
-                  scale: CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeOutBack,
-                  ),
-                  child: FadeTransition(opacity: animation, child: child),
-                ),
-                child: Icon(
-                  selected ? Icons.volume_up_rounded : Icons.music_note_rounded,
-                  key: ValueKey(selected),
-                  size: 18,
-                  color: selected
-                      ? AppColors.accent700
-                      : AppColors.text.withValues(alpha: 0.45),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnimatedDefaultTextStyle(
-                      duration: _duration,
-                      style: AppTextStyles.body(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: fg,
-                      ),
-                      child: Text(label),
+          child: AppPressContent(
+            child: Row(
+              children: [
+                // The note turns into a speaker on the one playing, with a
+                // small pop.
+                AnimatedSwitcher(
+                  duration: _duration,
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutBack,
                     ),
-                    if (detail != null)
+                    child: FadeTransition(opacity: animation, child: child),
+                  ),
+                  child: Icon(
+                    selected
+                        ? Icons.volume_up_rounded
+                        : Icons.music_note_rounded,
+                    key: ValueKey(selected),
+                    size: 18,
+                    color: selected
+                        ? AppColors.accent700
+                        : AppColors.text.withValues(alpha: 0.45),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       AnimatedDefaultTextStyle(
                         duration: _duration,
                         style: AppTextStyles.body(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w500,
-                          color: fg.withValues(alpha: 0.6),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: fg,
                         ),
-                        child: Text(detail!),
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                  ],
+                      if (detail != null)
+                        AnimatedDefaultTextStyle(
+                          duration: _duration,
+                          style: AppTextStyles.body(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                            color: fg.withValues(alpha: 0.6),
+                          ),
+                          child: Text(
+                            detail!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              AnimatedScale(
-                duration: _duration,
-                curve: selected ? Curves.easeOutBack : Curves.easeInCubic,
-                scale: selected ? 1 : 0,
-                child: Icon(
-                  Icons.check_rounded,
-                  size: 19,
-                  color: AppColors.accent700,
+                AnimatedScale(
+                  duration: _duration,
+                  curve: selected ? Curves.easeOutBack : Curves.easeInCubic,
+                  scale: selected ? 1 : 0,
+                  child: Icon(
+                    Icons.check_rounded,
+                    size: 19,
+                    color: AppColors.accent700,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

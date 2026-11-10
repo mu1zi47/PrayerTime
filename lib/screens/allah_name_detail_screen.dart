@@ -1,4 +1,6 @@
+import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
+import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +80,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                       ),
                     ),
                     AppTap(
+                      feedbackOnChild: false,
                       onTap: () =>
                           widget.appState.toggleFavoriteName(name.number),
                       child: Container(
@@ -88,12 +91,16 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                           color: AppColors.surface,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          isFavorite
-                              ? Icons.star_rounded
-                              : Icons.star_border_rounded,
-                          size: 20,
-                          color: isFavorite ? AppColors.accent : AppColors.text,
+                        child: AppPressContent(
+                          child: Icon(
+                            isFavorite
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            size: 20,
+                            color: isFavorite
+                                ? AppColors.accent
+                                : AppColors.text,
+                          ),
                         ),
                       ),
                     ),
@@ -104,6 +111,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                   alignment: Alignment.center,
                   children: [
                     AppTap(
+                      feedbackOnChild: false,
                       onHorizontalDragEnd: (details) {
                         final velocity = details.primaryVelocity ?? 0;
                         if (velocity < -250) {
@@ -121,59 +129,45 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                         // The app's icon colors (see IconBadge): soft gold,
                         // deep gold text.
                         decoration: glassDecoration(radius: AppRadius.lg),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: AppColors.accent200,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                '${name.number}',
-                                style: AppTextStyles.body(
-                                  fontSize: 13,
+                        child: AppPressContent(
+                          child: Column(
+                            children: [
+                              NumberBadge(name.number),
+                              const SizedBox(height: 20),
+                              Text(
+                                name.arabic,
+                                textDirection: TextDirection.rtl,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.heading(
+                                  fontSize: 40,
                                   color: AppColors.accent700,
-                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              name.arabic,
-                              textDirection: TextDirection.rtl,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.heading(
-                                fontSize: 40,
-                                color: AppColors.accent700,
+                              const SizedBox(height: 12),
+                              Text(
+                                name.transliteration,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.heading(
+                                  fontSize: 22,
+                                  color: AppColors.accent700,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              name.transliteration,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.heading(
-                                fontSize: 22,
-                                color: AppColors.accent700,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              name.meaning,
-                              textAlign: TextAlign.center,
-                              style:
-                                  AppTextStyles.body(
-                                    fontSize: 14,
-                                    color: AppColors.accent700,
-                                  ).copyWith(
-                                    color: AppColors.accent700.withValues(
-                                      alpha: 0.85,
+                              const SizedBox(height: 6),
+                              Text(
+                                name.meaning,
+                                textAlign: TextAlign.center,
+                                style:
+                                    AppTextStyles.body(
+                                      fontSize: 14,
+                                      color: AppColors.accent700,
+                                    ).copyWith(
+                                      color: AppColors.accent700.withValues(
+                                        alpha: 0.85,
+                                      ),
                                     ),
-                                  ),
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -244,6 +238,7 @@ class _NavArrowButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: enabled ? onTap : null,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -252,15 +247,9 @@ class _NavArrowButton extends StatelessWidget {
         alignment: Alignment.center,
         // An inverted icon badge (see IconBadge), since the card it sits
         // on is already soft gold; faded out at either end of the list.
-        decoration: BoxDecoration(
-          color: AppColors.accent700.withValues(alpha: enabled ? 1 : 0.25),
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-        ),
-        child: Icon(
-          icon,
-          size: 22,
-          color: AppColors.accent100.withValues(alpha: enabled ? 1 : 0.6),
+        decoration: iconBadgeDecoration(),
+        child: AppPressContent(
+          child: AppChevron(icon: icon, enabled: enabled),
         ),
       ),
     );

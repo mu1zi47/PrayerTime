@@ -15,6 +15,7 @@ class AppSwitch extends StatelessWidget {
     // Semantic colors interpolate across the reversed light/dark ramps.
     final soft = AppColors.onControlFill;
     return AppTap(
+      feedbackOnChild: false,
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
@@ -31,13 +32,15 @@ class AppSwitch extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           alignment: value ? Alignment.centerRight : Alignment.centerLeft,
           curve: Curves.easeOut,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              color: value ? soft : Colors.white,
-              shape: BoxShape.circle,
+          child: AppPressContent(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: value ? soft : Colors.white,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         ),

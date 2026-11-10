@@ -29,25 +29,28 @@ class SegmentedControl extends StatelessWidget {
         for (var i = 0; i < options.length; i++) ...[
           if (i > 0) const SizedBox(width: 24),
           AppTap(
+            feedbackOnChild: false,
             onTap: () => onSelect(i),
             behavior: HitTestBehavior.opaque,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOut,
-                  style: AppTextStyles.body(
-                    fontSize: 14,
-                    fontWeight: i == selectedIndex
-                        ? FontWeight.w800
-                        : FontWeight.w600,
-                    color: i == selectedIndex
-                        ? AppColors.accent
-                        : AppColors.text.withValues(alpha: 0.5),
+                AppPressContent(
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOut,
+                    style: AppTextStyles.body(
+                      fontSize: 14,
+                      fontWeight: i == selectedIndex
+                          ? FontWeight.w800
+                          : FontWeight.w600,
+                      color: i == selectedIndex
+                          ? AppColors.accent
+                          : AppColors.text.withValues(alpha: 0.5),
+                    ),
+                    child: Text(options[i]),
                   ),
-                  child: Text(options[i]),
                 ),
                 const SizedBox(height: 6),
                 AnimatedContainer(

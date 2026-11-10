@@ -83,7 +83,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.byType(BottomSheet), findsOneWidget);
+    final info = find.byIcon(Icons.info_outline_rounded).first;
+    await tester.tap(info);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
+    final copy = lookupAppLocalizations(const Locale('ru')).nowBarDescription;
+    expect(find.text(copy), findsOneWidget);
+    expect(
+      tester
+          .widgetList<FadeTransition>(
+            find.ancestor(
+              of: find.text(copy),
+              matching: find.byType(FadeTransition),
+            ),
+          )
+          .any((w) => w.opacity.value > 0 && w.opacity.value < 1),
+      isTrue,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(info);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(find.text(copy), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text(copy), findsNothing);
+    await tester.tap(info);
+    await tester.pumpAndSettle();
+
     await tester.pumpWidget(const SizedBox());
+    expect(tester.takeException(), isNull);
     state.dispose();
   });
 }

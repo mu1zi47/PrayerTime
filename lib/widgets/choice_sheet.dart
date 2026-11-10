@@ -1,3 +1,4 @@
+import 'app_modal_sheet.dart';
 import 'app_tap.dart';
 import 'settings_widgets.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ Future<void> showChoiceSheet(
   required int selectedIndex,
   required ValueChanged<int> onSelect,
 }) {
-  return showModalBottomSheet(
+  return showAppModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (sheetContext) => _ChoiceSheet(
@@ -58,11 +59,7 @@ class _ChoiceSheet extends StatelessWidget {
     AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
+      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -120,6 +117,7 @@ class _ChoiceOption extends StatelessWidget {
     AppColors.watch(context);
     final fg = selected ? AppColors.accent700 : AppColors.text;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
 
       child: Container(
@@ -131,31 +129,27 @@ class _ChoiceOption extends StatelessWidget {
           gradient: selected ? AppColors.selectionGradient : null,
           borderRadius: BorderRadius.zero,
         ),
-        child: Row(
-          children: [
-            if (option.icon != null) ...[
-              IconBadge(
-                option.icon!,
-                size: 32,
-                iconSize: 16,
-                background: selected ? AppColors.accent700 : null,
-                foreground: selected ? AppColors.accent100 : null,
-              ),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: Text(
-                option.label,
-                style: AppTextStyles.body(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: fg,
+        child: AppPressContent(
+          child: Row(
+            children: [
+              if (option.icon != null) ...[
+                IconBadge(option.icon!, size: 32, iconSize: 16),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Text(
+                  option.label,
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: fg,
+                  ),
                 ),
               ),
-            ),
-            if (selected)
-              Icon(Icons.check_rounded, size: 19, color: AppColors.accent700),
-          ],
+              if (selected)
+                Icon(Icons.check_rounded, size: 19, color: AppColors.accent700),
+            ],
+          ),
         ),
       ),
     );

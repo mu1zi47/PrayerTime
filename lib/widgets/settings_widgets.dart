@@ -1,4 +1,5 @@
 import 'app_tap.dart';
+import 'app_chevron.dart';
 import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -73,18 +74,17 @@ class OptRow extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(child: child),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: AppColors.text.withValues(alpha: 0.35),
-            ),
-          ],
+        child: AppPressContent(
+          child: Row(
+            children: [
+              Expanded(child: child),
+              const AppChevron(),
+            ],
+          ),
         ),
       ),
     );

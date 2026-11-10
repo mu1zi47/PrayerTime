@@ -64,6 +64,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
   @override
   void dispose() {
     _appState.removeListener(_onAppStateChanged);
+    _ambientObserver.dispose();
     _appState.dispose();
     super.dispose();
   }

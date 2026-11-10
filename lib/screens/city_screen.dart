@@ -370,46 +370,43 @@ class _CityRow extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       child: PanelRow(
         showDivider: showDivider,
         selected: selected,
-        child: Row(
-          children: [
-            // The chosen city's badge is filled the other way round, so it
-            // stands out from the rest of the list.
-            IconBadge(
-              Icons.location_on_rounded,
-              size: 32,
-              iconSize: 16,
-              background: selected ? AppColors.accent700 : null,
-              foreground: selected ? AppColors.accent100 : null,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: AppTextStyles.heading(
-                      fontSize: 14,
-                      color: selected ? AppColors.accent : AppColors.text,
+        child: AppPressContent(
+          child: Row(
+            children: [
+              // The chosen city's badge is filled the other way round, so it
+              // stands out from the rest of the list.
+              IconBadge(Icons.location_on_rounded, size: 32, iconSize: 16),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: AppTextStyles.heading(
+                        fontSize: 14,
+                        color: selected ? AppColors.accent : AppColors.text,
+                      ),
                     ),
-                  ),
-                  Text(
-                    country,
-                    style: AppTextStyles.body(
-                      fontSize: 11,
-                      color: AppColors.text,
-                    ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
-                  ),
-                ],
+                    Text(
+                      country,
+                      style: AppTextStyles.body(
+                        fontSize: 11,
+                        color: AppColors.text,
+                      ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            if (selected)
-              Icon(Icons.check_rounded, size: 16, color: AppColors.accent),
-          ],
+              if (selected)
+                Icon(Icons.check_rounded, size: 16, color: AppColors.accent),
+            ],
+          ),
         ),
       ),
     );

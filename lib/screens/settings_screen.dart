@@ -1,4 +1,5 @@
 import '../widgets/ambient_surface.dart';
+import '../widgets/root_tab_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -59,12 +60,10 @@ class SettingsScreen extends StatelessWidget {
     AppColors.watch(context);
     // No SafeArea — see HomeScreen's build() for why: content should scroll
     // edge-to-edge, under the transparent status bar, not stop short of it.
-    final topInset = MediaQuery.paddingOf(context).top;
     final t = AppLocalizations.of(context)!;
-    return ScreenContentInset(
-      margin: EdgeInsets.fromLTRB(18, topInset + 16, 18, 130),
+    return RootTabContent(
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: RootTabContent.scrollPadding(context),
         children: [
           Text(
             t.settingsScreenTitle,

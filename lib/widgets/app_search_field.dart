@@ -26,17 +26,21 @@ class AppSearchField extends StatelessWidget {
       child: SizedBox(
         height: 56,
         child: GlassPanel(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.zero,
           child: ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
             builder: (context, value, _) => Row(
               children: [
-                Icon(
-                  Icons.search_rounded,
-                  size: 20,
-                  color: AppColors.text.withValues(alpha: .55),
+                SizedBox(
+                  width: 52,
+                  child: Center(
+                    child: Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: AppColors.text.withValues(alpha: .55),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 12),
                 Expanded(
                   child: TextField(
                     controller: controller,
@@ -58,34 +62,39 @@ class AppSearchField extends StatelessWidget {
                   ),
                 ),
                 if (loading)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.accent,
+                  SizedBox(
+                    width: 52,
+                    child: Center(
+                      child: SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.accent,
+                        ),
                       ),
                     ),
                   )
                 else if (value.text.isNotEmpty)
-                  IconButton(
-                    onPressed: () {
-                      controller.clear();
-                      onChanged('');
-                    },
-                    tooltip: MaterialLocalizations.of(
-                      context,
-                    ).deleteButtonTooltip,
-                    constraints: const BoxConstraints.tightFor(
-                      width: 36,
-                      height: 36,
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    icon: Icon(
-                      Icons.close_rounded,
-                      size: 18,
-                      color: AppColors.text.withValues(alpha: .55),
+                  SizedBox(
+                    width: 52,
+                    child: IconButton(
+                      onPressed: () {
+                        controller.clear();
+                        onChanged('');
+                      },
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).deleteButtonTooltip,
+                      constraints: const BoxConstraints.tightFor(
+                        width: 52,
+                        height: 56,
+                      ),
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: AppColors.text.withValues(alpha: .55),
+                      ),
                     ),
                   ),
               ],

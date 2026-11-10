@@ -1,4 +1,5 @@
 import '../widgets/app_tap.dart';
+import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -196,6 +197,7 @@ class _MonthNavButton extends StatelessWidget {
     AppColors.watch(context);
     final enabled = onTap != null;
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -207,12 +209,8 @@ class _MonthNavButton extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.text.withValues(alpha: .08)),
         ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: enabled
-              ? AppColors.text
-              : AppColors.text.withValues(alpha: 0.25),
+        child: AppPressContent(
+          child: AppChevron(icon: icon, enabled: enabled),
         ),
       ),
     );
@@ -352,6 +350,7 @@ class _DayCell extends StatelessWidget {
         : null;
 
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Center(
@@ -364,12 +363,14 @@ class _DayCell extends StatelessWidget {
             shape: BoxShape.circle,
             border: border,
           ),
-          child: Text(
-            '$day',
-            style: AppTextStyles.body(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: fg,
+          child: AppPressContent(
+            child: Text(
+              '$day',
+              style: AppTextStyles.body(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: fg,
+              ),
             ),
           ),
         ),
@@ -466,35 +467,34 @@ class _PrayerLogRow extends StatelessWidget {
       null => (t.calendarNotMarked, AppColors.text.withValues(alpha: 0.4)),
     };
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
       child: PanelRow(
         showDivider: showDivider,
-        child: Row(
-          children: [
-            IconBadge(icon, size: 32, iconSize: 16),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: AppTextStyles.body(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w700,
+        child: AppPressContent(
+          child: Row(
+            children: [
+              IconBadge(icon, size: 32, iconSize: 16),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.body(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              statusLabel,
-              style: AppTextStyles.body(fontSize: 13, color: statusColor),
-            ),
-            if (onTap != null) ...[
-              const SizedBox(width: 6),
-              Icon(
-                Icons.chevron_right_rounded,
-                size: 17,
-                color: AppColors.text.withValues(alpha: 0.35),
+              Text(
+                statusLabel,
+                style: AppTextStyles.body(fontSize: 13, color: statusColor),
               ),
+              if (onTap != null) ...[
+                const SizedBox(width: 6),
+                const AppChevron(),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

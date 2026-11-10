@@ -1,4 +1,6 @@
+import 'icon_badge.dart';
 import 'app_tap.dart';
+import 'ambient_surface.dart';
 import 'dart:async';
 import 'dart:ui';
 
@@ -272,7 +274,7 @@ class _ToastCardVisual extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         // The overlay entry sits outside any Scaffold/Material ancestor —
@@ -282,28 +284,14 @@ class _ToastCardVisual extends StatelessWidget {
           type: MaterialType.transparency,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.neutral900.withValues(alpha: 0.22),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
+            decoration: glassDecoration(),
             child: Row(
               children: [
                 Container(
                   width: 30,
                   height: 30,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.accent100,
-                    shape: BoxShape.circle,
-                  ),
+                  decoration: iconBadgeDecoration(),
                   child: Icon(icon, size: 15, color: AppColors.accent700),
                 ),
                 const SizedBox(width: 12),

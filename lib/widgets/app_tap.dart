@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show kTouchSlop;
 
-/// Press feedback transforms the existing surface, so it follows its exact
-/// silhouette and never paints a splash outside rounded corners.
+/// Keep the hit area stationary. Decorated rows opt into explicit content
+/// feedback so their fills, borders and dividers never change size.
 class AppTap extends GestureDetector {
   AppTap({
     super.key,
-    super.child,
+    Widget? child,
+    bool feedbackOnChild = true,
     super.onTap,
     super.behavior = HitTestBehavior.opaque,
     super.onHorizontalDragStart,
@@ -19,7 +20,11 @@ class AppTap extends GestureDetector {
     super.onLongPressMoveUpdate,
     super.onLongPressEnd,
     super.onLongPressCancel,
-  });
+  }) : super(
+         child: feedbackOnChild && child != null
+             ? AppPressContent(child: child)
+             : child,
+       );
 
   @override
   Widget build(BuildContext context) =>
@@ -79,15 +84,44 @@ class _PressFeedbackState extends State<_PressFeedback> {
     onPointerCancel: (event) {
       if (event.pointer == _pointer) _release(cancelled: true);
     },
-    child: AnimatedScale(
-      scale: _pressed && widget.enabled ? .97 : 1,
+    child: _PressScope(
+      pressed: _pressed && widget.enabled,
+      instant: _cancelled,
+      child: widget.child,
+    ),
+  );
+}
+
+class _PressScope extends InheritedWidget {
+  final bool pressed;
+  final bool instant;
+  const _PressScope({
+    required this.pressed,
+    required this.instant,
+    required super.child,
+  });
+  @override
+  bool updateShouldNotify(_PressScope oldWidget) =>
+      pressed != oldWidget.pressed || instant != oldWidget.instant;
+}
+
+/// Wrap only the foreground of a decorated tappable surface.
+class AppPressContent extends StatelessWidget {
+  final Widget child;
+  const AppPressContent({super.key, required this.child});
+  @override
+  Widget build(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<_PressScope>();
+    if (scope == null) return child;
+    return AnimatedScale(
+      scale: scope.pressed ? .97 : 1,
       duration: Duration(
-        milliseconds: _cancelled || MediaQuery.disableAnimationsOf(context)
+        milliseconds: scope.instant || MediaQuery.disableAnimationsOf(context)
             ? 0
             : 110,
       ),
       curve: Curves.easeOutCubic,
-      child: widget.child,
-    ),
-  );
+      child: child,
+    );
+  }
 }

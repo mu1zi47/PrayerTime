@@ -1,3 +1,4 @@
+import 'app_modal_sheet.dart';
 import 'app_tap.dart';
 import 'settings_widgets.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ Future<void> showLogPrayerSheet(
   required void Function(PrayerLogStatus?) onPick,
 }) {
   final t = AppLocalizations.of(context)!;
-  return showModalBottomSheet(
+  return showAppModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (sheetContext) => _LogPrayerSheet(
@@ -52,11 +53,7 @@ class _LogPrayerSheet extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
+      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -139,6 +136,7 @@ class _LogOption extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
 
       child: Container(
@@ -147,20 +145,22 @@ class _LogOption extends StatelessWidget {
           gradient: selected ? AppColors.selectionGradient : null,
           borderRadius: BorderRadius.zero,
         ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: color),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: AppTextStyles.body(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+        child: AppPressContent(
+          child: Row(
+            children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.body(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

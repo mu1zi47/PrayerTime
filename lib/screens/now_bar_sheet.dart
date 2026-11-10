@@ -1,3 +1,5 @@
+import '../widgets/app_modal_sheet.dart';
+import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/ambient_surface.dart';
 import 'dart:async';
@@ -27,7 +29,7 @@ Future<void> showNowBarSheet(
   AppState appState,
   NowBarStatus initial,
 ) {
-  return showModalBottomSheet(
+  return showAppModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
@@ -114,13 +116,7 @@ class _NowBarSheetState extends State<_NowBarSheet> {
         maxHeight: MediaQuery.sizeOf(context).height * 0.85,
       ),
       child: Container(
-        padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-        decoration: BoxDecoration(
-          color: AppColors.bg,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.lg),
-          ),
-        ),
+        padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -251,35 +247,63 @@ class _LabelWithInfo extends StatefulWidget {
   State<_LabelWithInfo> createState() => _LabelWithInfoState();
 }
 
-class _LabelWithInfoState extends State<_LabelWithInfo> {
+class _LabelWithInfoState extends State<_LabelWithInfo>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animation = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 180),
+    reverseDuration: const Duration(milliseconds: 140),
+  );
   final _iconKey = GlobalKey();
   OverlayEntry? _bubble;
   Timer? _autoHide;
 
   @override
   void dispose() {
-    _hide();
+    _autoHide?.cancel();
+    _bubble?.remove();
+    _bubble?.dispose();
+    _bubble = null;
+    _animation.dispose();
     super.dispose();
   }
 
-  void _hide() {
+  Future<void> _hide() async {
     _autoHide?.cancel();
     _autoHide = null;
-    _bubble?.remove();
-    _bubble = null;
+    final entry = _bubble;
+    if (entry == null) return;
+    try {
+      await _animation.reverse().orCancel;
+    } on TickerCanceled {
+      return;
+    }
+    if (_bubble == entry) {
+      entry.remove();
+      entry.dispose();
+      _bubble = null;
+    }
   }
 
   void _show() {
-    _hide();
+    if (_bubble != null) return;
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    _animation.duration = Duration(milliseconds: reduced ? 0 : 180);
+    _animation.reverseDuration = Duration(milliseconds: reduced ? 0 : 140);
     final box = _iconKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null) return;
     final anchor = box.localToGlobal(Offset.zero) & box.size;
     final entry = OverlayEntry(
-      builder: (_) =>
-          _InfoBubble(anchor: anchor, text: widget.info, onDismiss: _hide),
+      builder: (_) => _InfoBubble(
+        anchor: anchor,
+        text: widget.info,
+        onDismiss: _hide,
+        animation: _animation,
+      ),
     );
     Overlay.of(context).insert(entry);
     _bubble = entry;
+    _animation.forward(from: 0);
     _autoHide = Timer(const Duration(seconds: 5), _hide);
   }
 
@@ -296,16 +320,18 @@ class _LabelWithInfoState extends State<_LabelWithInfo> {
           button: true,
           label: t.infoButtonLabel,
           hint: widget.info,
-          child: InkResponse(
+          child: AppTap(
+            feedbackOnChild: false,
             key: _iconKey,
             onTap: () => _bubble == null ? _show() : _hide(),
-            radius: 18,
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Icon(
-                Icons.info_outline_rounded,
-                size: 19,
-                color: AppColors.text.withValues(alpha: 0.5),
+              child: AppPressContent(
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  size: 19,
+                  color: AppColors.text.withValues(alpha: 0.5),
+                ),
               ),
             ),
           ),
@@ -319,6 +345,7 @@ class _LabelWithInfoState extends State<_LabelWithInfo> {
 /// deep gold text — see IconBadge), above the icon with a small arrow pointing at it — or
 /// below, when there's no room above.
 class _InfoBubble extends StatelessWidget {
+  final Animation<double> animation;
   final Rect anchor;
   final String text;
   final VoidCallback onDismiss;
@@ -327,6 +354,7 @@ class _InfoBubble extends StatelessWidget {
     required this.anchor,
     required this.text,
     required this.onDismiss,
+    required this.animation,
   });
 
   static const _gap = 4.0;
@@ -339,7 +367,7 @@ class _InfoBubble extends StatelessWidget {
     AppColors.watch(context);
     final screen = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
-    final color = AppColors.accent100;
+    final color = AppColors.surface.withValues(alpha: .78);
     // Room enough above for a few lines of text; otherwise it opens below.
     final above = anchor.top - padding.top > 140;
     final arrowTop = above
@@ -361,9 +389,12 @@ class _InfoBubble extends StatelessWidget {
         Positioned(
           left: anchor.center.dx - _arrowWidth / 2,
           top: arrowTop,
-          child: CustomPaint(
-            size: const Size(_arrowWidth, _arrowHeight),
-            painter: _ArrowPainter(color: color, pointsDown: above),
+          child: FadeTransition(
+            opacity: animation,
+            child: CustomPaint(
+              size: const Size(_arrowWidth, _arrowHeight),
+              painter: _ArrowPainter(color: color, pointsDown: above),
+            ),
           ),
         ),
         CustomSingleChildLayout(
@@ -373,29 +404,38 @@ class _InfoBubble extends StatelessWidget {
             edgeY: above ? arrowTop + 1 : arrowTop + _arrowHeight - 1,
             above: above,
             margin: _margin,
+            safeTop: padding.top + _margin,
+            safeBottom: padding.bottom + _margin,
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: screen.width - _margin * 2),
             // Material gives the text its default style: straight in the
             // overlay it had none, and Flutter underlined it in yellow.
-            child: Material(
-              type: MaterialType.transparency,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
+            child: FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                alignment: above ? Alignment.bottomCenter : Alignment.topCenter,
+                scale: animation.drive(
+                  Tween<double>(
+                    begin: .96,
+                    end: 1,
+                  ).chain(CurveTween(curve: Curves.easeOutCubic)),
                 ),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(AppRadius.inner),
-                ),
-                child: Text(
-                  text,
-                  style: AppTextStyles.body(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.accent700,
-                  ).copyWith(height: 1.35),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: GlassPanel(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        text,
+                        style: AppTextStyles.body(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.text,
+                        ).copyWith(height: 1.4),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -413,17 +453,30 @@ class _BubbleLayout extends SingleChildLayoutDelegate {
   final double edgeY;
   final bool above;
   final double margin;
+  final double safeTop;
+  final double safeBottom;
 
   const _BubbleLayout({
     required this.anchorX,
     required this.edgeY,
     required this.above,
     required this.margin,
+    required this.safeTop,
+    required this.safeBottom,
   });
 
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
-      constraints.loosen();
+      BoxConstraints(
+        maxWidth: (constraints.maxWidth - margin * 2).clamp(
+          0.0,
+          double.infinity,
+        ),
+        maxHeight: (constraints.maxHeight - safeTop - safeBottom).clamp(
+          0.0,
+          double.infinity,
+        ),
+      );
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
@@ -433,12 +486,21 @@ class _BubbleLayout extends SingleChildLayoutDelegate {
       maxLeft < margin ? margin : maxLeft,
     );
     final top = above ? edgeY - childSize.height : edgeY;
-    return Offset(left, top);
+    final maxTop = (size.height - safeBottom - childSize.height).clamp(
+      safeTop,
+      double.infinity,
+    );
+    return Offset(left, top.clamp(safeTop, maxTop));
   }
 
   @override
   bool shouldRelayout(_BubbleLayout old) =>
-      old.anchorX != anchorX || old.edgeY != edgeY || old.above != above;
+      old.anchorX != anchorX ||
+      old.edgeY != edgeY ||
+      old.above != above ||
+      old.safeTop != safeTop ||
+      old.safeBottom != safeBottom ||
+      old.margin != margin;
 }
 
 class _ArrowPainter extends CustomPainter {
@@ -501,12 +563,11 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
 
     // The app's icon colors (see IconBadge) for the step numbers and the
     // button: soft gold behind, deep gold on top, in either theme.
-    final badgeBg = AppColors.accent100;
     final badgeFg = AppColors.accent700;
 
-    return Container(
+    final content = Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      decoration: embedded ? null : glassDecoration(),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -516,10 +577,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                 width: 30,
                 height: 30,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.accent100,
-                  shape: BoxShape.circle,
-                ),
+                decoration: iconBadgeDecoration(),
                 child: Icon(
                   Icons.priority_high_rounded,
                   size: 17,
@@ -549,10 +607,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                     height: 20,
                     margin: const EdgeInsets.only(top: 1),
                     alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: badgeBg,
-                      shape: BoxShape.circle,
-                    ),
+                    decoration: iconBadgeDecoration(size: 20),
                     child: Text(
                       '${i + 1}',
                       style: AppTextStyles.body(
@@ -569,6 +624,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
             ),
           const SizedBox(height: 6),
           AppTap(
+            feedbackOnChild: false,
             onTap: unlocked
                 ? _bridge.openDeveloperSettings
                 : _bridge.openDeviceInfo,
@@ -577,16 +633,18 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: badgeBg,
+                gradient: AppColors.selectionGradient,
                 borderRadius: BorderRadius.circular(AppRadius.inner),
               ),
-              child: Text(
-                unlocked ? t.nowBarDevOpenDeveloper : t.nowBarDevOpenAbout,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: badgeFg,
+              child: AppPressContent(
+                child: Text(
+                  unlocked ? t.nowBarDevOpenDeveloper : t.nowBarDevOpenAbout,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: badgeFg,
+                  ),
                 ),
               ),
             ),
@@ -594,5 +652,6 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
         ],
       ),
     );
+    return embedded ? content : GlassPanel(child: content);
   }
 }

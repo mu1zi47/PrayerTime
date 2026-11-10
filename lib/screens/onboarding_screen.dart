@@ -1,4 +1,8 @@
 import '../widgets/app_tap.dart';
+import '../widgets/app_switch.dart';
+import '../services/now_bar_bridge.dart';
+import 'now_bar_sheet.dart';
+import '../widgets/settings_widgets.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +41,7 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-enum _Step { language, theme, city, method, madhab, notifications }
+enum _Step { language, theme, city, method, madhab, notifications, nowBar }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
@@ -52,7 +56,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ('isha', PrayerKind.isha),
   ];
 
+  static const _barBridge = NowBarBridge();
+  NowBarStatus? _barStatus;
+  bool _barEnabled = false;
+  bool _barBusy = false;
+  AppLifecycleListener? _barLifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _barLifecycle = AppLifecycleListener(onResume: _loadBar);
+    _loadBar();
+  }
+
+  Future<void> _loadBar() async {
+    final status = await _barBridge.status();
+    if (mounted && status != null && !_barBusy) {
+      setState(() {
+        _barStatus = status;
+        _barEnabled = status.enabled;
+      });
+    }
+  }
+
+  Future<void> _toggleBar(bool enabled) async {
+    if (_barBusy) return;
+    setState(() {
+      _barBusy = true;
+      _barEnabled = enabled;
+    });
+    if (enabled && !widget.appState.notificationsAllowed) {
+      await widget.appState.notifications.requestPermissions();
+      await widget.appState.refreshNotificationsAllowed();
+    }
+    await _barBridge.setEnabled(enabled);
+    if (!mounted) return;
+    setState(() => _barBusy = false);
+    await _loadBar();
+  }
+
   int _index = 0;
+  bool _transitioning = false;
   bool _detectingCity = false;
   String? _cityError;
   bool _permissionAsked = false;
@@ -64,17 +108,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void dispose() {
+    _barLifecycle?.dispose();
     _geocoding.close();
     _pageController.dispose();
     super.dispose();
   }
 
   void _next() {
+    if (_transitioning) return;
     if (_index == _Step.values.length - 1) {
+      setState(() => _transitioning = true);
       widget.appState.completeOnboarding();
       return;
     }
-    setState(() => _index++);
+    setState(() {
+      _index++;
+      _transitioning = true;
+    });
     // The system permission dialog belongs *here*, on the step that has
     // just explained what the notifications are for — not on the app's
     // first frame, where it used to fire before anything was on screen.
@@ -82,11 +132,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _permissionAsked = true;
       _askPermission();
     }
-    _pageController.animateToPage(
-      _index,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-    );
+    _pageController
+        .animateToPage(
+          _index,
+          duration: _motion(context),
+          curve: Curves.easeInOutCubic,
+        )
+        .whenComplete(() {
+          if (mounted) setState(() => _transitioning = false);
+        });
   }
 
   Future<void> _askPermission() async {
@@ -100,13 +154,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _back() {
-    if (_index == 0) return;
-    setState(() => _index--);
-    _pageController.animateToPage(
-      _index,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-    );
+    if (_index == 0 || _transitioning) return;
+    setState(() {
+      _index--;
+      _transitioning = true;
+    });
+    _pageController
+        .animateToPage(
+          _index,
+          duration: _motion(context),
+          curve: Curves.easeInOutCubic,
+        )
+        .whenComplete(() {
+          if (mounted) setState(() => _transitioning = false);
+        });
   }
 
   /// Same flow as CityScreen's own "detect automatically": GPS fix, reverse
@@ -196,7 +257,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           body: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(18, padding.top + 20, 18, 0),
+                padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, 0),
                 child: _StepProgress(
                   current: _index,
                   total: _Step.values.length,
@@ -204,33 +265,61 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  // Driven by the buttons only: a stray swipe shouldn't skip
-                  // past the city, which is the one choice that actually
-                  // changes what the app shows.
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _languageStep(t),
-                    _themeStep(t),
-                    _cityStep(t),
-                    _methodStep(t),
-                    _madhabStep(t),
-                    _notificationsStep(t),
+                child: AmbientPageMotion(
+                  positions: [
+                    for (var i = 0; i < _Step.values.length; i++)
+                      AmbientNavigationObserver.positions[i %
+                          AmbientNavigationObserver.positions.length],
                   ],
+                  child: PageView(
+                    controller: _pageController,
+                    // Driven by the buttons only: a stray swipe shouldn't skip
+                    // past the city, which is the one choice that actually
+                    // changes what the app shows.
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _languageStep(t),
+                      _themeStep(t),
+                      _cityStep(t),
+                      _methodStep(t),
+                      _madhabStep(t),
+                      _notificationsStep(t),
+                      _nowBarStep(t),
+                    ],
+                  ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(18, 8, 18, padding.bottom + 18),
+                padding: EdgeInsets.fromLTRB(18, 8, 18, padding.bottom + 16),
                 child: Row(
                   children: [
-                    if (_index > 0) ...[
-                      _SecondaryButton(label: t.onboardingBack, onTap: _back),
-                      const SizedBox(width: 10),
-                    ],
+                    AnimatedSize(
+                      duration: _motion(context),
+                      curve: Curves.easeInOutCubic,
+                      child: IgnorePointer(
+                        ignoring: _index == 0 || _transitioning,
+                        child: AnimatedSwitcher(
+                          duration: _motion(context),
+                          child: _index > 0
+                              ? Padding(
+                                  key: const ValueKey('setup-back'),
+                                  padding: const EdgeInsets.only(right: 16),
+                                  child: _SecondaryButton(
+                                    label: t.onboardingBack,
+                                    onTap: _back,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
                     Expanded(
                       child: _PrimaryButton(
-                        label: isLast ? t.onboardingFinish : t.onboardingNext,
+                        label: isLast
+                            ? (_barEnabled
+                                  ? t.onboardingFinish
+                                  : t.onboardingSkip)
+                            : t.onboardingNext,
                         onTap: _next,
                       ),
                     ),
@@ -292,13 +381,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final appState = widget.appState;
     return _StepShell(
       icon: Icons.location_on_rounded,
+      grouped: false,
       title: t.onboardingCityTitle,
       body: t.onboardingCityBody,
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: glassDecoration(radius: AppRadius.md),
+        GlassPanel(
+          key: const ValueKey('setup-selected-city'),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -318,29 +407,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        _OptionTile(
-          icon: Icons.my_location_rounded,
-          label: t.onboardingCityDetect,
-          selected: false,
-          trailing: _detectingCity
-              ? SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.accent,
+        const SizedBox(height: 16),
+        GlassPanel(
+          key: const ValueKey('setup-city-actions'),
+          child: GroupRows(
+            children: [
+              _OptionTile(
+                icon: Icons.my_location_rounded,
+                label: t.onboardingCityDetect,
+                selected: false,
+                trailing: _detectingCity
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.accent,
+                        ),
+                      )
+                    : null,
+                onTap: _detectingCity ? null : _detectCity,
+              ),
+              _OptionTile(
+                icon: Icons.search_rounded,
+                label: t.onboardingCityManual,
+                selected: false,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CityScreen(appState: appState),
                   ),
-                )
-              : null,
-          onTap: _detectingCity ? null : _detectCity,
-        ),
-        _OptionTile(
-          icon: Icons.search_rounded,
-          label: t.onboardingCityManual,
-          selected: false,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => CityScreen(appState: appState)),
+                ),
+              ),
+            ],
           ),
         ),
         if (_cityError != null) ...[
@@ -394,56 +492,118 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  Widget _nowBarStep(AppLocalizations t) {
+    final status = _barStatus;
+    final samsung = status?.isNowBar ?? false;
+    return _StepShell(
+      icon: Icons.notifications_active_rounded,
+      grouped: false,
+      title: samsung ? t.nowBarTitle : t.persistentNotifTitle,
+      body: t.onboardingNowBarBody,
+      children: [
+        GlassPanel(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _AnimatedCopy(
+                    samsung
+                        ? t.nowBarSwitchLabel
+                        : t.persistentNotifSwitchLabel,
+                    style: AppTextStyles.body(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                IgnorePointer(
+                  ignoring: _barBusy,
+                  child: AppSwitch(value: _barEnabled, onChanged: _toggleBar),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_barEnabled && !widget.appState.notificationsAllowed) ...[
+          const SizedBox(height: 16),
+          NotificationsBlockedNotice(
+            onAllow: widget.appState.allowNotifications,
+          ),
+        ],
+        if (_barEnabled && status != null && status.needsDeveloperSwitch) ...[
+          const SizedBox(height: 16),
+          NowBarDeveloperSwitchCard(status: status),
+        ],
+      ],
+    );
+  }
+
   Widget _notificationsStep(AppLocalizations t) {
     final appState = widget.appState;
     final blocked = _permissionAnswered && !appState.notificationsAllowed;
     return _StepShell(
       icon: Icons.notifications_active_rounded,
+      grouped: false,
       title: t.onboardingNotifTitle,
       body: t.onboardingNotifBody,
       children: [
-        if (blocked) ...[
-          NotificationsBlockedNotice(onAllow: appState.allowNotifications),
-          const SizedBox(height: 14),
-        ],
-        for (final (key, kind) in _notifOrder)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(16, 10, 10, 10),
-              decoration: glassDecoration(radius: AppRadius.md),
-              child: Row(
-                children: [
-                  Icon(
-                    iconForPrayer(kind),
-                    size: 18,
-                    color: AppColors.accent700,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      nameForPrayer(t, kind),
-                      style: AppTextStyles.body(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
+        AnimatedSize(
+          duration: _motion(context),
+          alignment: Alignment.topCenter,
+          child: AnimatedSwitcher(
+            duration: _motion(context),
+            child: blocked
+                ? Padding(
+                    key: const ValueKey('setup-notifications-blocked'),
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: NotificationsBlockedNotice(
+                      onAllow: appState.allowNotifications,
                     ),
-                  ),
-                  NotifModeSelector(
-                    value: appState.notifMode[key] ?? NotifMode.notification,
-                    onChanged: (mode) => appState.setNotifMode(key, mode),
-                    enabled: !blocked,
-                    onBlockedTap: () => AppToast.show(
-                      context,
-                      t.notifBlockedToast,
-                      icon: Icons.notifications_off_rounded,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  )
+                : const SizedBox.shrink(),
           ),
-        const SizedBox(height: 6),
+        ),
+        GlassPanel(
+          key: const ValueKey('setup-notification-prayers'),
+          child: GroupRows(
+            children: [
+              for (final (key, kind) in _notifOrder)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Icon(
+                        iconForPrayer(kind),
+                        size: 18,
+                        color: AppColors.accent700,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          nameForPrayer(t, kind),
+                          style: AppTextStyles.body(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      NotifModeSelector(
+                        value:
+                            appState.notifMode[key] ?? NotifMode.notification,
+                        onChanged: (mode) => appState.setNotifMode(key, mode),
+                        enabled: !blocked,
+                        onBlockedTap: () => AppToast.show(
+                          context,
+                          t.notifBlockedToast,
+                          icon: Icons.notifications_off_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         // The selector is three icons wide with nothing naming them, so the
         // key sits underneath rather than leaving people to guess which is
         // "silent" and which is "off".
@@ -499,7 +659,7 @@ class _StepProgress extends StatelessWidget {
             for (var i = 0; i < total; i++) ...[
               Expanded(
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 260),
+                  duration: _motion(context),
                   height: 4,
                   decoration: BoxDecoration(
                     color: i <= current
@@ -514,7 +674,7 @@ class _StepProgress extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text(
+        _AnimatedCopy(
           label,
           style: AppTextStyles.body(
             fontSize: 11.5,
@@ -534,8 +694,10 @@ class _StepShell extends StatelessWidget {
   final String title;
   final String body;
   final List<Widget> children;
+  final bool grouped;
 
   const _StepShell({
+    this.grouped = true,
     required this.icon,
     required this.title,
     required this.body,
@@ -545,33 +707,43 @@ class _StepShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 28, 18, 18),
-      children: [
-        Container(
-          width: 52,
-          height: 52,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.accent100,
-            shape: BoxShape.circle,
+    return Padding(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _AnimatedCopy(title, style: AppTextStyles.heading(fontSize: 26)),
+          const SizedBox(height: 8),
+          _AnimatedCopy(
+            body,
+            style: AppTextStyles.body(
+              fontSize: 14,
+              color: AppColors.text.withValues(alpha: .62),
+            ).copyWith(height: 1.5),
           ),
-          child: Icon(icon, size: 26, color: AppColors.accent700),
-        ),
-        const SizedBox(height: 18),
-        Text(title, style: AppTextStyles.heading(fontSize: 26)),
-        const SizedBox(height: 8),
-        Text(
-          body,
-          style: AppTextStyles.body(fontSize: 14, color: AppColors.text)
-              .copyWith(
-                color: AppColors.text.withValues(alpha: 0.62),
-                height: 1.5,
-              ),
-        ),
-        const SizedBox(height: 22),
-        ...children,
-      ],
+          const SizedBox(height: 16),
+          Flexible(
+            child: grouped
+                ? GlassPanel(
+                    key: const ValueKey('setup-options-panel'),
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      children: [GroupRows(children: children)],
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    child: BackdropGroup(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: children,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -594,38 +766,30 @@ class _OptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: AppTap(
-        onTap: onTap,
-
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: icon != null ? 10 : 15,
+    final row = AppTap(
+      feedbackOnChild: false,
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: _motion(context),
+        curve: Curves.easeInOutCubic,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.accent.withValues(alpha: selected ? .12 : 0),
+              AppColors.accent.withValues(alpha: selected ? .02 : 0),
+            ],
           ),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-            color: selected ? null : AppColors.surface,
-            gradient: selected ? AppColors.selectionGradient : null,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
+        ),
+        child: AppPressContent(
           child: Row(
             children: [
-              // Styled like the settings pickers (ChoiceSheet): the icon in
-              // a badge, inverted on the chosen option.
               if (icon != null) ...[
-                IconBadge(
-                  icon!,
-                  size: 32,
-                  iconSize: 16,
-                  background: selected ? AppColors.accent700 : null,
-                  foreground: selected ? AppColors.accent100 : null,
-                ),
+                IconBadge(icon!, size: 32, iconSize: 16),
                 const SizedBox(width: 12),
               ],
               Expanded(
-                child: Text(
+                child: _AnimatedCopy(
                   label,
                   style: AppTextStyles.body(
                     fontSize: 15,
@@ -634,45 +798,84 @@ class _OptionTile extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(width: 12),
               if (trailing != null)
                 trailing!
-              else if (selected)
-                Icon(Icons.check_rounded, size: 19, color: AppColors.accent700),
+              else
+                AnimatedSwitcher(
+                  duration: _motion(context),
+                  child: selected
+                      ? Icon(
+                          Icons.check_rounded,
+                          key: const ValueKey(true),
+                          size: 19,
+                          color: AppColors.accent700,
+                        )
+                      : const SizedBox(
+                          key: ValueKey(false),
+                          width: 19,
+                          height: 19,
+                        ),
+                ),
             ],
           ),
         ),
       ),
     );
+    return row;
   }
 }
 
 class _PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
-
   const _PrimaryButton({required this.label, required this.onTap});
+  @override
+  Widget build(BuildContext context) =>
+      _SetupButton(label: label, onTap: onTap, primary: true);
+}
 
+class _SecondaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _SecondaryButton({required this.label, required this.onTap});
+  @override
+  Widget build(BuildContext context) =>
+      _SetupButton(label: label, onTap: onTap);
+}
+
+class _SetupButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final bool primary;
+  const _SetupButton({
+    required this.label,
+    required this.onTap,
+    this.primary = false,
+  });
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 52,
-        alignment: Alignment.center,
-        // The app's icon colors (see IconBadge): soft gold, deep gold text.
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-          color: AppColors.accent100,
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.body(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: AppColors.accent700,
+      child: GlassPanel(
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 52),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          decoration: BoxDecoration(
+            gradient: primary ? AppColors.selectionGradient : null,
+          ),
+          alignment: Alignment.center,
+          child: AppPressContent(
+            child: _AnimatedCopy(
+              label,
+              style: AppTextStyles.body(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: primary ? AppColors.accent700 : AppColors.text,
+              ),
+            ),
           ),
         ),
       ),
@@ -680,32 +883,25 @@ class _PrimaryButton extends StatelessWidget {
   }
 }
 
-class _SecondaryButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
+Duration _motion(BuildContext context) =>
+    Duration(milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 300);
 
-  const _SecondaryButton({required this.label, required this.onTap});
-
+class _AnimatedCopy extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  const _AnimatedCopy(this.text, {required this.style});
   @override
-  Widget build(BuildContext context) {
-    AppColors.watch(context);
-    return AppTap(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        height: 52,
-        padding: const EdgeInsets.symmetric(horizontal: 22),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: AppColors.divider),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.body(fontSize: 15, fontWeight: FontWeight.w700),
-        ),
+  Widget build(BuildContext context) => AnimatedSize(
+    duration: _motion(context),
+    curve: Curves.easeInOutCubic,
+    alignment: Alignment.topLeft,
+    child: AnimatedSwitcher(
+      duration: _motion(context),
+      layoutBuilder: (current, previous) => Stack(
+        alignment: Alignment.topLeft,
+        children: [...previous, ?current],
       ),
-    );
-  }
+      child: Text(text, key: ValueKey(text), style: style),
+    ),
+  );
 }

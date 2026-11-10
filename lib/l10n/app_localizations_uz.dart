@@ -903,6 +903,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get tasbihClear => 'Tozalash';
+
+  @override
+  String get onboardingSkip => 'O‘tkazib yuborish';
+
+  @override
+  String get onboardingNowBarBody =>
+      'Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin.';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -1802,6 +1809,13 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get tasbihClear => 'Тозалаш';
+
+  @override
+  String get onboardingSkip => 'Ўтказиб юбориш';
+
+  @override
+  String get onboardingNowBarBody =>
+      'Жорий намоз ва қолган вақтни доимий билдиришномада ёки Now Bar’да кўрсатиш. Дастлаб ўчирилган. Ҳозир ёки кейин созламаларда ёқиш мумкин.';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -2703,4 +2717,11 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get tasbihClear => 'Tozalash';
+
+  @override
+  String get onboardingSkip => 'O‘tkazib yuborish';
+
+  @override
+  String get onboardingNowBarBody =>
+      'Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin.';
 }

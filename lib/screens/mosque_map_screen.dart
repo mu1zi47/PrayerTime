@@ -1,3 +1,4 @@
+import '../widgets/app_modal_sheet.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/ambient_surface.dart';
@@ -512,7 +513,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
   }
 
   void _showMosque(Mosque mosque) {
-    showModalBottomSheet(
+    showAppModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => _MosqueSheet(
@@ -736,13 +737,16 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                     _Floating(
                       shape: BoxShape.circle,
                       child: AppTap(
+                        feedbackOnChild: false,
                         onTap: () => Navigator.of(context).pop(),
                         child: SizedBox.square(
                           dimension: 38,
-                          child: Icon(
-                            Icons.arrow_back_rounded,
-                            size: 18,
-                            color: AppColors.text,
+                          child: AppPressContent(
+                            child: Icon(
+                              Icons.arrow_back_rounded,
+                              size: 18,
+                              color: AppColors.text,
+                            ),
                           ),
                         ),
                       ),
@@ -817,6 +821,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
             child: _Floating(
               shape: BoxShape.circle,
               child: AppTap(
+                feedbackOnChild: false,
                 onTap: _locateMe,
                 behavior: HitTestBehavior.opaque,
                 child: SizedBox.square(
@@ -830,10 +835,12 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                               color: AppColors.accent700,
                             ),
                           )
-                        : Icon(
-                            Icons.my_location_rounded,
-                            size: 22,
-                            color: AppColors.accent700,
+                        : AppPressContent(
+                            child: Icon(
+                              Icons.my_location_rounded,
+                              size: 22,
+                              color: AppColors.accent700,
+                            ),
                           ),
                   ),
                 ),
@@ -1252,6 +1259,7 @@ class _Attribution extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return AppTap(
+      feedbackOnChild: false,
       onTap: () => launchUrl(
         Uri.parse(_copyrightUrl),
         mode: LaunchMode.externalApplication,
@@ -1263,9 +1271,14 @@ class _Attribution extends StatelessWidget {
           color: AppColors.surface.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
-        child: Text(
-          '© OpenStreetMap contributors',
-          style: AppTextStyles.body(fontSize: 10, color: AppColors.neutral700),
+        child: AppPressContent(
+          child: Text(
+            '© OpenStreetMap contributors',
+            style: AppTextStyles.body(
+              fontSize: 10,
+              color: AppColors.neutral700,
+            ),
+          ),
         ),
       ),
     );
@@ -1382,11 +1395,7 @@ class _MosqueSheet extends StatelessWidget {
     final distance = _distanceLabel(t);
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomInset + 20),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
+      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

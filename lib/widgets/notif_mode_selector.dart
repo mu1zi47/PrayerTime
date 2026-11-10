@@ -65,17 +65,20 @@ class NotifModeSelector extends StatelessWidget {
             children: [
               for (final mode in _modes)
                 AppTap(
+                  feedbackOnChild: false,
                   onTap: enabled ? () => onChanged(mode) : onBlockedTap,
                   behavior: HitTestBehavior.opaque,
                   child: SizedBox(
                     width: _segmentSize,
                     height: _segmentSize,
-                    child: Icon(
-                      mode.icon,
-                      size: 16,
-                      color: mode == shown
-                          ? soft
-                          : AppColors.text.withValues(alpha: 0.5),
+                    child: AppPressContent(
+                      child: Icon(
+                        mode.icon,
+                        size: 16,
+                        color: mode == shown
+                            ? soft
+                            : AppColors.text.withValues(alpha: 0.5),
+                      ),
                     ),
                   ),
                 ),

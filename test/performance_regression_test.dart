@@ -247,4 +247,36 @@ void main() {
     expect(filters.first.backdropKey, isNotNull);
     expect(filters.first.backdropKey, same(filters.last.backdropKey));
   });
+  testWidgets('a modal stack blurs its backdrop only once', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: GlassPanel(
+          child: Column(
+            children: [
+              GlassPanel(child: Text('one')),
+              GlassPanel(child: Text('two')),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(BackdropFilter), findsOneWidget);
+  });
+
+  testWidgets(
+    'ambient panels preserve glass without re-filtering a diffuse glow',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AmbientScaffold(
+            body: GlassPanel(
+              child: SizedBox(height: 100, child: Text('panel')),
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(BackdropFilter), findsNothing);
+      expect(find.byType(GlassPanel), findsOneWidget);
+    },
+  );
 }

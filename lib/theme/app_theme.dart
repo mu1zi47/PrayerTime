@@ -53,6 +53,23 @@ class AppTheme {
         bodyMedium: AppTextStyles.body(color: palette.text),
         bodyLarge: AppTextStyles.body(color: palette.text),
       ),
+      tooltipTheme: TooltipThemeData(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: palette.text.withValues(alpha: .08)),
+          gradient: LinearGradient(
+            colors: [
+              palette.surface.withValues(alpha: .78),
+              palette.surface.withValues(alpha: .48),
+            ],
+          ),
+        ),
+        textStyle: AppTextStyles.body(fontSize: 14, color: palette.text),
+        showDuration: const Duration(seconds: 5),
+        exitDuration: const Duration(milliseconds: 140),
+      ),
       splashFactory: InkRipple.splashFactory,
       splashColor: palette.accent.withValues(alpha: .12),
       highlightColor: palette.accent.withValues(alpha: .06),

@@ -145,7 +145,8 @@ object PrayerWidgetViews {
             viewId,
             "setBackgroundResource",
             when {
-                marked -> R.drawable.widget_button_marked
+                marked && state.dark -> R.drawable.widget_button_marked_dark
+                marked -> R.drawable.widget_button_marked_light
                 state.dark -> R.drawable.widget_button_dark
                 else -> R.drawable.widget_button_light
             },

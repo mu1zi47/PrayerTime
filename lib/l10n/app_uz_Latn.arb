@@ -423,5 +423,7 @@
   "tasbihClearTitle": "Tasbeh tozalansinmi?",
   "tasbihClearBody": "Joriy davra va jami bosishlar soni nolga qaytariladi.",
   "tasbihCancel": "Bekor qilish",
-  "tasbihClear": "Tozalash"
+  "tasbihClear": "Tozalash",
+  "onboardingSkip": "O‘tkazib yuborish",
+  "onboardingNowBarBody": "Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin."
 }

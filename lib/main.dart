@@ -1,3 +1,4 @@
+import 'theme/app_design_system.dart';
 import 'widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +10,6 @@ import 'navigation.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/root_shell.dart';
 import 'state/app_state.dart';
-import 'theme/app_colors.dart';
-import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,19 +18,19 @@ void main() {
   // Every screen already insets its content with SafeArea, so this only
   // changes what's visible *behind* the system bars, not the layout.
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  runApp(const PrayerTimeApp());
+  runApp(const FiveGlowApp());
 }
 
-class PrayerTimeApp extends StatefulWidget {
+class FiveGlowApp extends StatefulWidget {
   final AppState? appState;
 
-  const PrayerTimeApp({super.key, this.appState});
+  const FiveGlowApp({super.key, this.appState});
 
   @override
-  State<PrayerTimeApp> createState() => _PrayerTimeAppState();
+  State<FiveGlowApp> createState() => _FiveGlowAppState();
 }
 
-class _PrayerTimeAppState extends State<PrayerTimeApp> {
+class _FiveGlowAppState extends State<FiveGlowApp> {
   final _ambientObserver = AmbientNavigationObserver();
   late final AppState _appState = widget.appState ?? AppState();
 
@@ -79,7 +78,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       navigatorObservers: [_ambientObserver],
-      title: 'Prayer times',
+      title: 'FiveGlow',
       scrollBehavior: const StableScrollBehavior(),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
@@ -125,10 +124,10 @@ class _ThemedRoot extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: AppColors.transparent,
         statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
         statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarColor: AppColors.transparent,
         systemNavigationBarIconBrightness: isDark
             ? Brightness.light
             : Brightness.dark,
@@ -142,7 +141,7 @@ class _ThemedRoot extends StatelessWidget {
 /// Picks between first-run setup and the app itself.
 ///
 /// Watches only the two flags that decide that, the same narrowing
-/// [_PrayerTimeAppState] does for the theme and locale — [RootShell] and
+/// [_FiveGlowAppState] does for the theme and locale — [RootShell] and
 /// [OnboardingScreen] both listen to whatever else they need on their own,
 /// and neither wants a rebuild every time a prayer gets logged.
 class _Entry extends StatefulWidget {

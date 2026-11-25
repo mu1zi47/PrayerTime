@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/screens/end_reminders_sheet.dart';
-import 'package:prayertime/screens/now_bar_sheet.dart';
-import 'package:prayertime/services/now_bar_bridge.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/state/app_state.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/screens/end_reminders_sheet.dart';
+import 'package:fiveglow/screens/now_bar_sheet.dart';
+import 'package:fiveglow/services/now_bar_bridge.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/state/app_state.dart';
 
 void main() {
   testWidgets('grouped reminder sheet and picker fit a small phone', (

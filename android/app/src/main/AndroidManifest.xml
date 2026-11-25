@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS"/>
     <application
         android:enableOnBackInvokedCallback="true"
-        android:label="Prayer times"
+        android:label="FiveGlow"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

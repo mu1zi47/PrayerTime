@@ -2,14 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-import 'package:prayertime/models/app_locale.dart';
-import 'package:prayertime/models/notif_mode.dart';
-import 'package:prayertime/models/notif_sound.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
+import 'package:fiveglow/models/app_locale.dart';
+import 'package:fiveglow/models/notif_mode.dart';
+import 'package:fiveglow/models/notif_sound.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
 
 PrayerDay _day(int day) => PrayerDay(
   date: DateTime(2030, 6, day),

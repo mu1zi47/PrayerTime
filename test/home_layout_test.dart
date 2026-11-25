@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/models/prayer_log_status.dart';
-import 'package:prayertime/widgets/icon_badge.dart';
-import 'package:prayertime/screens/home_screen.dart';
-import 'package:prayertime/screens/more_screen.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/theme/app_theme.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
-import 'package:prayertime/widgets/floating_tab_bar.dart';
-import 'package:prayertime/widgets/app_tap.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/models/prayer_log_status.dart';
+import 'package:fiveglow/widgets/icon_badge.dart';
+import 'package:fiveglow/screens/home_screen.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/theme/app_theme.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
+import 'package:fiveglow/widgets/app_tap.dart';
 
 class _EveningState extends AppState {
   _EveningState() : super(notifications: NoopNotificationService());
@@ -19,6 +17,16 @@ class _EveningState extends AppState {
   PrayerLogStatus? status;
   @override
   PrayerLogStatus? prayerStatusFor(DateTime date, String key) => status;
+
+  @override
+  void setPrayerStatus(
+    DateTime date,
+    String prayerKey,
+    PrayerLogStatus? value,
+  ) {
+    status = status == value ? null : value;
+    notifyListeners();
+  }
 
   DateTime now = DateTime.utc(2026, 11, 8, 19, 39);
   @override
@@ -41,38 +49,21 @@ class _EveningState extends AppState {
   ];
 }
 
-Widget _app(_EveningState state, {bool more = false, double textScale = 1}) =>
-    MaterialApp(
-      locale: const Locale('ru'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.light,
-      scrollBehavior: const StableScrollBehavior(),
-      home: MediaQuery(
-        data: MediaQueryData(
-          size: const Size(390, 844),
-          padding: const EdgeInsets.only(top: 24, bottom: 24),
-          textScaler: TextScaler.linear(textScale),
-        ),
-        child: AmbientScaffold(
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: more
-                    ? MoreScreen(appState: state)
-                    : HomeScreen(appState: state),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: FloatingTabBar(index: more ? 1 : 0, onSelect: (_) {}),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+Widget _app(_EveningState state, {double textScale = 1}) => MaterialApp(
+  locale: const Locale('ru'),
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  theme: AppTheme.light,
+  scrollBehavior: const StableScrollBehavior(),
+  home: MediaQuery(
+    data: MediaQueryData(
+      size: const Size(390, 844),
+      padding: const EdgeInsets.only(top: 24, bottom: 24),
+      textScaler: TextScaler.linear(textScale),
+    ),
+    child: AmbientScaffold(body: HomeScreen(appState: state)),
+  ),
+);
 
 void main() {
   testWidgets('tomorrow appears only in the next-prayer card', (tester) async {
@@ -83,28 +74,42 @@ void main() {
     addTearDown(state.dispose);
     await tester.pumpWidget(_app(state));
     await tester.pumpAndSettle();
-    expect(find.text('05:43'), findsOneWidget);
+    expect(find.text('05:43'), findsNothing);
+    expect(find.text('10:04:00'), findsOneWidget);
+    state.now = state.now.add(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('10:03:59'), findsOneWidget);
     final today = find.byKey(const ValueKey('today-prayers-panel'));
     expect(
       find.descendant(of: today, matching: find.text('05:43')),
       findsNothing,
     );
-    await tester.scrollUntilVisible(find.text('Расписание на месяц'), 150);
+    expect(
+      tester
+          .getTopRight(find.byKey(const ValueKey('next-prayer-countdown')))
+          .dx,
+      closeTo(372, .1),
+    );
+    await tester.ensureVisible(find.text('Расписание'));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('tomorrow-prayer-panel')), findsNothing);
     final monthAction = find.ancestor(
-      of: find.text('Расписание на месяц'),
+      of: find.text('Расписание'),
       matching: find.byType(AppTap),
     );
     expect(
-      tester.getTopLeft(monthAction).dy - tester.getBottomLeft(today).dy,
-      closeTo(16, .01),
+      tester.getBottomLeft(monthAction).dy,
+      lessThan(tester.getTopLeft(today).dy),
     );
+    expect(find.text('8 ноября'), findsNothing);
+    expect(find.byKey(const ValueKey('prayer-divider-maghrib')), findsOneWidget);
+    expect(find.byKey(const ValueKey('prayer-divider-isha')), findsNothing);
+    expect(find.byKey(const ValueKey('prayer-divider-asr')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets(
-    'city starts exactly where More starts and can scroll above its resting inset',
+    'home sections have padding while action row stays edge to edge',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 844);
@@ -113,54 +118,38 @@ void main() {
       addTearDown(state.dispose);
       await tester.pumpWidget(_app(state));
       await tester.pumpAndSettle();
-      final city = find.text('Ташкент');
-      expect(tester.widget<Text>(city).style!.fontSize, 12.5);
-      final start = tester.getTopLeft(city);
-      expect(start, const Offset(18, 40));
-      await tester.drag(find.byType(ListView), const Offset(0, -12));
-      await tester.pumpAndSettle();
-      expect(tester.getTopLeft(city).dy, lessThan(start.dy));
-      expect(city.hitTestable(), findsOneWidget);
-      await tester.pumpWidget(_app(state, more: true));
-      await tester.pumpAndSettle();
-      expect(
-        tester.getTopLeft(
-          find.descendant(
-            of: find.byType(MoreScreen),
-            matching: find.text('Ещё'),
-          ),
-        ),
-        start,
-      );
-      expect(find.text('Календарь намазов'), findsNothing);
+      expect(tester.getTopLeft(find.text('Ташкент')).dx, 18);
+      final summary = find.byKey(const ValueKey('next-prayer-summary'));
+      expect(tester.getTopLeft(summary).dx, 18);
+      expect(tester.getSize(summary).width, 354);
       expect(tester.takeException(), isNull);
     },
   );
 
-  for (final scale in [1.0, 1.8]) {
-    testWidgets('scroll viewport ends 16px above nav at text scale $scale', (
-      tester,
-    ) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 844);
-      addTearDown(tester.view.reset);
-      final state = _EveningState();
-      addTearDown(state.dispose);
-      await tester.pumpWidget(_app(state, textScale: scale));
-      await tester.pumpAndSettle();
-      final viewportBottom = tester.getBottomLeft(find.byType(ListView)).dy;
-      final navTop = tester
-          .getTopLeft(find.byKey(FloatingTabBar.surfaceKey))
-          .dy;
-      expect(navTop - viewportBottom, closeTo(16, .1));
-      await tester.scrollUntilVisible(find.text('Расписание на месяц'), 150);
-      await tester.pumpAndSettle();
-      expect(find.text('Расписание на месяц').hitTestable(), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+  for (final width in [360.0, 400.0]) {
+    for (final scale in [1.0, 1.8]) {
+      testWidgets('home uses full viewport at $width dp and scale $scale', (
+        tester,
+      ) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(width, 844);
+        addTearDown(tester.view.reset);
+        final state = _EveningState();
+        addTearDown(state.dispose);
+        await tester.pumpWidget(_app(state, textScale: scale));
+        await tester.pumpAndSettle();
+        expect(tester.getSize(find.byType(ListView)).height, 844);
+        await tester.drag(find.byType(ListView), const Offset(0, -1400));
+        await tester.pumpAndSettle();
+        final isha = find.text('18:32');
+        expect(isha.hitTestable(), findsOneWidget);
+        expect(tester.getBottomLeft(isha).dy, lessThan(820));
+        expect(tester.takeException(), isNull);
+      });
+    }
   }
 
-  testWidgets('schedule and calendar share one panel and one separator', (
+  testWidgets('schedule and calendar are separate squares above prayers', (
     tester,
   ) async {
     final state = _EveningState();
@@ -168,61 +157,295 @@ void main() {
     await tester.pumpWidget(_app(state));
     await tester.pumpAndSettle();
     final actions = find.byKey(const ValueKey('home-schedule-actions'));
-    await tester.scrollUntilVisible(actions, 150);
+    await tester.ensureVisible(actions);
     await tester.pumpAndSettle();
     expect(
       find.descendant(of: actions, matching: find.byType(GlassPanel)),
+      findsNWidgets(5),
+    );
+    final monthly = find.byKey(const ValueKey('home-monthly-times'));
+    final calendar = find.byKey(const ValueKey('home-prayer-calendar'));
+    expect(tester.getSize(monthly), const Size(140, 140));
+    expect(tester.getTopLeft(monthly).dx, 18);
+    expect(tester.getSize(calendar), tester.getSize(monthly));
+    expect(tester.getTopLeft(calendar).dx - tester.getTopRight(monthly).dx, 6);
+    expect(tester.getTopLeft(monthly).dy, tester.getTopLeft(calendar).dy);
+    expect(
+      tester.getBottomLeft(actions).dy,
+      lessThan(
+        tester.getTopLeft(find.byKey(const ValueKey('today-prayers-panel'))).dy,
+      ),
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('today-prayers-panel')),
+        matching: find.byType(GlassPanel),
+      ),
       findsNothing,
-    );
-    expect(
-      find.descendant(of: actions, matching: find.byType(PanelDivider)),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: actions, matching: find.text('Расписание на месяц')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: actions, matching: find.text('Календарь намазов')),
-      findsOneWidget,
     );
   });
 
-  for (final status in [null, PrayerLogStatus.onTime, PrayerLogStatus.qada]) {
-    testWidgets('prayer swipe preview uses transparent tile for $status', (
-      tester,
-    ) async {
-      final state = _EveningState()..status = status;
+  testWidgets(
+    'action content has edge padding while viewport clips at screen edge',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.reset);
+      final state = _EveningState();
+      addTearDown(state.dispose);
+      await tester.pumpWidget(_app(state, textScale: 1.8));
+      await tester.pumpAndSettle();
+      final actions = find.byKey(const ValueKey('home-schedule-actions'));
+      await tester.ensureVisible(actions);
+      await tester.pumpAndSettle();
+      final first = find.byKey(const ValueKey('home-monthly-times'));
+      final last = find.byKey(const ValueKey('home-settings'));
+      expect(tester.getTopLeft(actions).dx, 0);
+      expect(tester.getSize(actions).width, 390);
+      expect(tester.getTopLeft(first).dx, 18);
+
+      await tester.drag(actions, const Offset(-50, 0));
+      await tester.pumpAndSettle();
+      expect(tester.getTopLeft(first).dx, lessThan(0));
+
+      await tester.drag(actions, const Offset(-2000, 0));
+      await tester.pumpAndSettle();
+      expect(tester.getTopRight(last).dx, closeTo(372, .1));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('tools collapse on a short page and return at the top', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 1600);
+    addTearDown(tester.view.reset);
+    final state = _EveningState();
+    addTearDown(state.dispose);
+    await tester.pumpWidget(_app(state));
+    await tester.pumpAndSettle();
+    final scroll = find.byKey(const ValueKey('home-scroll'));
+    final reveal = find.byKey(const ValueKey('home-actions-reveal'));
+    final position = tester
+        .state<ScrollableState>(
+          find.descendant(of: scroll, matching: find.byType(Scrollable)).first,
+        )
+        .position;
+    expect(position.maxScrollExtent, 0);
+    expect(tester.getSize(reveal).height, greaterThan(0));
+    final prayers = find.byKey(const ValueKey('today-prayers-panel'));
+    final map = find.byKey(const ValueKey('home-nearby-mosque'));
+    expect(
+      tester.getTopLeft(map).dy,
+      greaterThan(tester.getBottomLeft(prayers).dy),
+    );
+
+    final fullHeight = tester.getSize(reveal).height;
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
+    );
+    // Establish the vertical gesture, then verify individual pixel deltas.
+    await gesture.moveBy(const Offset(0, -24));
+    await tester.pump();
+    final firstHeight = tester.getSize(reveal).height;
+    final firstButtonTop = tester
+        .getTopLeft(find.byKey(const ValueKey('home-monthly-times')))
+        .dy;
+    await gesture.moveBy(const Offset(0, -30));
+    await tester.pump();
+    final partialHeight = tester.getSize(reveal).height;
+    expect(partialHeight, closeTo(firstHeight - 30, .1));
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('home-monthly-times'))).dy,
+      closeTo(firstButtonTop - 30, .1),
+    );
+    expect(partialHeight, inExclusiveRange(0, fullHeight));
+    // The row moves above its layout boundary instead of clipping there.
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('home-monthly-times'))).dy,
+      lessThan(tester.getTopLeft(reveal).dy),
+    );
+    expect(
+      find.descendant(of: reveal, matching: find.byType(SizeTransition)),
+      findsNothing,
+    );
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(tester.getSize(reveal).height, partialHeight);
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(tester.getSize(reveal).height, fullHeight);
+    expect(position.pixels, 0);
+    // Collapse past halfway and check that release completes the collapse.
+    final close = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
+    );
+    await close.moveBy(Offset(0, -fullHeight * .8));
+    await tester.pump();
+    await close.up();
+    await tester.pumpAndSettle();
+    expect(tester.getSize(reveal).height, 0);
+
+    // A reverse drag follows the finger too, without reopening in one jump.
+    final reverse = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
+    );
+    await reverse.moveBy(const Offset(0, 24));
+    await tester.pump();
+    final beforeReveal = tester.getSize(reveal).height;
+    await reverse.moveBy(const Offset(0, 12));
+    await tester.pump();
+    expect(tester.getSize(reveal).height, closeTo(beforeReveal + 12, .1));
+    await reverse.up();
+    await tester.pumpAndSettle();
+
+    await tester.drag(scroll, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(reveal).height, 0);
+    expect(find.text('Расписание').hitTestable(), findsNothing);
+    expect(position.pixels, 0);
+
+    await tester.drag(scroll, const Offset(0, 300));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(reveal).height, greaterThan(0));
+    expect(find.text('Расписание').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'tools stay hidden until the vertical scroll returns to the top',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 500);
+      addTearDown(tester.view.reset);
+      final state = _EveningState();
       addTearDown(state.dispose);
       await tester.pumpWidget(_app(state));
       await tester.pumpAndSettle();
-      final time = find.text('15:30');
-      await tester.ensureVisible(time);
+      final scroll = find.byKey(const ValueKey('home-scroll'));
+      final reveal = find.byKey(const ValueKey('home-actions-reveal'));
+      await tester.drag(scroll, const Offset(0, -240));
       await tester.pumpAndSettle();
-      final stack = find.ancestor(of: time, matching: find.byType(Stack)).first;
-      final preview = find.descendant(
-        of: stack,
-        matching: find.byKey(
-          ValueKey('prayer-swipe-preview-${status?.name ?? 'unread'}'),
-        ),
-      );
-      final gesture = await tester.startGesture(tester.getCenter(time));
-      await gesture.moveBy(const Offset(-32, 0));
+      expect(find.text('Расписание').hitTestable(), findsNothing);
+      await tester.drag(scroll, const Offset(0, 40));
       await tester.pumpAndSettle();
-      expect(preview, findsOneWidget);
-      final decoration =
-          tester.widget<Container>(preview).decoration! as BoxDecoration;
-      expect(decoration.color, isNull);
-      if (status == null) {
-        expect(decoration.gradient, isNull);
-      } else {
-        expect(decoration.gradient, isA<LinearGradient>());
-      }
-      expect(decoration.border, isNotNull);
-      await gesture.up();
+      expect(find.text('Расписание').hitTestable(), findsNothing);
+      await tester.drag(scroll, const Offset(0, 1600));
       await tester.pumpAndSettle();
+      expect(tester.getSize(reveal).height, greaterThan(0));
       expect(tester.takeException(), isNull);
-    });
+    },
+  );
+
+  testWidgets('only the prayer button toggles a mark without a sheet', (
+    tester,
+  ) async {
+    final state = _EveningState();
+    addTearDown(state.dispose);
+    await tester.pumpWidget(_app(state));
+    await tester.pumpAndSettle();
+    final time = find.text('15:30');
+    await tester.ensureVisible(time);
+    await tester.pumpAndSettle();
+    await tester.drag(time, const Offset(-80, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Как прошёл Аср?'), findsNothing);
+    await tester.tap(time);
+    await tester.pumpAndSettle();
+    expect(state.status, isNull);
+    final button = find.byKey(const ValueKey('prayer-mark-asr'));
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(state.status, PrayerLogStatus.onTime);
+    expect(find.text('Как прошёл Аср?'), findsNothing);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(state.status, isNull);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('future prayer button is disabled on home', (tester) async {
+    final state = _EveningState()..now = DateTime.utc(2026, 11, 8, 18, 31);
+    addTearDown(state.dispose);
+    await tester.pumpWidget(_app(state));
+    await tester.pumpAndSettle();
+    final button = find.byKey(const ValueKey('prayer-mark-isha'));
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(state.status, isNull);
+    state.now = DateTime.utc(2026, 11, 8, 18, 32);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(state.status, PrayerLogStatus.onTime);
+  });
+
+  for (final width in [360.0, 400.0]) {
+    for (final scale in [1.0, 1.8]) {
+      testWidgets(
+        'all prayer rows including sunrise share geometry at $width/$scale',
+        (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = Size(width, 1600);
+          addTearDown(tester.view.reset);
+          final state = _EveningState();
+          addTearDown(state.dispose);
+          await tester.pumpWidget(_app(state, textScale: scale));
+          await tester.pumpAndSettle();
+          final reference = find.byKey(const ValueKey('prayer-row-fajr'));
+          final height = tester.getSize(reference).height;
+          final timeRight = tester.getTopRight(find.text('05:42')).dx;
+          for (final entry in [
+            ('fajr', '05:42'),
+            ('sunrise', '07:02'),
+            ('zuhr', '12:07'),
+            ('asr', '15:30'),
+            ('maghrib', '17:15'),
+            ('isha', '18:32'),
+          ]) {
+            final row = find.byKey(ValueKey('prayer-row-${entry.$1}'));
+            expect(tester.getSize(row).height, height, reason: entry.$1);
+            expect(
+              tester.getTopRight(find.text(entry.$2)).dx,
+              closeTo(timeRight, .1),
+              reason: entry.$1,
+            );
+            final icon = find.descendant(
+              of: row,
+              matching: find.byType(IconBadge),
+            );
+            expect(
+              tester.getCenter(icon).dy,
+              closeTo(tester.getCenter(row).dy, .1),
+            );
+            if (entry.$1 != 'sunrise') {
+              final surface = find.descendant(
+                of: row,
+                matching: find.byWidgetPredicate(
+                  (widget) =>
+                      widget.key ==
+                      const ValueKey('prayer-swipe-preview-unread'),
+                ),
+              );
+              expect(
+                tester.getCenter(surface).dy,
+                closeTo(tester.getCenter(icon).dy, .1),
+              );
+              expect(
+                tester.getTopLeft(icon).dx - tester.getTopLeft(row).dx,
+                closeTo(
+                  tester.getTopRight(row).dx - tester.getTopRight(surface).dx,
+                  .1,
+                ),
+              );
+            }
+          }
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
   }
 
   testWidgets('name number badges share the new surface and center digits', (
@@ -253,7 +476,7 @@ void main() {
     addTearDown(state.dispose);
     await tester.pumpWidget(_app(state));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('Расписание на месяц'), 150);
+    await tester.ensureVisible(find.text('Расписание'));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('yesterday-prayer-panel')), findsNothing);
     expect(find.textContaining('ВЧЕРА'), findsNothing);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:prayertime/widgets/expand_reveal.dart';
+import 'package:fiveglow/widgets/expand_reveal.dart';
 
 void main() {
   Widget host(bool visible) => MaterialApp(

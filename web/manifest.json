@@ -1,10 +1,10 @@
 {
-    "name": "Prayer times",
-    "short_name": "Prayer times",
+    "name": "FiveGlow",
+    "short_name": "FiveGlow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0C182C",
-    "theme_color": "#E7B248",
+    "theme_color": "#FFFFFF",
     "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

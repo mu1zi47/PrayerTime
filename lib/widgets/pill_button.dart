@@ -1,52 +1,81 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-
-/// The app's main button: soft gold, deep gold text (see IconBadge), faded
-/// while there's nothing it can do.
+/// Shared glass action button, using the same surface and corners as panels.
 class PillButton extends StatelessWidget {
   final String label;
   final IconData? icon;
   final VoidCallback? onTap;
+  final bool loading;
 
-  const PillButton({super.key, required this.label, this.icon, this.onTap});
+  const PillButton({
+    super.key,
+    required this.label,
+    this.icon,
+    this.onTap,
+    this.loading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    return AppTap(
-      feedbackOnChild: false,
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: onTap == null ? 0.5 : 1,
-        child: Container(
-          height: 50,
-          alignment: Alignment.center,
-          decoration: glassDecoration(
-            radius: AppRadius.inner,
-          ).copyWith(gradient: AppColors.selectionGradient),
-          child: AppPressContent(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, size: 19, color: AppColors.accent700),
-                  const SizedBox(width: 6),
-                ],
-                Text(
-                  label,
-                  style: AppTextStyles.body(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.accent700,
+    return Semantics(
+      button: true,
+      enabled: onTap != null && !loading,
+      child: AppTap(
+        feedbackOnChild: false,
+        onTap: loading ? null : onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedOpacity(
+          duration: AppMotion.fast,
+          opacity: onTap == null && !loading ? AppOpacity.disabled : 1,
+          child: GlassPanel(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: AppPressContent(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (loading) ...[
+                        SizedBox.square(
+                          dimension: AppIconSize.small,
+                          child: CircularProgressIndicator(
+                            strokeWidth: AppSpacing.micro,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                      ] else if (icon != null) ...[
+                        Icon(
+                          icon,
+                          size: AppIconSize.medium,
+                          color: AppColors.accent,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                      ],
+                      Flexible(
+                        child: Text(
+                          label,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.body(
+                            fontSize: AppFontSize.body,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

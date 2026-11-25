@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_switch.dart';
 import '../services/now_bar_bridge.dart';
@@ -14,8 +15,6 @@ import '../services/geocoding_service.dart';
 import '../services/location_service.dart';
 import '../models/notif_mode.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/notif_mode_selector.dart';
@@ -257,7 +256,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           body: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, 0),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.screen,
+                  padding.top + AppSpacing.md,
+                  AppSpacing.screen,
+                  AppSpacing.none,
+                ),
                 child: _StepProgress(
                   current: _index,
                   total: _Step.values.length,
@@ -290,7 +294,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(18, 8, 18, padding.bottom + 16),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.screen,
+                  AppSpacing.xs,
+                  AppSpacing.screen,
+                  padding.bottom + AppSpacing.md,
+                ),
                 child: Row(
                   children: [
                     AnimatedSize(
@@ -303,7 +312,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: _index > 0
                               ? Padding(
                                   key: const ValueKey('setup-back'),
-                                  padding: const EdgeInsets.only(right: 16),
+                                  padding: const EdgeInsets.only(
+                                    right: AppSpacing.md,
+                                  ),
                                   child: _SecondaryButton(
                                     label: t.onboardingBack,
                                     onTap: _back,
@@ -387,27 +398,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       children: [
         GlassPanel(
           key: const ValueKey('setup-selected-city'),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 t.onboardingCitySelected.toUpperCase(),
                 style: AppTextStyles.body(
-                  fontSize: 10.5,
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w800,
                   color: AppColors.accent700,
                 ).copyWith(letterSpacing: 0.9),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 appState.cityLabel(t),
-                style: AppTextStyles.heading(fontSize: 20),
+                style: AppTextStyles.heading(fontSize: AppFontSize.title),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         GlassPanel(
           key: const ValueKey('setup-city-actions'),
           child: GroupRows(
@@ -442,11 +453,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
         if (_cityError != null) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             _cityError!,
             style: AppTextStyles.body(
-              fontSize: 13,
+              fontSize: AppFontSize.small,
               color: AppColors.text,
             ).copyWith(color: AppColors.text.withValues(alpha: 0.6)),
           ),
@@ -503,7 +514,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       children: [
         GlassPanel(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
                 Expanded(
@@ -514,7 +525,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: AppTextStyles.body(fontWeight: FontWeight.w700),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 IgnorePointer(
                   ignoring: _barBusy,
                   child: AppSwitch(value: _barEnabled, onChanged: _toggleBar),
@@ -524,13 +535,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
         if (_barEnabled && !widget.appState.notificationsAllowed) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           NotificationsBlockedNotice(
             onAllow: widget.appState.allowNotifications,
           ),
         ],
         if (_barEnabled && status != null && status.needsDeveloperSwitch) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           NowBarDeveloperSwitchCard(status: status),
         ],
       ],
@@ -554,7 +565,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: blocked
                 ? Padding(
                     key: const ValueKey('setup-notifications-blocked'),
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: NotificationsBlockedNotice(
                       onAllow: appState.allowNotifications,
                     ),
@@ -568,20 +579,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               for (final (key, kind) in _notifOrder)
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: Row(
                     children: [
                       Icon(
                         iconForPrayer(kind),
-                        size: 18,
+                        size: AppIconSize.medium,
                         color: AppColors.accent700,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
                           nameForPrayer(t, kind),
                           style: AppTextStyles.body(
-                            fontSize: 15,
+                            fontSize: AppFontSize.body,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -603,7 +614,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         // The selector is three icons wide with nothing naming them, so the
         // key sits underneath rather than leaving people to guess which is
         // "silent" and which is "off".
@@ -617,14 +628,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Icon(
                     mode.icon,
-                    size: 15,
+                    size: AppIconSize.small,
                     color: AppColors.text.withValues(alpha: 0.55),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: AppSpacing.compact),
                   Text(
                     notifModeLabel(t, mode),
                     style: AppTextStyles.body(
-                      fontSize: 12.5,
+                      fontSize: AppFontSize.small,
                       color: AppColors.text,
                     ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
                   ),
@@ -660,24 +671,24 @@ class _StepProgress extends StatelessWidget {
               Expanded(
                 child: AnimatedContainer(
                   duration: _motion(context),
-                  height: 4,
+                  height: AppSize.sheetHandleHeight,
                   decoration: BoxDecoration(
                     color: i <= current
                         ? AppColors.accent
                         : AppColors.text.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                 ),
               ),
-              if (i < total - 1) const SizedBox(width: 5),
+              if (i < total - 1) const SizedBox(width: AppSpacing.compact),
             ],
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.sm),
         _AnimatedCopy(
           label,
           style: AppTextStyles.body(
-            fontSize: 11.5,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w700,
             color: AppColors.text,
           ).copyWith(color: AppColors.text.withValues(alpha: 0.5)),
@@ -708,20 +719,23 @@ class _StepShell extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Padding(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.screen),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _AnimatedCopy(title, style: AppTextStyles.heading(fontSize: 26)),
-          const SizedBox(height: 8),
+          _AnimatedCopy(
+            title,
+            style: AppTextStyles.heading(fontSize: AppFontSize.display),
+          ),
+          const SizedBox(height: AppSpacing.xs),
           _AnimatedCopy(
             body,
             style: AppTextStyles.body(
-              fontSize: 14,
+              fontSize: AppFontSize.body,
               color: AppColors.text.withValues(alpha: .62),
             ).copyWith(height: 1.5),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Flexible(
             child: grouped
                 ? GlassPanel(
@@ -772,7 +786,7 @@ class _OptionTile extends StatelessWidget {
       child: AnimatedContainer(
         duration: _motion(context),
         curve: Curves.easeInOutCubic,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -785,20 +799,24 @@ class _OptionTile extends StatelessWidget {
           child: Row(
             children: [
               if (icon != null) ...[
-                IconBadge(icon!, size: 32, iconSize: 16),
-                const SizedBox(width: 12),
+                IconBadge(
+                  icon!,
+                  size: AppIconSize.display,
+                  iconSize: AppIconSize.small,
+                ),
+                const SizedBox(width: AppSpacing.sm),
               ],
               Expanded(
                 child: _AnimatedCopy(
                   label,
                   style: AppTextStyles.body(
-                    fontSize: 15,
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w700,
                     color: selected ? AppColors.accent700 : AppColors.text,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               if (trailing != null)
                 trailing!
               else
@@ -808,7 +826,7 @@ class _OptionTile extends StatelessWidget {
                       ? Icon(
                           Icons.check_rounded,
                           key: const ValueKey(true),
-                          size: 19,
+                          size: AppIconSize.medium,
                           color: AppColors.accent700,
                         )
                       : const SizedBox(
@@ -862,7 +880,10 @@ class _SetupButton extends StatelessWidget {
       child: GlassPanel(
         child: Container(
           constraints: const BoxConstraints(minHeight: 52),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             gradient: primary ? AppColors.selectionGradient : null,
           ),
@@ -871,7 +892,7 @@ class _SetupButton extends StatelessWidget {
             child: _AnimatedCopy(
               label,
               style: AppTextStyles.body(
-                fontSize: 15,
+                fontSize: AppFontSize.body,
                 fontWeight: FontWeight.w800,
                 color: primary ? AppColors.accent700 : AppColors.text,
               ),

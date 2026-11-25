@@ -1,11 +1,10 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'dart:math' show max;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
-
-import '../theme/app_text_styles.dart';
 
 /// One of the buttons [SwipeActionTile] reveals.
 class SwipeAction {
@@ -293,24 +292,26 @@ class _ActionButton extends StatelessWidget {
                       child: Opacity(
                         opacity: (width / fullWidth).clamp(0.0, 1.0),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.compact,
+                          ),
                           child: AppPressContent(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   action.icon,
-                                  size: 20,
+                                  size: AppIconSize.medium,
                                   color: action.foreground,
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xxs),
                                 Text(
                                   action.label,
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTextStyles.body(
-                                    fontSize: 11,
+                                    fontSize: AppFontSize.caption,
                                     fontWeight: FontWeight.w700,
                                     color: action.foreground,
                                   ).copyWith(height: 1.15),

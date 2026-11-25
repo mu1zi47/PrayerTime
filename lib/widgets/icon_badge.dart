@@ -1,7 +1,5 @@
+import '../theme/app_design_system.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
 /// Shared translucent icon tile for prayer rows, settings and pickers.
 class IconBadge extends StatelessWidget {
@@ -17,8 +15,8 @@ class IconBadge extends StatelessWidget {
   const IconBadge(
     this.icon, {
     super.key,
-    this.size = 34,
-    this.iconSize = 17,
+    this.size = AppSize.badge,
+    this.iconSize = AppIconSize.small,
     this.background,
     this.foreground,
   });
@@ -41,10 +39,12 @@ class IconBadge extends StatelessWidget {
 }
 
 /// A translucent icon surface using the same navy/white glass as panels.
-BoxDecoration iconBadgeDecoration({double size = 34, Color? tint}) =>
+BoxDecoration iconBadgeDecoration({double size = AppSize.badge, Color? tint}) =>
     BoxDecoration(
-      borderRadius: BorderRadius.circular(size * .32),
-      border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      border: Border.all(
+        color: AppColors.text.withValues(alpha: AppOpacity.border),
+      ),
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -52,7 +52,7 @@ BoxDecoration iconBadgeDecoration({double size = 34, Color? tint}) =>
           (tint ?? AppColors.surface).withValues(
             alpha: tint == null ? .38 : .12,
           ),
-          AppColors.surface.withValues(alpha: .12),
+          AppColors.surface.withValues(alpha: AppOpacity.tint),
         ],
       ),
     );
@@ -65,8 +65,8 @@ class NumberBadge extends StatelessWidget {
   const NumberBadge(
     this.number, {
     super.key,
-    this.size = 40,
-    this.fontSize = 13,
+    this.size = AppSize.largeBadge,
+    this.fontSize = AppFontSize.small,
   });
   @override
   Widget build(BuildContext context) {

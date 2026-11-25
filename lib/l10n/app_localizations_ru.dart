@@ -21,6 +21,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nextPrayerLabel => 'Следующий намаз';
 
   @override
+  String get homeScheduleButton => 'Расписание';
+
+  @override
+  String get homeCalendarButton => 'Календарь';
+
+  @override
+  String get homeNextPrayerTomorrow => 'Следующий намаз · Завтра';
+
+  @override
   String nextPrayerTomorrowLabel(String date) {
     return 'Завтра, $date';
   }
@@ -791,7 +800,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get soundListUnavailable => 'Не удалось получить звуки телефона';
 
   @override
-  String get calendarNotMarked => 'Не отмечен';
+  String get calendarNotMarked => 'Не прочитано';
 
   @override
   String get calendarDayPanelKicker => 'Отметьте намазы';
@@ -907,4 +916,47 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get onboardingNowBarBody =>
       'Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках.';
+
+  @override
+  String get mosquePreviewTitle => 'Мечеть рядом';
+
+  @override
+  String get mosquePreviewEnable => 'Разрешить доступ';
+
+  @override
+  String get mosquePreviewLocationHint =>
+      'Разрешите доступ к геопозиции, чтобы найти ближайшую мечеть.';
+
+  @override
+  String mosquePreviewDistance(String distance) {
+    return 'Около $distance по прямой';
+  }
+
+  @override
+  String get mosquePreviewApproximate =>
+      'Местоположение определено приблизительно';
+
+  @override
+  String get mosquePreviewEmpty => 'В этой области мечети не найдены';
+
+  @override
+  String get mosquePreviewTileLoading => 'Загружаем карту…';
+
+  @override
+  String get mosquePreviewTileError =>
+      'Карта недоступна. Нажмите, чтобы открыть';
+
+  @override
+  String get mosquePreviewLoadingHint =>
+      'Определяем ваше местоположение и ищем ближайшую мечеть.';
+
+  @override
+  String get mosquePreviewSearching => 'Ищем рядом…';
+
+  @override
+  String get mosquePreviewPermissionSettings =>
+      'Разрешите геопозицию в настройках приложения — покажем ближайшую мечеть.';
+
+  @override
+  String get homeCurrentPrayer => 'Сейчас';
 }

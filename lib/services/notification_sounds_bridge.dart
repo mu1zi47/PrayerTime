@@ -27,7 +27,7 @@ class SystemSound {
 class NotificationSoundsBridge {
   const NotificationSoundsBridge();
 
-  static const _channel = MethodChannel('uz.mu1zi47.prayertime/sounds');
+  static const _channel = MethodChannel('uz.mu1zi47.fiveglow/sounds');
 
   static bool get supported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;

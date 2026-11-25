@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
 
 /// Never completes — stands in for a slow network, so the test can tell
 /// "served from cache" apart from "served from the fetch".

@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.widget
+package uz.mu1zi47.fiveglow.widget
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -10,8 +10,8 @@ import android.os.Bundle
 import android.util.SizeF
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
-import uz.mu1zi47.prayertime.EndReminders
-import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
+import uz.mu1zi47.fiveglow.EndReminders
+import uz.mu1zi47.fiveglow.nowbar.PrayerStatusNotifier
 
 /**
  * What both prayer widgets are. They differ only in the size the picker

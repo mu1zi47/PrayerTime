@@ -29,7 +29,7 @@ const kWidgetPayloadPrefsKey = 'widget_payload';
 class HomeWidgetBridge {
   const HomeWidgetBridge();
 
-  static const _channel = MethodChannel('uz.mu1zi47.prayertime/widget');
+  static const _channel = MethodChannel('uz.mu1zi47.fiveglow/widget');
 
   static bool get _supported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;

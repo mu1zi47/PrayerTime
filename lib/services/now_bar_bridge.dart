@@ -71,7 +71,7 @@ class NowBarStatus {
 class NowBarBridge {
   const NowBarBridge();
 
-  static const _channel = MethodChannel('uz.mu1zi47.prayertime/now_bar');
+  static const _channel = MethodChannel('uz.mu1zi47.fiveglow/now_bar');
 
   static bool get _supported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;

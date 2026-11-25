@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import '../widgets/ambient_surface.dart';
 import '../widgets/app_tap.dart';
@@ -6,8 +7,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/notif_sound.dart';
 import '../services/notification_sounds_bridge.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/settings_widgets.dart';
 
 /// The phone's sounds to pick the notifications' one from — its default
@@ -21,7 +20,7 @@ Future<NotifSound?> showSoundPicker(
 }) {
   return showAppModalBottomSheet<NotifSound>(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     isScrollControlled: true,
     // A touch slower than the default and easing out, so the sheet glides
     // up rather than snaps — it's a tall one.
@@ -116,27 +115,32 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * 0.85,
       child: Container(
-        padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          AppSpacing.xs,
+          AppSpacing.screen,
+          bottomInset + AppSpacing.md,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
-                width: 36,
-                height: 4,
+                width: AppSize.sheetHandleWidth,
+                height: AppSize.sheetHandleHeight,
                 decoration: BoxDecoration(
                   color: AppColors.divider,
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.screen),
             Text(
               widget.title,
               textAlign: TextAlign.center,
-              style: AppTextStyles.heading(fontSize: 18),
+              style: AppTextStyles.heading(fontSize: AppFontSize.title),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 280),
@@ -177,7 +181,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                       ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             ActionGroup(
               children: [
                 OptRow(
@@ -185,7 +189,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                   child: Text(
                     t.soundPickerDone,
                     style: AppTextStyles.body(
-                      fontSize: 15,
+                      fontSize: AppFontSize.body,
                       color: AppColors.accent,
                     ),
                   ),
@@ -234,7 +238,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
       ),
       if (sounds.isEmpty)
         SliverPadding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           sliver: SliverToBoxAdapter(child: Text(t.soundListUnavailable)),
         ),
     ];
@@ -249,7 +253,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
       slivers.add(
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.only(top: AppSpacing.md),
             child: SectionKicker(title),
           ),
         ),
@@ -271,7 +275,9 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
             position: DecorationPosition.foreground,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+              border: Border.all(
+                color: AppColors.text.withValues(alpha: AppOpacity.border),
+              ),
             ),
             sliver: SliverFixedExtentList(
               itemExtent: metrics.rowExtent,
@@ -298,7 +304,7 @@ class _SoundPickerSheetState extends State<_SoundPickerSheet> {
                       if (index < section.length - 1)
                         const PanelDivider()
                       else
-                        const SizedBox(height: 1),
+                        const SizedBox(height: AppSpacing.micro),
                     ],
                   ),
                 );
@@ -395,7 +401,10 @@ class _PickerRow extends StatelessWidget {
         child: AnimatedContainer(
           duration: _duration,
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             gradient: selected ? AppColors.selectionGradient : null,
             borderRadius: BorderRadius.zero,
@@ -419,13 +428,13 @@ class _PickerRow extends StatelessWidget {
                         ? Icons.volume_up_rounded
                         : Icons.music_note_rounded,
                     key: ValueKey(selected),
-                    size: 18,
+                    size: AppIconSize.medium,
                     color: selected
                         ? AppColors.accent700
                         : AppColors.text.withValues(alpha: 0.45),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,7 +442,7 @@ class _PickerRow extends StatelessWidget {
                       AnimatedDefaultTextStyle(
                         duration: _duration,
                         style: AppTextStyles.body(
-                          fontSize: 15,
+                          fontSize: AppFontSize.body,
                           fontWeight: FontWeight.w700,
                           color: fg,
                         ),
@@ -447,7 +456,7 @@ class _PickerRow extends StatelessWidget {
                         AnimatedDefaultTextStyle(
                           duration: _duration,
                           style: AppTextStyles.body(
-                            fontSize: 12.5,
+                            fontSize: AppFontSize.small,
                             fontWeight: FontWeight.w500,
                             color: fg.withValues(alpha: 0.6),
                           ),
@@ -466,7 +475,7 @@ class _PickerRow extends StatelessWidget {
                   scale: selected ? 1 : 0,
                   child: Icon(
                     Icons.check_rounded,
-                    size: 19,
+                    size: AppIconSize.medium,
                     color: AppColors.accent700,
                   ),
                 ),

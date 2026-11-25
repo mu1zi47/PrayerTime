@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 class SystemGesturesBridge {
   const SystemGesturesBridge();
 
-  static const _channel = MethodChannel('uz.mu1zi47.prayertime/gestures');
+  static const _channel = MethodChannel('uz.mu1zi47.fiveglow/gestures');
 
   /// Replaces the parts of the screen where a swipe from the edge belongs to
   /// the app rather than to the system back gesture (gesture navigation,

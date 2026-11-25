@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prayertime/screens/prayer_calendar_screen.dart';
+import 'package:fiveglow/screens/prayer_calendar_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:prayertime/data/date_labels.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/main.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/widgets/screen_back_button.dart';
+import 'package:fiveglow/data/date_labels.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/main.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/widgets/screen_back_button.dart';
 
 // Same flat schedule for every day, so a time found on screen says which
 // screen is up rather than which day is being read.
@@ -111,7 +111,7 @@ class _AlwaysOnline extends ConnectivityService {
 
 Future<void> _pumpApp(WidgetTester tester, [PrayerTimesApi? api]) async {
   await tester.pumpWidget(
-    PrayerTimeApp(
+    FiveGlowApp(
       appState: AppState(
         api: api ?? _FakeApi(),
         notifications: NoopNotificationService(),
@@ -137,12 +137,12 @@ void main() {
     await _pumpApp(tester);
 
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
 
     expect(find.text('Времена намазов'), findsOneWidget);
@@ -168,12 +168,12 @@ void main() {
   ) async {
     await _pumpApp(tester);
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
 
     // The month selector and column headings stay outside the table scroll.
@@ -194,12 +194,12 @@ void main() {
   ) async {
     await _pumpApp(tester);
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
 
     final now = DateTime.now();
@@ -240,12 +240,12 @@ void main() {
     addTearDown(tester.view.reset);
     await _pumpApp(tester);
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
     final now = DateTime.now();
     final label = DateLabels.monthYearLabel(
@@ -300,7 +300,7 @@ void main() {
   });
 
   testWidgets(
-    'home calendar action is below the monthly schedule and opens the calendar',
+    'home calendar square is beside the monthly schedule and opens the calendar',
     (tester) async {
       await _pumpApp(tester);
       final calendar = find.byKey(const ValueKey('home-prayer-calendar'));
@@ -312,7 +312,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         tester.getTopLeft(calendar).dy,
-        greaterThan(tester.getBottomLeft(find.text('Расписание на месяц')).dy),
+        lessThan(tester.getBottomLeft(find.text('Расписание')).dy),
       );
       await tester.tap(calendar);
       await tester.pumpAndSettle();
@@ -328,12 +328,12 @@ void main() {
     await _pumpApp(tester, api);
 
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
 
@@ -341,12 +341,12 @@ void main() {
     await tester.tap(find.byType(ScreenBackButton));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
-      find.text('Расписание на месяц'),
+      find.text('Расписание'),
       180,
       scrollable: find.byType(Scrollable).last,
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Расписание на месяц'));
+    await tester.tap(find.text('Расписание'));
     await tester.pumpAndSettle();
     expect(api.monthFetches, 1);
 
@@ -364,7 +364,7 @@ void main() {
     expect(stored, hasLength(DateTime(now.year, now.month + 1, 0).day));
   });
 
-  // The month action sits after the prayer list, including on narrow phones.
+  // Square actions stay above the prayer list on narrow phones.
   for (final width in [320.0, 360.0, 390.0]) {
     testWidgets('the home header fits at ${width.toInt()}dp', (tester) async {
       tester.view.devicePixelRatio = 1.0;
@@ -374,15 +374,15 @@ void main() {
       await _pumpApp(tester);
 
       await tester.scrollUntilVisible(
-        find.text('Расписание на месяц'),
+        find.text('Расписание'),
         180,
         scrollable: find.byType(Scrollable).last,
       );
       await tester.pumpAndSettle();
-      expect(find.text('Расписание на месяц').hitTestable(), findsOneWidget);
+      expect(find.text('Расписание').hitTestable(), findsOneWidget);
       expect(
-        tester.getTopLeft(find.text('Расписание на месяц')).dy,
-        greaterThan(tester.getBottomLeft(find.text('Иша')).dy),
+        tester.getTopLeft(find.text('Расписание')).dy,
+        lessThan(tester.getTopLeft(find.text('Иша')).dy),
       );
       expect(tester.takeException(), isNull);
     });

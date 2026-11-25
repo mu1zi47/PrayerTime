@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
@@ -9,8 +10,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/now_bar_bridge.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/app_switch.dart';
 import '../widgets/expand_reveal.dart';
 import '../widgets/settings_widgets.dart';
@@ -31,7 +30,7 @@ Future<void> showNowBarSheet(
 ) {
   return showAppModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     isScrollControlled: true,
     builder: (_) => _NowBarSheet(appState: appState, initial: initial),
   );
@@ -116,7 +115,12 @@ class _NowBarSheetState extends State<_NowBarSheet> {
         maxHeight: MediaQuery.sizeOf(context).height * 0.85,
       ),
       child: Container(
-        padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          AppSpacing.xs,
+          AppSpacing.screen,
+          bottomInset + AppSpacing.md,
+        ),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -124,21 +128,21 @@ class _NowBarSheetState extends State<_NowBarSheet> {
             children: [
               Center(
                 child: Container(
-                  width: 36,
-                  height: 4,
+                  width: AppSize.sheetHandleWidth,
+                  height: AppSize.sheetHandleHeight,
                   decoration: BoxDecoration(
                     color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                 ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: AppSpacing.screen),
               Text(
                 nowBarTitle(t, _status),
                 textAlign: TextAlign.center,
-                style: AppTextStyles.heading(fontSize: 18),
+                style: AppTextStyles.heading(fontSize: AppFontSize.title),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.sm),
               GlassPanel(
                 child: Column(
                   children: [
@@ -187,11 +191,11 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                         children: [
                           const PanelDivider(),
                           Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(AppSpacing.md),
                             child: Text(
                               t.nowBarNotificationsOff,
                               style: AppTextStyles.body(
-                                fontSize: 14,
+                                fontSize: AppFontSize.body,
                                 fontWeight: FontWeight.w400,
                                 color: muted,
                               ).copyWith(height: 1.4),
@@ -202,7 +206,7 @@ class _NowBarSheetState extends State<_NowBarSheet> {
                             child: Text(
                               t.nowBarOpenSettings,
                               style: AppTextStyles.body(
-                                fontSize: 15,
+                                fontSize: AppFontSize.body,
                                 color: AppColors.accent,
                               ),
                             ),
@@ -314,7 +318,10 @@ class _LabelWithInfoState extends State<_LabelWithInfo>
     return Row(
       children: [
         Flexible(
-          child: Text(widget.label, style: AppTextStyles.body(fontSize: 15)),
+          child: Text(
+            widget.label,
+            style: AppTextStyles.body(fontSize: AppFontSize.body),
+          ),
         ),
         Semantics(
           button: true,
@@ -325,11 +332,11 @@ class _LabelWithInfoState extends State<_LabelWithInfo>
             key: _iconKey,
             onTap: () => _bubble == null ? _show() : _hide(),
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(AppSpacing.xs),
               child: AppPressContent(
                 child: Icon(
                   Icons.info_outline_rounded,
-                  size: 19,
+                  size: AppIconSize.medium,
                   color: AppColors.text.withValues(alpha: 0.5),
                 ),
               ),
@@ -367,7 +374,7 @@ class _InfoBubble extends StatelessWidget {
     AppColors.watch(context);
     final screen = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
-    final color = AppColors.surface.withValues(alpha: .78);
+    final color = AppColors.surface.withValues(alpha: AppOpacity.strong);
     // Room enough above for a few lines of text; otherwise it opens below.
     final above = anchor.top - padding.top > 140;
     final arrowTop = above
@@ -424,12 +431,12 @@ class _InfoBubble extends StatelessWidget {
                 child: Material(
                   type: MaterialType.transparency,
                   child: GlassPanel(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     child: SingleChildScrollView(
                       child: Text(
                         text,
                         style: AppTextStyles.body(
-                          fontSize: 14,
+                          fontSize: AppFontSize.body,
                           fontWeight: FontWeight.w600,
                           color: AppColors.text,
                         ).copyWith(height: 1.4),
@@ -556,7 +563,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
       t.nowBarDevStepSwitch,
     ];
     final textStyle = AppTextStyles.body(
-      fontSize: 13.5,
+      fontSize: AppFontSize.body,
       fontWeight: FontWeight.w400,
       color: AppColors.text.withValues(alpha: 0.8),
     ).copyWith(height: 1.4);
@@ -566,7 +573,12 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
     final badgeFg = AppColors.accent700;
 
     final content = Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+      ),
 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,49 +592,49 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                 decoration: iconBadgeDecoration(),
                 child: Icon(
                   Icons.priority_high_rounded,
-                  size: 17,
+                  size: AppIconSize.small,
                   color: AppColors.accent700,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   t.nowBarDevTitle,
-                  style: AppTextStyles.heading(fontSize: 15),
+                  style: AppTextStyles.heading(fontSize: AppFontSize.body),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Text(t.nowBarDevBody, style: textStyle),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           for (var i = 0; i < steps.length; i++)
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     width: 20,
                     height: 20,
-                    margin: const EdgeInsets.only(top: 1),
+                    margin: const EdgeInsets.only(top: AppSpacing.micro),
                     alignment: Alignment.center,
-                    decoration: iconBadgeDecoration(size: 20),
+                    decoration: iconBadgeDecoration(size: AppIconSize.medium),
                     child: Text(
                       '${i + 1}',
                       style: AppTextStyles.body(
-                        fontSize: 11,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w800,
                         color: badgeFg,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(child: Text(steps[i], style: textStyle)),
                 ],
               ),
             ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.compact),
           AppTap(
             feedbackOnChild: false,
             onTap: unlocked
@@ -630,7 +642,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                 : _bridge.openDeviceInfo,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 gradient: AppColors.selectionGradient,
@@ -641,7 +653,7 @@ class NowBarDeveloperSwitchCard extends StatelessWidget {
                   unlocked ? t.nowBarDevOpenDeveloper : t.nowBarDevOpenAbout,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
-                    fontSize: 14,
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w700,
                     color: badgeFg,
                   ),

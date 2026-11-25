@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
@@ -9,11 +10,9 @@ import '../data/next_prayer.dart';
 import '../l10n/app_localizations.dart';
 import '../models/prayer_log_status.dart';
 import '../state/app_state.dart';
-import '../theme/status_colors.dart';
 import '../widgets/icon_badge.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../widgets/log_prayer_sheet.dart';
+import '../widgets/prayer_mark_indicator.dart';
+import '../widgets/prayer_row_layout.dart';
 import '../widgets/prayer_icon.dart';
 import '../widgets/screen_back_button.dart';
 
@@ -80,17 +79,8 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
         .toList();
   }
 
-  /// Opens the same sheet the home screen's prayer rows use, so a day
-  /// filled in here and a day marked as it happened go through one path.
   void _editPrayer(DateTime date, String prayerKey, PrayerKind kind) {
-    final t = AppLocalizations.of(context)!;
-    showLogPrayerSheet(
-      context,
-      prayerName: nameForPrayer(t, kind),
-      current: widget.appState.prayerStatusFor(date, prayerKey),
-      onPick: (status) =>
-          widget.appState.setPrayerStatus(date, prayerKey, status),
-    );
+    widget.appState.setPrayerStatus(date, prayerKey, PrayerLogStatus.onTime);
   }
 
   @override
@@ -106,10 +96,10 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
           backgroundColor: AppColors.bg,
           body: ScreenContentInset(
             margin: EdgeInsets.fromLTRB(
-              18,
-              padding.top + 16,
-              18,
-              padding.bottom + 18,
+              AppSpacing.screen,
+              padding.top + AppSpacing.md,
+              AppSpacing.screen,
+              padding.bottom + AppSpacing.screen,
             ),
             child: ListView(
               padding: EdgeInsets.zero,
@@ -117,14 +107,18 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                    const SizedBox(width: 12),
-                    Text(
-                      t.calendarScreenTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        t.calendarScreenTitle,
+                        style: AppTextStyles.heading(
+                          fontSize: AppFontSize.heading,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -134,7 +128,9 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                     ),
                     Text(
                       DateLabels.monthYearLabel(t, _visibleMonth),
-                      style: AppTextStyles.heading(fontSize: 16),
+                      style: AppTextStyles.heading(
+                        fontSize: AppFontSize.bodyLarge,
+                      ),
                     ),
                     _MonthNavButton(
                       icon: Icons.chevron_right_rounded,
@@ -142,9 +138,9 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 GlassPanel(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: _CalendarGrid(
                     appState: widget.appState,
                     month: _visibleMonth,
@@ -152,7 +148,7 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                     onSelect: (date) => setState(() => _selectedDay = date),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
                 if (markable.isNotEmpty) ...[
                   _DayLogPanel(
                     appState: widget.appState,
@@ -160,7 +156,7 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                     prayers: markable,
                     onEdit: _editPrayer,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.lg),
                 ],
                 Wrap(
                   spacing: 16,
@@ -168,12 +164,11 @@ class _PrayerCalendarScreenState extends State<PrayerCalendarScreen> {
                   children: [
                     _LegendItem(
                       color: StatusColors.onTime,
-                      label: t.legendOnTime,
+                      label: t.widgetMarkedLabel,
                     ),
-                    _LegendItem(color: StatusColors.qada, label: t.legendQada),
                     _LegendItem(
-                      color: AppColors.neutral300,
-                      label: t.legendMissed,
+                      color: AppColors.transparent,
+                      label: t.calendarNotMarked,
                     ),
                   ],
                 ),
@@ -207,7 +202,9 @@ class _MonthNavButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          border: Border.all(
+            color: AppColors.text.withValues(alpha: AppOpacity.border),
+          ),
         ),
         child: AppPressContent(
           child: AppChevron(icon: icon, enabled: enabled),
@@ -261,7 +258,7 @@ class _CalendarGrid extends StatelessWidget {
                   child: Text(
                     w,
                     style: AppTextStyles.body(
-                      fontSize: 11,
+                      fontSize: AppFontSize.caption,
                       color: AppColors.text,
                     ).copyWith(color: AppColors.text.withValues(alpha: 0.5)),
                   ),
@@ -269,7 +266,7 @@ class _CalendarGrid extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.xs),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -329,14 +326,9 @@ class _DayCell extends StatelessWidget {
     AppColors.watch(context);
     final (bg, fg) = switch (completion) {
       DayCompletion.onTime => (StatusColors.onTime, StatusColors.onOnTime),
-      DayCompletion.qada => (StatusColors.qada, StatusColors.onQada),
-      DayCompletion.missed => (
-        AppColors.neutral300,
-        AppColors.text.withValues(alpha: 0.4),
-      ),
-      DayCompletion.upcoming => (
-        Colors.transparent,
-        AppColors.text.withValues(alpha: 0.75),
+      DayCompletion.missed || DayCompletion.upcoming => (
+        AppColors.transparent,
+        AppColors.text.withValues(alpha: AppOpacity.secondary),
       ),
     };
 
@@ -355,8 +347,8 @@ class _DayCell extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Center(
         child: Container(
-          width: 32,
-          height: 32,
+          width: AppSize.badge,
+          height: AppSize.badge,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: bg,
@@ -367,7 +359,7 @@ class _DayCell extends StatelessWidget {
             child: Text(
               '$day',
               style: AppTextStyles.body(
-                fontSize: 12,
+                fontSize: AppFontSize.small,
                 fontWeight: FontWeight.w700,
                 color: fg,
               ),
@@ -410,24 +402,29 @@ class _DayLogPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.none,
+            ),
             child: Text(
               DateLabels.fullLabel(t, date),
-              style: AppTextStyles.heading(fontSize: 17),
+              style: AppTextStyles.heading(fontSize: AppFontSize.bodyLarge),
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSpacing.micro),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Text(
               t.calendarDayPanelKicker,
               style: AppTextStyles.body(
-                fontSize: 12.5,
+                fontSize: AppFontSize.small,
                 color: AppColors.text,
               ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           for (final (key, kind) in prayers)
             _PrayerLogRow(
               showDivider: (key, kind) != prayers.last,
@@ -460,42 +457,22 @@ class _PrayerLogRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    final t = AppLocalizations.of(context)!;
-    final (statusLabel, statusColor) = switch (status) {
-      PrayerLogStatus.onTime => (t.legendOnTime, StatusColors.onTime),
-      PrayerLogStatus.qada => (t.legendQada, StatusColors.qada),
-      null => (t.calendarNotMarked, AppColors.text.withValues(alpha: 0.4)),
-    };
-    return AppTap(
-      feedbackOnChild: false,
-      onTap: onTap,
-      child: PanelRow(
-        showDivider: showDivider,
-        child: AppPressContent(
-          child: Row(
-            children: [
-              IconBadge(icon, size: 32, iconSize: 16),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  label,
-                  style: AppTextStyles.body(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Text(
-                statusLabel,
-                style: AppTextStyles.body(fontSize: 13, color: statusColor),
-              ),
-              if (onTap != null) ...[
-                const SizedBox(width: 6),
-                const AppChevron(),
-              ],
-            ],
-          ),
+    return PanelRow(
+      padding: EdgeInsets.zero,
+      showDivider: showDivider,
+      child: PrayerRowLayout(
+        leading: IconBadge(
+          icon,
+          size: AppSize.badge,
+          iconSize: AppIconSize.small,
         ),
+        label: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.prayerName(),
+        ),
+        mark: PrayerMarkIndicator(status: status, onTap: onTap),
       ),
     );
   }
@@ -516,13 +493,19 @@ class _LegendItem extends StatelessWidget {
         Container(
           width: 10,
           height: 10,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.text.withValues(alpha: AppOpacity.secondary),
+            ),
+          ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppSpacing.compact),
         Text(
           label,
           style: AppTextStyles.body(
-            fontSize: 12,
+            fontSize: AppFontSize.small,
             color: AppColors.text,
           ).copyWith(color: AppColors.text.withValues(alpha: 0.6)),
         ),

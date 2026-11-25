@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -28,6 +30,45 @@ class LocationService {
           timeLimit: Duration(seconds: 15),
         ),
       );
+    } catch (_) {
+      throw const LocationException(LocationError.unknown);
+    }
+  }
+
+  /// A fresh map fix. Opening home never requests permission implicitly.
+  Future<Position?> mapPosition({bool requestPermission = false}) async {
+    if (requestPermission) {
+      await ensurePermission();
+    } else {
+      final permission = await Geolocator.checkPermission().timeout(
+        const Duration(seconds: 3),
+      );
+      if (permission == LocationPermission.deniedForever) {
+        throw const LocationException(LocationError.permissionDeniedForever);
+      }
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      if (!await Geolocator.isLocationServiceEnabled().timeout(
+        const Duration(seconds: 3),
+      )) {
+        throw const LocationException(LocationError.serviceDisabled);
+      }
+    }
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: defaultTargetPlatform == TargetPlatform.android
+            ? AndroidSettings(
+                accuracy: LocationAccuracy.high,
+                forceLocationManager: true,
+                timeLimit: const Duration(seconds: 15),
+              )
+            : const LocationSettings(
+                accuracy: LocationAccuracy.high,
+                timeLimit: Duration(seconds: 15),
+              ),
+      ).timeout(const Duration(seconds: 18));
     } catch (_) {
       throw const LocationException(LocationError.unknown);
     }

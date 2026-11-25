@@ -1,47 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The current-prayer notification's colors. Like the widget's, the icon
-     and chip colors come in explicit _light/_dark pairs rather than
-     values-night, because it's the theme picked *in the app* that decides —
-     see PrayerStatusNotifier.look. None of them changes when the prayer is
-     logged; the button's icon is what says that. -->
 <resources>
-    <!-- The Now Bar icon's circle and the status-bar chip: the app's bright
-         gold. One UI draws the crescent and the chip's text on it in white.
-         One shade for both themes on purpose: the lock screen card's gold
-         gradient is drawn from this color too, and with the light theme's
-         deeper #B27509 it all but disappeared. -->
+    <color name="now_bar_icon_light">@color/app_ds_dark_chip</color>
+    <color name="now_bar_icon_dark">@color/app_ds_dark_chip</color>
+    <color name="now_bar_chip_light">@color/app_ds_dark_chip</color>
+    <color name="now_bar_chip_dark">@color/app_ds_dark_chip</color>
 
-    <color name="now_bar_icon_light">#C69739</color>
-    <color name="now_bar_icon_dark">#C69739</color>
-    <color name="now_bar_chip_light">#C69739</color>
-    <color name="now_bar_chip_dark">#C69739</color>
-
-    <!-- The expanded card (now_bar_expanded.xml). Its fill, text and button
-         colors follow the system theme (values-night), taken from One UI's
-         own card colors (`ongoing_activity_card_item_background_color` for
-         the fill), so in the shade it looks like One UI's card. Only the
-         gold glow and the current prayer's highlight are fixed. -->
     <color name="now_bar_expanded_card">#FCFCFF</color>
     <color name="now_bar_expanded_text">#252528</color>
     <color name="now_bar_expanded_text_muted">#8C252528</color>
     <color name="now_bar_expanded_button_bg">#12252528</color>
-    <color name="now_bar_expanded_glow">#4DC69739</color>
-    <color name="now_bar_expanded_highlight">#33C69739</color>
+    <color name="now_bar_expanded_glow">@color/app_ds_dark_glow_4d</color>
+    <color name="now_bar_expanded_highlight">@color/app_ds_dark_glow_33</color>
 
-    <!-- The disc behind the crescent, and the mark button once the prayer
-         is logged. Gold on the light card; in the dark theme the card is
-         itself gold (see values-night), so both flip to white there. -->
     <color name="now_bar_expanded_icon_bg">@color/now_bar_icon_light</color>
     <color name="now_bar_expanded_button_selected_bg">@color/now_bar_icon_light</color>
     <color name="now_bar_expanded_button_selected_glyph">#FFFFFF</color>
 
-    <!-- The Now Bar's button glyphs. One UI draws these icons as they are,
-         on a card it paints itself, so unlike the colors above they follow
-         the card (the system theme) rather than the app — the same pair,
-         and the same values-night split, Samsung Clock uses for its
-         stopwatch buttons. A white glyph simply vanished on the light card. -->
     <color name="now_bar_button_glyph">#252528</color>
-    <!-- The plain notification's schedule rows (prayer_schedule_row.xml),
-         near the system's own notification text in each theme. -->
     <color name="prayer_schedule_text">#1F1F23</color>
 </resources>

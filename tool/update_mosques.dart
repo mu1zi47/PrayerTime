@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:prayertime/models/mosque.dart';
+import 'package:fiveglow/models/mosque.dart';
 
 /// Kept on whole half-degrees so it lines up with the map screen's cell
 /// grid, which treats every cell inside it as already loaded.
@@ -67,7 +67,7 @@ Future<List<Mosque>?> _fetchFrom(String endpoint) async {
     final response = await http
         .post(
           Uri.parse(endpoint),
-          headers: {'User-Agent': 'PrayerTimeApp (mosque data update)'},
+          headers: {'User-Agent': 'FiveGlowApp (mosque data update)'},
           body: {
             'data': Mosque.overpassQuery(_region, timeoutSeconds: 170),
           },

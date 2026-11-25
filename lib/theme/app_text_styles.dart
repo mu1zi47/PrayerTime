@@ -1,3 +1,4 @@
+import 'app_tokens.dart';
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
@@ -29,7 +30,10 @@ class AppTextStyles {
   /// Exo 2 — chosen over the original heading font because it covers Қ/Ғ/Ҳ,
   /// the Uzbek Cyrillic letters that otherwise fell back to the system font
   /// mid-word.
-  static TextStyle heading({double fontSize = 20, Color? color}) {
+  static TextStyle heading({
+    double fontSize = AppFontSize.heading,
+    Color? color,
+  }) {
     return TextStyle(
       fontFamily: _headingFamily,
       fontSize: fontSize,
@@ -40,8 +44,18 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle prayerName({Color? color}) =>
+      heading(fontSize: AppFontSize.body, color: color);
+
+  // Inline labels use the name's font metrics so their visual centers match.
+  static TextStyle prayerInlineLabel({Color? color}) =>
+      heading(fontSize: AppFontSize.caption, color: color);
+
+  static TextStyle prayerSubtitle({Color? color}) =>
+      body(fontSize: AppFontSize.caption, color: color).copyWith(height: 1.4);
+
   static TextStyle body({
-    double fontSize = 15,
+    double fontSize = AppFontSize.body,
     Color? color,
     FontWeight fontWeight = FontWeight.w600,
   }) {

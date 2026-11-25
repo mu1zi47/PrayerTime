@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/models/tasbih_counter.dart';
-import 'package:prayertime/screens/tasbih_screen.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/models/tasbih_counter.dart';
+import 'package:fiveglow/screens/tasbih_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

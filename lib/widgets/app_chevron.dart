@@ -1,6 +1,5 @@
+import '../theme/app_design_system.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
 
 /// One treatment for row actions and previous/next navigation.
 class AppChevron extends StatelessWidget {
@@ -18,7 +17,7 @@ class AppChevron extends StatelessWidget {
     AppColors.watch(context);
     return Icon(
       icon,
-      size: 20,
+      size: AppIconSize.medium,
       color: AppColors.accent.withValues(alpha: enabled ? 1 : .25),
     );
   }

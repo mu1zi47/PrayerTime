@@ -21,6 +21,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nextPrayerLabel => 'Keyingi namoz';
 
   @override
+  String get homeScheduleButton => 'Jadval';
+
+  @override
+  String get homeCalendarButton => 'Taqvim';
+
+  @override
+  String get homeNextPrayerTomorrow => 'Keyingi namoz · Ertaga';
+
+  @override
   String nextPrayerTomorrowLabel(String date) {
     return 'Ertaga, $date';
   }
@@ -793,7 +802,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get soundListUnavailable => 'Telefon ovozlarini olib bo\'lmadi';
 
   @override
-  String get calendarNotMarked => 'Belgilanmagan';
+  String get calendarNotMarked => 'O‘qilmagan';
 
   @override
   String get calendarDayPanelKicker => 'Namozlarni belgilang';
@@ -910,6 +919,47 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get onboardingNowBarBody =>
       'Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin.';
+
+  @override
+  String get mosquePreviewTitle => 'Yaqin masjid';
+
+  @override
+  String get mosquePreviewEnable => 'Ruxsat berish';
+
+  @override
+  String get mosquePreviewLocationHint =>
+      'Eng yaqin masjidni topish uchun joylashuvingizga ruxsat bering.';
+
+  @override
+  String mosquePreviewDistance(String distance) {
+    return 'To‘g‘ri chiziq bo‘ylab taxminan $distance';
+  }
+
+  @override
+  String get mosquePreviewApproximate => 'Joylashuv taxminiy aniqlangan';
+
+  @override
+  String get mosquePreviewEmpty => 'Bu hududda masjidlar topilmadi';
+
+  @override
+  String get mosquePreviewTileLoading => 'Xarita yuklanmoqda…';
+
+  @override
+  String get mosquePreviewTileError => 'Xarita ochilmadi. Ochish uchun bosing';
+
+  @override
+  String get mosquePreviewLoadingHint =>
+      'Joylashuvingiz va eng yaqin masjid aniqlanmoqda.';
+
+  @override
+  String get mosquePreviewSearching => 'Yaqin atrofdan qidirilmoqda…';
+
+  @override
+  String get mosquePreviewPermissionSettings =>
+      'Eng yaqin masjidni topish uchun ilova sozlamalarida joylashuvga ruxsat bering.';
+
+  @override
+  String get homeCurrentPrayer => 'Hozir';
 }
 
 /// The translations for Uzbek, using the Cyrillic script (`uz_Cyrl`).
@@ -927,6 +977,15 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get nextPrayerLabel => 'Кейинги намоз';
+
+  @override
+  String get homeScheduleButton => 'Жадвал';
+
+  @override
+  String get homeCalendarButton => 'Тақвим';
+
+  @override
+  String get homeNextPrayerTomorrow => 'Кейинги намоз · Эртага';
 
   @override
   String nextPrayerTomorrowLabel(String date) {
@@ -1699,7 +1758,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get soundListUnavailable => 'Телефон овозларини олиб бўлмади';
 
   @override
-  String get calendarNotMarked => 'Белгиланмаган';
+  String get calendarNotMarked => 'Ўқилмаган';
 
   @override
   String get calendarDayPanelKicker => 'Намозларни белгиланг';
@@ -1816,6 +1875,47 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   @override
   String get onboardingNowBarBody =>
       'Жорий намоз ва қолган вақтни доимий билдиришномада ёки Now Bar’да кўрсатиш. Дастлаб ўчирилган. Ҳозир ёки кейин созламаларда ёқиш мумкин.';
+
+  @override
+  String get mosquePreviewTitle => 'Яқин масжид';
+
+  @override
+  String get mosquePreviewEnable => 'Рухсат бериш';
+
+  @override
+  String get mosquePreviewLocationHint =>
+      'Энг яқин масжидни топиш учун жойлашувингизга рухсат беринг.';
+
+  @override
+  String mosquePreviewDistance(String distance) {
+    return 'Тўғри чизиқ бўйлаб тахминан $distance';
+  }
+
+  @override
+  String get mosquePreviewApproximate => 'Жойлашув тахминий аниқланган';
+
+  @override
+  String get mosquePreviewEmpty => 'Бу ҳудудда масжидлар топилмади';
+
+  @override
+  String get mosquePreviewTileLoading => 'Харита юкланмоқда…';
+
+  @override
+  String get mosquePreviewTileError => 'Харита очилмади. Очиш учун босинг';
+
+  @override
+  String get mosquePreviewLoadingHint =>
+      'Жойлашувингиз ва энг яқин масжид аниқланмоқда.';
+
+  @override
+  String get mosquePreviewSearching => 'Яқин атрофдан қидирилмоқда…';
+
+  @override
+  String get mosquePreviewPermissionSettings =>
+      'Энг яқин масжидни топиш учун илова созламаларида жойлашувга рухсат беринг.';
+
+  @override
+  String get homeCurrentPrayer => 'Ҳозир';
 }
 
 /// The translations for Uzbek, using the Latin script (`uz_Latn`).
@@ -1833,6 +1933,15 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
 
   @override
   String get nextPrayerLabel => 'Keyingi namoz';
+
+  @override
+  String get homeScheduleButton => 'Jadval';
+
+  @override
+  String get homeCalendarButton => 'Taqvim';
+
+  @override
+  String get homeNextPrayerTomorrow => 'Keyingi namoz · Ertaga';
 
   @override
   String nextPrayerTomorrowLabel(String date) {
@@ -2607,7 +2716,7 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   String get soundListUnavailable => 'Telefon ovozlarini olib bo\'lmadi';
 
   @override
-  String get calendarNotMarked => 'Belgilanmagan';
+  String get calendarNotMarked => 'O‘qilmagan';
 
   @override
   String get calendarDayPanelKicker => 'Namozlarni belgilang';
@@ -2724,4 +2833,45 @@ class AppLocalizationsUzLatn extends AppLocalizationsUz {
   @override
   String get onboardingNowBarBody =>
       'Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin.';
+
+  @override
+  String get mosquePreviewTitle => 'Yaqin masjid';
+
+  @override
+  String get mosquePreviewEnable => 'Ruxsat berish';
+
+  @override
+  String get mosquePreviewLocationHint =>
+      'Eng yaqin masjidni topish uchun joylashuvingizga ruxsat bering.';
+
+  @override
+  String mosquePreviewDistance(String distance) {
+    return 'To‘g‘ri chiziq bo‘ylab taxminan $distance';
+  }
+
+  @override
+  String get mosquePreviewApproximate => 'Joylashuv taxminiy aniqlangan';
+
+  @override
+  String get mosquePreviewEmpty => 'Bu hududda masjidlar topilmadi';
+
+  @override
+  String get mosquePreviewTileLoading => 'Xarita yuklanmoqda…';
+
+  @override
+  String get mosquePreviewTileError => 'Xarita ochilmadi. Ochish uchun bosing';
+
+  @override
+  String get mosquePreviewLoadingHint =>
+      'Joylashuvingiz va eng yaqin masjid aniqlanmoqda.';
+
+  @override
+  String get mosquePreviewSearching => 'Yaqin atrofdan qidirilmoqda…';
+
+  @override
+  String get mosquePreviewPermissionSettings =>
+      'Eng yaqin masjidni topish uchun ilova sozlamalarida joylashuvga ruxsat bering.';
+
+  @override
+  String get homeCurrentPrayer => 'Hozir';
 }

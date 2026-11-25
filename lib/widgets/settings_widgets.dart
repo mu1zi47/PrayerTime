@@ -1,10 +1,8 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'app_chevron.dart';
 import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
 class SectionKicker extends StatelessWidget {
   final String label;
@@ -15,11 +13,14 @@ class SectionKicker extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 2),
+      padding: const EdgeInsets.only(
+        bottom: AppSpacing.xs,
+        left: AppSpacing.micro,
+      ),
       child: Text(
         label,
         style: AppTextStyles.body(
-          fontSize: 13,
+          fontSize: AppFontSize.small,
           fontWeight: FontWeight.w800,
           color: AppColors.text.withValues(alpha: .55),
         ).copyWith(letterSpacing: .1),
@@ -77,7 +78,7 @@ class OptRow extends StatelessWidget {
       feedbackOnChild: false,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: AppPressContent(
           child: Row(
             children: [
@@ -101,7 +102,7 @@ class SettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Row(
         children: [
           Expanded(child: child),
@@ -134,19 +135,19 @@ class SettingsValue extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Text(label, style: AppTextStyles.body(fontSize: 15)),
-      const SizedBox(width: 16),
+      Text(label, style: AppTextStyles.body(fontSize: AppFontSize.body)),
+      const SizedBox(width: AppSpacing.md),
       Expanded(
         child: Text(
           value,
           textAlign: TextAlign.end,
           style: AppTextStyles.body(
-            fontSize: 14,
+            fontSize: AppFontSize.body,
             color: AppColors.text.withValues(alpha: .55),
           ),
         ),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
     ],
   );
 }

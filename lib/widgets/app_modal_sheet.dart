@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import 'package:flutter/material.dart';
 
 import 'ambient_surface.dart';
@@ -35,7 +36,7 @@ Future<T?> showAppModalBottomSheet<T>({
     ),
     isScrollControlled: isScrollControlled,
     useSafeArea: useSafeArea,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     elevation: 0,
     enableDrag: false,
     showDragHandle: false,

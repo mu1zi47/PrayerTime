@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/theme/app_theme.dart';
+import 'package:fiveglow/theme/app_theme.dart';
 
 void main() {
   testWidgets(

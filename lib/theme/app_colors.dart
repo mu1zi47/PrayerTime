@@ -116,15 +116,15 @@ class AppPalette {
   Color get divider => text.withValues(alpha: 0.16);
 }
 
-// Gold accents in both themes.
+// Neutral accents in both themes. Dark mode uses white light and controls.
 const _light = AppPalette(
-  controlFill: Color(0xFF8C631A),
-  onControlFill: Color(0xFFFAEBD1),
+  controlFill: Color(0xFF303A4A),
+  onControlFill: Color(0xFFFFFFFF),
   bg: Color(0xFFF3F6FB),
   surface: Color(0xFFFFFFFF),
   text: Color(0xFF16213C),
-  accent: Color(0xFFB27509),
-  accent2: Color(0xFF8C631A),
+  accent: Color(0xFF26344A),
+  accent2: Color(0xFF596579),
   neutral100: Color(0xFFEDF0F9),
   neutral200: Color(0xFFDBE0EE),
   neutral300: Color(0xFFC4CBDC),
@@ -134,24 +134,24 @@ const _light = AppPalette(
   neutral700: Color(0xFF505664),
   neutral800: Color(0xFF383C47),
   neutral900: Color(0xFF25282E),
-  accent100: Color(0xFFFAEBD1),
-  accent200: Color(0xFFF7DFB6),
-  accent300: Color(0xFFFFDFA5),
-  accent400: Color(0xFFF6C46B),
-  accent500: Color(0xFFD6A348),
-  accent600: Color(0xFFB2822D),
-  accent700: Color(0xFF8C631A),
-  accent800: Color(0xFF644612),
-  accent900: Color(0xFF402F10),
-  accent2_100: Color(0xFFF6E9CF),
-  accent2_200: Color(0xFFEFDCB5),
-  accent2_300: Color(0xFFE3C891),
-  accent2_400: Color(0xFFCFAA69),
-  accent2_500: Color(0xFFB38A45),
-  accent2_600: Color(0xFF9A722A),
-  accent2_700: Color(0xFF7E5A18),
-  accent2_800: Color(0xFF5F4311),
-  accent2_900: Color(0xFF3F2D0C),
+  accent100: Color(0xFFEDF0F5),
+  accent200: Color(0xFFDCE1E9),
+  accent300: Color(0xFFC4CBD7),
+  accent400: Color(0xFFA4AEBD),
+  accent500: Color(0xFF828EA0),
+  accent600: Color(0xFF626F83),
+  accent700: Color(0xFF344157),
+  accent800: Color(0xFF253146),
+  accent900: Color(0xFF16213C),
+  accent2_100: Color(0xFFF0F2F6),
+  accent2_200: Color(0xFFE0E5EC),
+  accent2_300: Color(0xFFCAD1DD),
+  accent2_400: Color(0xFFAFB8C7),
+  accent2_500: Color(0xFF8C99AB),
+  accent2_600: Color(0xFF6F7D91),
+  accent2_700: Color(0xFF536176),
+  accent2_800: Color(0xFF39485E),
+  accent2_900: Color(0xFF253349),
 );
 
 // Mirrors `_light`'s internal logic (the NNN scales run from "closest to
@@ -159,13 +159,13 @@ const _light = AppPalette(
 // flipped, since in dark mode the darkest tone is the background and the
 // lightest is the readable-on-dark end.
 const _dark = AppPalette(
-  controlFill: Color(0xFF3A2E15),
-  onControlFill: Color(0xFFE0B152),
+  controlFill: Color(0xFF303B4D),
+  onControlFill: Color(0xFFFFFFFF),
   bg: Color(0xFF0C182C),
   surface: Color(0xFF192943),
-  text: Color(0xFFF4EFE3),
-  accent: Color(0xFFE7B248),
-  accent2: Color(0xFF8A6A2C),
+  text: Color(0xFFFFFFFF),
+  accent: Color(0xFFFFFFFF),
+  accent2: Color(0xFFA8B3C5),
   neutral100: Color(0xFF161A21),
   neutral200: Color(0xFF20242C),
   neutral300: Color(0xFF292E3A),
@@ -175,24 +175,24 @@ const _dark = AppPalette(
   neutral700: Color(0xFF7381A0),
   neutral800: Color(0xFF95A3C2),
   neutral900: Color(0xFFC7D0E4),
-  accent100: Color(0xFF3A2E15),
-  accent200: Color(0xFF4A3A1B),
-  accent300: Color(0xFF5D4922),
-  accent400: Color(0xFF7A5F2A),
-  accent500: Color(0xFF9C7A35),
-  accent600: Color(0xFFC69739),
-  accent700: Color(0xFFE0B152),
-  accent800: Color(0xFFF0C97C),
-  accent900: Color(0xFFFBEBCC),
-  accent2_100: Color(0xFF2B2313),
-  accent2_200: Color(0xFF382D17),
-  accent2_300: Color(0xFF47391C),
-  accent2_400: Color(0xFF5E4B24),
-  accent2_500: Color(0xFF7A612E),
-  accent2_600: Color(0xFF9C7C3A),
-  accent2_700: Color(0xFFC29C4E),
-  accent2_800: Color(0xFFDDBA70),
-  accent2_900: Color(0xFFF2DAA6),
+  accent100: Color(0xFF202B3C),
+  accent200: Color(0xFF303C4E),
+  accent300: Color(0xFF435068),
+  accent400: Color(0xFF5A6980),
+  accent500: Color(0xFF7C8BA1),
+  accent600: Color(0xFFA8B3C5),
+  accent700: Color(0xFFFFFFFF),
+  accent800: Color(0xFFFFFFFF),
+  accent900: Color(0xFFFFFFFF),
+  accent2_100: Color(0xFF202A3A),
+  accent2_200: Color(0xFF303B4E),
+  accent2_300: Color(0xFF435068),
+  accent2_400: Color(0xFF5A6980),
+  accent2_500: Color(0xFF7C8BA1),
+  accent2_600: Color(0xFF99A6BA),
+  accent2_700: Color(0xFFB8C3D3),
+  accent2_800: Color(0xFFD7DFEA),
+  accent2_900: Color(0xFFEEF2F8),
 );
 
 class AppColors {
@@ -218,7 +218,14 @@ class AppColors {
   );
   static Color get selectionFill => accent.withValues(alpha: .12);
   static Color get controlFill => _active.controlFill;
-  static Color get onControlFill => accent700;
+  static Color get onControlFill => _active.onControlFill;
+  static Color get glow => _active.accent;
+
+  static const white = Color(0xFFFFFFFF);
+  static const black = Color(0xFF000000);
+  static const transparent = Color(0x00000000);
+  static const destructive = Color(0xFFC4523F);
+  static const location = Color(0xFF2F80ED);
 
   static Color get bg => _active.bg;
   static Color get surface => _active.surface;
@@ -262,10 +269,14 @@ class AppColors {
 class AppRadius {
   AppRadius._();
 
+  static const indicator = 2.0;
+  static const inner = 8.0;
   static const sm = 12.0;
   static const md = 12.0;
-  static const inner = 8.0;
+  static const control = 18.0;
+  static const row = 20.0;
   static const lg = 24.0;
+  static const pill = 999.0;
 }
 
 /// Covers the Navigator too, so sheets and pushed routes recolor together.

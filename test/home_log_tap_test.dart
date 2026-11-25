@@ -1,12 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:fiveglow/models/prayer_log_status.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:prayertime/main.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
+import 'package:fiveglow/main.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
 
 // Every prayer sits just after midnight, so all of them have already passed
 // by the time this test runs (whatever the wall clock says) and every row on
@@ -57,26 +59,28 @@ void main() {
     });
   });
 
-  testWidgets('tapping a prayer row opens the log sheet', (tester) async {
-    await tester.pumpWidget(
-      PrayerTimeApp(
-        appState: AppState(
-          api: _AllPrayersPassedApi(),
-          notifications: NoopNotificationService(),
-          connectivity: const _AlwaysOnline(),
-          installTimes: () async => null,
-        ),
-      ),
+  testWidgets('prayer button saves and clears a mark without a sheet', (
+    tester,
+  ) async {
+    final state = AppState(
+      api: _AllPrayersPassedApi(),
+      notifications: NoopNotificationService(),
+      connectivity: const _AlwaysOnline(),
+      installTimes: () async => null,
     );
+    await tester.pumpWidget(FiveGlowApp(appState: state));
     await tester.pumpAndSettle();
 
     // Asr's time, unique on the screen — a plain tap, no swipe.
     await tester.ensureVisible(find.text('00:04'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('00:04'));
+    final button = find.byKey(const ValueKey('prayer-mark-asr'));
+    await tester.tap(button);
     await tester.pumpAndSettle();
-
-    expect(find.text('Как прошёл Аср?'), findsOneWidget);
-    expect(find.text('Прочитал вовремя'), findsOneWidget);
+    expect(state.prayerStatusFor(state.cityNow, 'asr'), PrayerLogStatus.onTime);
+    expect(find.text('Как прошёл Аср?'), findsNothing);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(state.prayerStatusFor(state.cityNow, 'asr'), isNull);
   });
 }

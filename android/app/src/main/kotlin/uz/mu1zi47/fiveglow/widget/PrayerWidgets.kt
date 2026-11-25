@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.widget
+package uz.mu1zi47.fiveglow.widget
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import uz.mu1zi47.prayertime.R
+import uz.mu1zi47.fiveglow.R
 
 /**
  * What the three home-screen widgets share: opening the app, the single
@@ -29,8 +29,8 @@ object PrayerWidgets {
         PrayerNextWidgetProvider::class.java,
     )
 
-    const val ACTION_REFRESH = "uz.mu1zi47.prayertime.widget.REFRESH"
-    const val ACTION_MARK_DONE = "uz.mu1zi47.prayertime.widget.MARK_DONE"
+    const val ACTION_REFRESH = "uz.mu1zi47.fiveglow.widget.REFRESH"
+    const val ACTION_MARK_DONE = "uz.mu1zi47.fiveglow.widget.MARK_DONE"
     const val EXTRA_DATE = "date"
     const val EXTRA_PRAYER = "prayer"
 

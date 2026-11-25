@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +7,6 @@ import '../models/app_locale.dart';
 import '../services/notification_sounds_bridge.dart';
 import '../services/now_bar_bridge.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/choice_sheet.dart';
 import '../widgets/screen_back_button.dart';
 import '../widgets/settings_widgets.dart';
@@ -34,10 +33,10 @@ class SystemSettingsScreen extends StatelessWidget {
           backgroundColor: AppColors.bg,
           body: ScreenContentInset(
             margin: EdgeInsets.fromLTRB(
-              18,
-              padding.top + 16,
-              18,
-              padding.bottom + 18,
+              AppSpacing.screen,
+              padding.top + AppSpacing.md,
+              AppSpacing.screen,
+              padding.bottom + AppSpacing.screen,
             ),
             child: ListView(
               padding: EdgeInsets.zero,
@@ -45,14 +44,16 @@ class SystemSettingsScreen extends StatelessWidget {
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.systemSettingsTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
+                      style: AppTextStyles.heading(
+                        fontSize: AppFontSize.heading,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.notificationsScreenTitle,
                   footer: _NowBarRow(appState: appState),
@@ -64,7 +65,9 @@ class SystemSettingsScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               t.azanAndReminders,
-                              style: AppTextStyles.body(fontSize: 15),
+                              style: AppTextStyles.body(
+                                fontSize: AppFontSize.body,
+                              ),
                             ),
                           ),
                           // The sheet says why and offers the fix; this is
@@ -73,11 +76,11 @@ class SystemSettingsScreen extends StatelessWidget {
                             Text(
                               t.notifBlockedShort,
                               style: AppTextStyles.body(
-                                fontSize: 14,
+                                fontSize: AppFontSize.body,
                                 color: AppColors.text.withValues(alpha: 0.5),
                               ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: AppSpacing.xxs),
                           ],
                         ],
                       ),
@@ -98,9 +101,11 @@ class SystemSettingsScreen extends StatelessWidget {
                           children: [
                             Text(
                               t.soundRowTitle,
-                              style: AppTextStyles.body(fontSize: 15),
+                              style: AppTextStyles.body(
+                                fontSize: AppFontSize.body,
+                              ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
                                 appState.sharedSound.label(t),
@@ -108,18 +113,18 @@ class SystemSettingsScreen extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyles.body(
-                                  fontSize: 14,
+                                  fontSize: AppFontSize.body,
                                   color: AppColors.text.withValues(alpha: 0.5),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: AppSpacing.xxs),
                           ],
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.appSettingsKicker,
                   children: [
@@ -255,23 +260,26 @@ class _NowBarRowState extends State<_NowBarRow> {
               Expanded(
                 child: Text(
                   nowBarTitle(t, status),
-                  style: AppTextStyles.body(fontSize: 15),
+                  style: AppTextStyles.body(fontSize: AppFontSize.body),
                 ),
               ),
               Text(
                 status.enabled ? t.nowBarOn : t.nowBarOff,
                 style: AppTextStyles.body(
-                  fontSize: 14,
+                  fontSize: AppFontSize.body,
                   color: AppColors.text.withValues(alpha: 0.5),
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xxs),
             ],
           ),
         ),
         if (status.enabled && status.needsDeveloperSwitch)
           Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 4),
+            padding: const EdgeInsets.only(
+              top: AppSpacing.sm,
+              bottom: AppSpacing.xxs,
+            ),
             child: NowBarDeveloperSwitchCard(status: status),
           ),
       ],

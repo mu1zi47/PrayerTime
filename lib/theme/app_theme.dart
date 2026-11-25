@@ -1,3 +1,4 @@
+import 'app_tokens.dart';
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
@@ -44,34 +45,116 @@ class AppTheme {
       brightness: brightness,
       scaffoldBackgroundColor: palette.bg,
       fontFamily: AppTextStyles.body().fontFamily,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: palette.accent,
-        brightness: brightness,
-        surface: palette.bg,
-      ),
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: palette.accent,
+            brightness: brightness,
+            surface: palette.bg,
+          ).copyWith(
+            primary: palette.accent,
+            onPrimary: palette.bg,
+            secondary: palette.accent2,
+            onSecondary: palette.bg,
+            tertiary: palette.text,
+            onTertiary: palette.bg,
+            primaryContainer: palette.controlFill,
+            onPrimaryContainer: palette.onControlFill,
+            secondaryContainer: palette.surface,
+            onSecondaryContainer: palette.text,
+            surfaceTint: AppColors.transparent,
+            onSurface: palette.text,
+            onSurfaceVariant: palette.text.withValues(
+              alpha: AppOpacity.secondary,
+            ),
+            outline: palette.divider,
+            error: AppColors.destructive,
+          ),
       textTheme: TextTheme(
-        bodyMedium: AppTextStyles.body(color: palette.text),
-        bodyLarge: AppTextStyles.body(color: palette.text),
+        bodySmall: AppTextStyles.body(
+          fontSize: AppFontSize.small,
+          color: palette.text,
+        ),
+        bodyMedium: AppTextStyles.body(
+          fontSize: AppFontSize.body,
+          color: palette.text,
+        ),
+        bodyLarge: AppTextStyles.body(
+          fontSize: AppFontSize.bodyLarge,
+          color: palette.text,
+        ),
+        labelSmall: AppTextStyles.body(
+          fontSize: AppFontSize.caption,
+          color: palette.text,
+        ),
+        labelMedium: AppTextStyles.body(
+          fontSize: AppFontSize.small,
+          color: palette.text,
+        ),
+        labelLarge: AppTextStyles.body(
+          fontSize: AppFontSize.body,
+          color: palette.text,
+        ),
+        titleSmall: AppTextStyles.heading(
+          fontSize: AppFontSize.bodyLarge,
+          color: palette.text,
+        ),
+        titleMedium: AppTextStyles.heading(
+          fontSize: AppFontSize.title,
+          color: palette.text,
+        ),
+        titleLarge: AppTextStyles.heading(
+          fontSize: AppFontSize.heading,
+          color: palette.text,
+        ),
+        headlineSmall: AppTextStyles.heading(
+          fontSize: AppFontSize.heading,
+          color: palette.text,
+        ),
+        headlineMedium: AppTextStyles.heading(
+          fontSize: AppFontSize.display,
+          color: palette.text,
+        ),
+        headlineLarge: AppTextStyles.heading(
+          fontSize: AppFontSize.timer,
+          color: palette.text,
+        ),
+        displaySmall: AppTextStyles.heading(
+          fontSize: AppFontSize.hero,
+          color: palette.text,
+        ),
+        displayMedium: AppTextStyles.heading(
+          fontSize: AppFontSize.hero,
+          color: palette.text,
+        ),
+        displayLarge: AppTextStyles.heading(
+          fontSize: AppFontSize.counter,
+          color: palette.text,
+        ),
       ),
       tooltipTheme: TooltipThemeData(
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.symmetric(horizontal: 18),
+        padding: const EdgeInsets.all(AppSpacing.md),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: palette.text.withValues(alpha: .08)),
+          border: Border.all(
+            color: palette.text.withValues(alpha: AppOpacity.border),
+          ),
           gradient: LinearGradient(
             colors: [
-              palette.surface.withValues(alpha: .78),
+              palette.surface.withValues(alpha: AppOpacity.strong),
               palette.surface.withValues(alpha: .48),
             ],
           ),
         ),
-        textStyle: AppTextStyles.body(fontSize: 14, color: palette.text),
+        textStyle: AppTextStyles.body(
+          fontSize: AppFontSize.body,
+          color: palette.text,
+        ),
         showDuration: const Duration(seconds: 5),
         exitDuration: const Duration(milliseconds: 140),
       ),
       splashFactory: InkRipple.splashFactory,
-      splashColor: palette.accent.withValues(alpha: .12),
+      splashColor: palette.accent.withValues(alpha: AppOpacity.tint),
       highlightColor: palette.accent.withValues(alpha: .06),
     );
   }

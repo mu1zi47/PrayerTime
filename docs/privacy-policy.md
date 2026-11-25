@@ -1,10 +1,10 @@
-# Политика конфиденциальности — Prayer times
+# Политика конфиденциальности — FiveGlow
 
 **Дата вступления в силу:** 6 сентября 2026 г.
 
 ## Коротко
 
-Приложение **Prayer times** («Время намаза») не собирает, не хранит на серверах
+Приложение **FiveGlow** не собирает, не хранит на серверах
 и не передаёт третьим лицам персональные данные. Всё, что вы отмечаете
 и настраиваете, остаётся на вашем устройстве.
 
@@ -65,13 +65,13 @@
 
 ---
 
-# Privacy Policy — Prayer times
+# Privacy Policy — FiveGlow
 
 **Effective date:** 6 September 2026
 
 ## In short
 
-**Prayer times** does not collect personal data, does not store it on any
+**FiveGlow** does not collect personal data, does not store it on any
 server, and does not share it with third parties. Everything you log and
 configure stays on your device.
 

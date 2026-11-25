@@ -1,11 +1,10 @@
+import '../theme/app_design_system.dart';
 import '../widgets/ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../data/reference_data.dart';
 import '../l10n/app_localizations.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/app_switch.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/choice_sheet.dart';
@@ -32,10 +31,10 @@ class PrayerSettingsScreen extends StatelessWidget {
           backgroundColor: AppColors.bg,
           body: ScreenContentInset(
             margin: EdgeInsets.fromLTRB(
-              18,
-              padding.top + 16,
-              18,
-              padding.bottom + 18,
+              AppSpacing.screen,
+              padding.top + AppSpacing.md,
+              AppSpacing.screen,
+              padding.bottom + AppSpacing.screen,
             ),
             child: ListView(
               padding: EdgeInsets.zero,
@@ -43,14 +42,16 @@ class PrayerSettingsScreen extends StatelessWidget {
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.prayerSettingsTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
+                      style: AppTextStyles.heading(
+                        fontSize: AppFontSize.heading,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.cityKicker,
                   children: [
@@ -62,12 +63,12 @@ class PrayerSettingsScreen extends StatelessWidget {
                       ),
                       child: Text(
                         appState.cityLabel(t),
-                        style: AppTextStyles.body(fontSize: 15),
+                        style: AppTextStyles.body(fontSize: AppFontSize.body),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.methodScreenTitle,
                   children: [
@@ -96,12 +97,12 @@ class PrayerSettingsScreen extends StatelessWidget {
                       ),
                       child: Text(
                         appState.methodLabel,
-                        style: AppTextStyles.body(fontSize: 15),
+                        style: AppTextStyles.body(fontSize: AppFontSize.body),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.madhabKicker,
                   children: [
@@ -130,12 +131,12 @@ class PrayerSettingsScreen extends StatelessWidget {
                         appState.madhab == 'shafi'
                             ? t.madhabShafi
                             : t.madhabHanafi,
-                        style: AppTextStyles.body(fontSize: 15),
+                        style: AppTextStyles.body(fontSize: AppFontSize.body),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 SettingsGroup(
                   kicker: t.tahajjudKicker,
                   children: [
@@ -146,7 +147,7 @@ class PrayerSettingsScreen extends StatelessWidget {
                       ),
                       child: Text(
                         t.tahajjudEnableRow,
-                        style: AppTextStyles.body(fontSize: 15),
+                        style: AppTextStyles.body(fontSize: AppFontSize.body),
                       ),
                     ),
                   ],

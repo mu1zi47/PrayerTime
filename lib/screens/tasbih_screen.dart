@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/settings_widgets.dart';
@@ -7,8 +8,6 @@ import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/tasbih_counter.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 
 class TasbihScreen extends StatefulWidget {
@@ -49,7 +48,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
   Future<void> _clear() async {
     final confirmed = await showAppModalBottomSheet<bool>(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       builder: (_) => const _ClearTasbihSheet(),
     );
@@ -65,7 +64,12 @@ class _TasbihScreenState extends State<TasbihScreen> {
       backgroundColor: AppColors.bg,
       body: SafeArea(
         child: ScreenContentInset(
-          margin: const EdgeInsets.fromLTRB(18, 16, 18, 28),
+          margin: const EdgeInsets.fromLTRB(
+            AppSpacing.screen,
+            AppSpacing.md,
+            AppSpacing.screen,
+            AppSpacing.xl,
+          ),
           child: SingleChildScrollView(
             padding: EdgeInsets.zero,
             child: Column(
@@ -73,24 +77,26 @@ class _TasbihScreenState extends State<TasbihScreen> {
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.pop(context)),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.tasbihTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
+                      style: AppTextStyles.heading(
+                        fontSize: AppFontSize.heading,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: AppSpacing.xl),
                 if (counter == null)
                   const Padding(
-                    padding: EdgeInsets.all(64),
+                    padding: EdgeInsets.all(AppSpacing.huge),
                     child: CircularProgressIndicator(),
                   )
                 else ...[
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(AppSpacing.xxs),
                       decoration: glassDecoration(radius: AppRadius.md),
                       child: LayoutBuilder(
                         builder: (context, constraints) {
@@ -128,7 +134,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                           child: Padding(
                                             key: ValueKey('tasbih-mode-$limit'),
                                             padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
+                                              vertical: AppSpacing.sm,
                                             ),
                                             child: AppPressContent(
                                               child: AnimatedDefaultTextStyle(
@@ -136,10 +142,10 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                                   milliseconds: 200,
                                                 ),
                                                 style: AppTextStyles.body(
-                                                  fontSize: 13,
+                                                  fontSize: AppFontSize.small,
                                                   fontWeight: FontWeight.w700,
                                                   color: counter.limit == limit
-                                                      ? AppColors.onControlFill
+                                                      ? AppColors.accent
                                                       : AppColors.text
                                                             .withValues(
                                                               alpha: 0.5,
@@ -168,7 +174,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 38),
+                  const SizedBox(height: AppSpacing.xl),
                   Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 270),
@@ -187,7 +193,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                 limit: counter.limit,
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(AppSpacing.sm),
                                 child: Material(
                                   color: AppColors.surface,
                                   shape: const CircleBorder(),
@@ -214,7 +220,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                             'tasbih-current',
                                           ),
                                           style: AppTextStyles.heading(
-                                            fontSize: 64,
+                                            fontSize: AppFontSize.counter,
                                             color: AppColors.accent700,
                                           ),
                                         ),
@@ -237,7 +243,8 @@ class _TasbihScreenState extends State<TasbihScreen> {
                                                       counter.limit,
                                                     ),
                                                     style: AppTextStyles.body(
-                                                      fontSize: 16,
+                                                      fontSize:
+                                                          AppFontSize.bodyLarge,
                                                       color: AppColors.text
                                                           .withValues(
                                                             alpha: 0.45,
@@ -257,32 +264,35 @@ class _TasbihScreenState extends State<TasbihScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.lg),
                   Text(
                     t.tasbihTapHint,
                     style: AppTextStyles.body(
-                      fontSize: 13,
+                      fontSize: AppFontSize.small,
                       color: AppColors.text.withValues(alpha: 0.5),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.xl),
                   Text(
                     t.tasbihTotal,
                     style: AppTextStyles.body(
-                      fontSize: 13,
+                      fontSize: AppFontSize.small,
                       color: AppColors.text.withValues(alpha: 0.6),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.compact),
                   _AnimatedCount(
                     value: counter.total,
                     textKey: const ValueKey('tasbih-total'),
-                    style: AppTextStyles.heading(fontSize: 28),
+                    style: AppTextStyles.heading(fontSize: AppFontSize.display),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.xl),
                   TextButton.icon(
                     onPressed: counter.total == 0 ? null : _clear,
-                    icon: const Icon(Icons.restart_alt_rounded, size: 18),
+                    icon: const Icon(
+                      Icons.restart_alt_rounded,
+                      size: AppIconSize.medium,
+                    ),
                     label: Text(t.tasbihClear),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.accent700,
@@ -308,37 +318,42 @@ class _ClearTasbihSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          AppSpacing.xs,
+          AppSpacing.screen,
+          AppSpacing.md,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
-                width: 36,
-                height: 4,
+                width: AppSize.sheetHandleWidth,
+                height: AppSize.sheetHandleHeight,
                 decoration: BoxDecoration(
                   color: AppColors.divider,
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.screen),
             Text(
               t.tasbihClearTitle,
               textAlign: TextAlign.center,
-              style: AppTextStyles.heading(fontSize: 18),
+              style: AppTextStyles.heading(fontSize: AppFontSize.title),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               t.tasbihClearBody,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(
-                fontSize: 14,
+                fontSize: AppFontSize.body,
                 color: AppColors.text.withValues(alpha: 0.65),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             ActionGroup(
               children: [
                 OptRow(
@@ -434,7 +449,7 @@ class _AnimatedTasbihRingState extends State<_AnimatedTasbihRing> {
           strokeWidth: 4,
           strokeCap: StrokeCap.round,
           color: AppColors.accent,
-          backgroundColor: AppColors.text.withValues(alpha: .08),
+          backgroundColor: AppColors.text.withValues(alpha: AppOpacity.border),
         ),
       ),
     );

@@ -1,8 +1,8 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'package:flutter/material.dart';
 
 import '../models/notif_mode.dart';
-import '../theme/app_colors.dart';
 
 class NotifModeSelector extends StatelessWidget {
   final NotifMode value;
@@ -32,12 +32,14 @@ class NotifModeSelector extends StatelessWidget {
     final shown = enabled ? value : NotifMode.off;
     final selectedIndex = _modes.indexOf(shown);
     // Semantic colors interpolate across the reversed light/dark ramps.
-    final soft = AppColors.onControlFill;
+    final soft = AppColors.accent;
     final selector = Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(AppSpacing.xxs),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.text.withValues(alpha: .08)),
-        color: AppColors.text.withValues(alpha: .04),
+        border: Border.all(
+          color: AppColors.text.withValues(alpha: AppOpacity.border),
+        ),
+        color: AppColors.text.withValues(alpha: AppOpacity.faint),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Stack(
@@ -53,7 +55,7 @@ class NotifModeSelector extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: AppColors.text.withValues(alpha: .08),
+                  color: AppColors.text.withValues(alpha: AppOpacity.border),
                 ),
                 gradient: AppColors.selectionGradient,
                 borderRadius: BorderRadius.circular(AppRadius.inner),
@@ -74,7 +76,7 @@ class NotifModeSelector extends StatelessWidget {
                     child: AppPressContent(
                       child: Icon(
                         mode.icon,
-                        size: 16,
+                        size: AppIconSize.small,
                         color: mode == shown
                             ? soft
                             : AppColors.text.withValues(alpha: 0.5),

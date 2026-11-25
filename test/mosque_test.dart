@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:prayertime/data/mosque_clusters.dart';
-import 'package:prayertime/models/mosque.dart';
-import 'package:prayertime/services/mosque_cache.dart';
-import 'package:prayertime/services/mosque_service.dart';
+import 'package:fiveglow/data/mosque_clusters.dart';
+import 'package:fiveglow/models/mosque.dart';
+import 'package:fiveglow/services/mosque_cache.dart';
+import 'package:fiveglow/services/mosque_service.dart';
 
 /// One Overpass CSV row: type, id, lat, lon, then the 11 tags in the order
 /// Mosque.overpassQuery asks for them.

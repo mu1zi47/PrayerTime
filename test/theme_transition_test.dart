@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/theme/app_colors.dart';
-import 'package:prayertime/widgets/icon_badge.dart';
+import 'package:fiveglow/theme/app_colors.dart';
+import 'package:fiveglow/widgets/icon_badge.dart';
 
 void main() {
   testWidgets(

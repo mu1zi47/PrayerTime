@@ -1,10 +1,9 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'ambient_surface.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import 'icon_badge.dart';
 
 /// Sits above the per-prayer notification modes while the phone isn't
@@ -23,7 +22,7 @@ class NotificationsBlockedNotice extends StatelessWidget {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return GlassPanel(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -31,39 +30,39 @@ class NotificationsBlockedNotice extends StatelessWidget {
             children: [
               const IconBadge(
                 Icons.notifications_off_rounded,
-                size: 30,
-                iconSize: 16,
+                size: AppIconSize.display,
+                iconSize: AppIconSize.small,
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   t.notifBlockedTitle,
-                  style: AppTextStyles.heading(fontSize: 15),
+                  style: AppTextStyles.heading(fontSize: AppFontSize.body),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             t.notifBlockedBody,
             style: AppTextStyles.body(
-              fontSize: 13.5,
+              fontSize: AppFontSize.body,
               fontWeight: FontWeight.w400,
               color: AppColors.text.withValues(alpha: 0.8),
             ).copyWith(height: 1.4),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.md),
           AppTap(
             feedbackOnChild: false,
             onTap: onAllow,
             behavior: HitTestBehavior.opaque,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: AppColors.text.withValues(alpha: .08),
+                  color: AppColors.text.withValues(alpha: AppOpacity.border),
                 ),
                 gradient: AppColors.selectionGradient,
                 borderRadius: BorderRadius.circular(AppRadius.inner),
@@ -73,7 +72,7 @@ class NotificationsBlockedNotice extends StatelessWidget {
                   t.notifBlockedAllow,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.body(
-                    fontSize: 14,
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w700,
                     color: AppColors.accent700,
                   ),

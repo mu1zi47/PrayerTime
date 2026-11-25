@@ -3,4 +3,4 @@
     <gradient android:angle="315" android:startColor="@color/widget_panel_top_light" android:endColor="@color/widget_bg_light" />
     <stroke android:width="1dp" android:color="@color/widget_border_light" />
 </shape>
-</item><item><shape android:shape="rectangle"><corners android:radius="24dp" /><gradient android:type="radial" android:centerX="0.05" android:centerY="0.05" android:gradientRadius="180dp" android:startColor="#14E7B248" android:endColor="#00E7B248" /></shape></item></layer-list>
+</item><item><shape android:shape="rectangle"><corners android:radius="24dp" /><gradient android:type="radial" android:centerX="0.05" android:centerY="0.05" android:gradientRadius="180dp" android:startColor="@color/app_ds_dark_glow_14" android:endColor="@color/app_ds_dark_glow_00" /></shape></item></layer-list>

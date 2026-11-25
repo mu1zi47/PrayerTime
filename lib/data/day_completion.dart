@@ -7,11 +7,8 @@ const requiredPrayerKeys = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 
 /// How a single day reads on the calendar (see PrayerCalendarScreen).
 enum DayCompletion {
-  /// All five prayed, none late.
+  /// All five prayers are marked as read.
   onTime,
-
-  /// All five prayed, at least one qada.
-  qada,
 
   /// Locked (its edit window has closed, see AppState.isDayLocked) and
   /// still not fully marked — a real miss.
@@ -30,10 +27,6 @@ DayCompletion classifyDay(
   required bool isLocked,
 }) {
   final fullyMarked = requiredPrayerKeys.every(dayLog.containsKey);
-  final allOnTime =
-      fullyMarked &&
-      requiredPrayerKeys.every((k) => dayLog[k] == PrayerLogStatus.onTime);
-  if (allOnTime) return DayCompletion.onTime;
-  if (fullyMarked) return DayCompletion.qada;
+  if (fullyMarked) return DayCompletion.onTime;
   return isLocked ? DayCompletion.missed : DayCompletion.upcoming;
 }

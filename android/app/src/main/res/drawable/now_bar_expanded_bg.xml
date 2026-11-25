@@ -22,7 +22,7 @@
             <gradient
                 android:centerX="0.12"
                 android:centerY="0.12"
-                android:endColor="#00C69739"
+                android:endColor="@color/app_ds_dark_chip_00"
                 android:gradientRadius="220dp"
                 android:startColor="@color/now_bar_expanded_glow"
                 android:type="radial" />

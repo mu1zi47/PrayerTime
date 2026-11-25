@@ -51,7 +51,7 @@ class MosqueService {
 
   // Overpass's usage policy asks for an identifying User-Agent, same as
   // Nominatim's (see GeocodingService).
-  static const _userAgent = 'PrayerTimeApp (Flutter prayer times app)';
+  static const _userAgent = 'FiveGlowApp (Flutter prayer times app)';
 
   /// Alternates which of the two main servers goes first, so lookups
   /// spread over both instead of all queueing on one.

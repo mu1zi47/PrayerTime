@@ -1,11 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/data/day_completion.dart';
-import 'package:prayertime/models/prayer_log_status.dart';
+import 'package:fiveglow/data/day_completion.dart';
+import 'package:fiveglow/models/prayer_log_status.dart';
 
 void main() {
-  Map<String, PrayerLogStatus> fullDay({bool allOnTime = true}) => {
-    for (final k in requiredPrayerKeys)
-      k: allOnTime ? PrayerLogStatus.onTime : PrayerLogStatus.qada,
+  Map<String, PrayerLogStatus> fullDay() => {
+    for (final k in requiredPrayerKeys) k: PrayerLogStatus.onTime,
   };
 
   group('classifyDay', () {
@@ -13,9 +12,9 @@ void main() {
       expect(classifyDay(fullDay(), isLocked: true), DayCompletion.onTime);
     });
 
-    test('all five marked but one late is qada', () {
-      final log = fullDay()..['isha'] = PrayerLogStatus.qada;
-      expect(classifyDay(log, isLocked: true), DayCompletion.qada);
+    test('legacy late mark is read and completes the day', () {
+      final log = fullDay()..['isha'] = PrayerLogStatus.fromName('qada')!;
+      expect(classifyDay(log, isLocked: true), DayCompletion.onTime);
     });
 
     test('incomplete and locked is missed', () {

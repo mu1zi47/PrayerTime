@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_chevron.dart';
@@ -7,8 +8,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/allah_name.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 
 class AllahNameDetailScreen extends StatefulWidget {
@@ -60,10 +59,10 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
           final isFavorite = widget.appState.isFavoriteName(name.number);
           return ScreenContentInset(
             margin: EdgeInsets.fromLTRB(
-              18,
-              padding.top + 16,
-              18,
-              padding.bottom + 24,
+              AppSpacing.screen,
+              padding.top + AppSpacing.md,
+              AppSpacing.screen,
+              padding.bottom + AppSpacing.lg,
             ),
             child: ListView(
               padding: EdgeInsets.zero,
@@ -71,11 +70,13 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         t.allahNamesTitle,
-                        style: AppTextStyles.heading(fontSize: 22),
+                        style: AppTextStyles.heading(
+                          fontSize: AppFontSize.heading,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -84,8 +85,8 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                       onTap: () =>
                           widget.appState.toggleFavoriteName(name.number),
                       child: Container(
-                        width: 38,
-                        height: 38,
+                        width: AppSize.largeBadge,
+                        height: AppSize.largeBadge,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: AppColors.surface,
@@ -96,7 +97,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                             isFavorite
                                 ? Icons.star_rounded
                                 : Icons.star_border_rounded,
-                            size: 20,
+                            size: AppIconSize.medium,
                             color: isFavorite
                                 ? AppColors.accent
                                 : AppColors.text,
@@ -106,7 +107,7 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.lg),
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -123,8 +124,8 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 44,
-                          vertical: 32,
+                          horizontal: AppSpacing.xxl,
+                          vertical: AppSpacing.xl,
                         ),
                         // The app's icon colors (see IconBadge): soft gold,
                         // deep gold text.
@@ -133,32 +134,32 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                           child: Column(
                             children: [
                               NumberBadge(name.number),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: AppSpacing.lg),
                               Text(
                                 name.arabic,
                                 textDirection: TextDirection.rtl,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.heading(
-                                  fontSize: 40,
+                                  fontSize: AppFontSize.hero,
                                   color: AppColors.accent700,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.sm),
                               Text(
                                 name.transliteration,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.heading(
-                                  fontSize: 22,
+                                  fontSize: AppFontSize.heading,
                                   color: AppColors.accent700,
                                 ),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: AppSpacing.compact),
                               Text(
                                 name.meaning,
                                 textAlign: TextAlign.center,
                                 style:
                                     AppTextStyles.body(
-                                      fontSize: 14,
+                                      fontSize: AppFontSize.body,
                                       color: AppColors.accent700,
                                     ).copyWith(
                                       color: AppColors.accent700.withValues(
@@ -189,25 +190,26 @@ class _AllahNameDetailScreenState extends State<AllahNameDetailScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(18),
+                  padding: const EdgeInsets.all(AppSpacing.screen),
                   decoration: glassDecoration(radius: AppRadius.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         t.descriptionLabel,
-                        style: AppTextStyles.heading(fontSize: 15).copyWith(
-                          color: AppColors.text.withValues(alpha: 0.55),
-                        ),
+                        style: AppTextStyles.heading(fontSize: AppFontSize.body)
+                            .copyWith(
+                              color: AppColors.text.withValues(alpha: 0.55),
+                            ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         name.description,
                         style: AppTextStyles.body(
-                          fontSize: 15,
+                          fontSize: AppFontSize.body,
                           color: AppColors.text,
                         ).copyWith(height: 1.5),
                       ),

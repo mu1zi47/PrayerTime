@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import 'package:flutter/material.dart';
 
@@ -5,8 +6,6 @@ import '../l10n/app_localizations.dart';
 import '../models/notif_mode.dart';
 import '../state/app_state.dart';
 import '../widgets/icon_badge.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/notif_mode_selector.dart';
 import '../widgets/notifications_blocked_notice.dart';
@@ -21,7 +20,7 @@ import 'end_reminders_sheet.dart';
 Future<void> showNotificationsSheet(BuildContext context, AppState appState) {
   return showAppModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     isScrollControlled: true,
     builder: (_) => _NotificationsSheet(appState: appState),
   );
@@ -59,28 +58,33 @@ class _NotificationsSheet extends StatelessWidget {
             maxHeight: MediaQuery.sizeOf(context).height * 0.85,
           ),
           child: Container(
-            padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.screen,
+              AppSpacing.xs,
+              AppSpacing.screen,
+              bottomInset + AppSpacing.md,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
                   child: Container(
-                    width: 36,
-                    height: 4,
+                    width: AppSize.sheetHandleWidth,
+                    height: AppSize.sheetHandleHeight,
                     decoration: BoxDecoration(
                       color: AppColors.divider,
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.screen),
                 Text(
                   t.notificationsScreenTitle,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.heading(fontSize: 18),
+                  style: AppTextStyles.heading(fontSize: AppFontSize.title),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.screen),
                 Flexible(
                   child: SingleChildScrollView(
                     child: Column(
@@ -90,7 +94,7 @@ class _NotificationsSheet extends StatelessWidget {
                           NotificationsBlockedNotice(
                             onAllow: appState.allowNotifications,
                           ),
-                          const SizedBox(height: 18),
+                          const SizedBox(height: AppSpacing.screen),
                         ],
                         ActionGroup(
                           children: [
@@ -113,20 +117,22 @@ class _NotificationsSheet extends StatelessWidget {
                                   children: [
                                     IconBadge(
                                       iconForPrayer(kind),
-                                      size: 32,
-                                      iconSize: 16,
+                                      size: AppIconSize.display,
+                                      iconSize: AppIconSize.small,
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: AppSpacing.sm),
                                     Text(
                                       nameForPrayer(t, kind),
-                                      style: AppTextStyles.body(fontSize: 15),
+                                      style: AppTextStyles.body(
+                                        fontSize: AppFontSize.body,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         ActionGroup(
                           children: [
                             AnimatedOpacity(
@@ -143,14 +149,16 @@ class _NotificationsSheet extends StatelessWidget {
                                   children: [
                                     const IconBadge(
                                       Icons.alarm_rounded,
-                                      size: 32,
-                                      iconSize: 16,
+                                      size: AppIconSize.display,
+                                      iconSize: AppIconSize.small,
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: AppSpacing.sm),
                                     Expanded(
                                       child: Text(
                                         t.endRemindersName,
-                                        style: AppTextStyles.body(fontSize: 15),
+                                        style: AppTextStyles.body(
+                                          fontSize: AppFontSize.body,
+                                        ),
                                       ),
                                     ),
                                   ],

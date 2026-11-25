@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.nowbar
+package uz.mu1zi47.fiveglow.nowbar
 
 import android.Manifest
 import android.app.AlarmManager
@@ -25,9 +25,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import org.json.JSONObject
-import uz.mu1zi47.prayertime.R
-import uz.mu1zi47.prayertime.widget.PrayerWidgetState
-import uz.mu1zi47.prayertime.widget.PrayerWidgetStore
+import uz.mu1zi47.fiveglow.R
+import uz.mu1zi47.fiveglow.widget.PrayerWidgetState
+import uz.mu1zi47.fiveglow.widget.PrayerWidgetStore
 
 /**
  * The always-there "current prayer" notification: the prayer that's on now,
@@ -563,7 +563,7 @@ object PrayerStatusNotifier {
             putExtra(PrayerStatusReceiver.EXTRA_PRAYER, prayerKey)
             // Same reason as the widget's: extras don't make PendingIntents
             // distinct, so the day/prayer goes in the data URI too.
-            data = Uri.parse("prayertime://status-mark/$dateKey/$prayerKey")
+            data = Uri.parse("fiveglow://status-mark/$dateKey/$prayerKey")
         }
         return PendingIntent.getBroadcast(
             context,

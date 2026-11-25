@@ -10,6 +10,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/day_completion.dart';
+import '../data/next_prayer.dart';
+import '../widgets/prayer_icon.dart' show PrayerKind;
 import '../data/reference_data.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_locale.dart';
@@ -1048,11 +1050,26 @@ class AppState extends ChangeNotifier {
     return true;
   }
 
+  /// All entry points use the schedule in the selected city's time zone.
+  bool canMarkPrayer(DateTime date, String prayerKey) {
+    if (!requiredPrayerKeys.contains(prayerKey)) return false;
+    final now = cityNow;
+    final today = DateTime.utc(now.year, now.month, now.day);
+    final target = DateTime.utc(date.year, date.month, date.day);
+    if (target.isAfter(today)) return false;
+    if (target.isBefore(today)) return true;
+    final day = todayPrayerDay;
+    if (day == null) return false;
+    final kind = PrayerKind.values.firstWhere((kind) => kind.name == prayerKey);
+    return hasPrayerTimePassed(day, kind, now);
+  }
+
   void setPrayerStatus(
     DateTime date,
     String prayerKey,
     PrayerLogStatus? status,
   ) {
+    if (status != null && !canMarkPrayer(date, prayerKey)) return;
     final key = _dateKey(date);
     final day = _prayerLog.putIfAbsent(key, () => {});
     if (status == null || day[prayerKey] == status) {

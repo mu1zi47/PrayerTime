@@ -6,12 +6,12 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:prayertime/main.dart' as app;
-import 'package:prayertime/navigation.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/screens/names_screen.dart';
-import 'package:prayertime/screens/notification_sound_sheet.dart';
-import 'package:prayertime/models/notif_sound.dart';
+import 'package:fiveglow/main.dart' as app;
+import 'package:fiveglow/navigation.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/screens/names_screen.dart';
+import 'package:fiveglow/screens/notification_sound_sheet.dart';
+import 'package:fiveglow/models/notif_sound.dart';
 
 final _frames = <FrameTiming>[];
 final _clock = Stopwatch()..start();
@@ -21,7 +21,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SchedulerBinding.instance.addTimingsCallback(_frames.addAll);
   final state = AppState();
-  runApp(app.PrayerTimeApp(appState: state));
+  runApp(app.FiveGlowApp(appState: state));
   unawaited(_run(state));
 }
 

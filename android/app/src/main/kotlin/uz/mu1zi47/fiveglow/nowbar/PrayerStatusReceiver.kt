@@ -1,11 +1,11 @@
-package uz.mu1zi47.prayertime.nowbar
+package uz.mu1zi47.fiveglow.nowbar
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import uz.mu1zi47.prayertime.EndReminders
-import uz.mu1zi47.prayertime.widget.PrayerWidgets
-import uz.mu1zi47.prayertime.widget.PrayerWidgetStore
+import uz.mu1zi47.fiveglow.EndReminders
+import uz.mu1zi47.fiveglow.widget.PrayerWidgets
+import uz.mu1zi47.fiveglow.widget.PrayerWidgetStore
 
 /**
  * Everything that makes [PrayerStatusNotifier] redraw.
@@ -47,9 +47,9 @@ class PrayerStatusReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_REFRESH = "uz.mu1zi47.prayertime.status.REFRESH"
-        const val ACTION_DISMISSED = "uz.mu1zi47.prayertime.status.DISMISSED"
-        const val ACTION_MARK_DONE = "uz.mu1zi47.prayertime.status.MARK_DONE"
+        const val ACTION_REFRESH = "uz.mu1zi47.fiveglow.status.REFRESH"
+        const val ACTION_DISMISSED = "uz.mu1zi47.fiveglow.status.DISMISSED"
+        const val ACTION_MARK_DONE = "uz.mu1zi47.fiveglow.status.MARK_DONE"
         const val EXTRA_DATE = "date"
         const val EXTRA_PRAYER = "prayer"
         private const val ACTION_QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON"

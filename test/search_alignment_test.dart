@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/widgets/app_search_field.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/widgets/app_search_field.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 void main() {
   testWidgets('search and clear icons have equal visible edge spacing', (

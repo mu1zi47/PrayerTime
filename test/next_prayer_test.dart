@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/data/next_prayer.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/widgets/prayer_icon.dart';
+import 'package:fiveglow/data/next_prayer.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/widgets/prayer_icon.dart';
 
 void main() {
   // AppState.cityNow encodes "wall clock time in the selected city" as a

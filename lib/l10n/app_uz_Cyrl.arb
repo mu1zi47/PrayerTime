@@ -6,6 +6,9 @@
   "navSettings": "Созламалар",
 
   "nextPrayerLabel": "Кейинги намоз",
+  "homeScheduleButton": "Жадвал",
+  "homeCalendarButton": "Тақвим",
+  "homeNextPrayerTomorrow": "Кейинги намоз · Эртага",
   "nextPrayerTomorrowLabel": "Эртага, {date}",
   "@nextPrayerTomorrowLabel": {
     "placeholders": {
@@ -371,7 +374,7 @@
   "soundPickerDone": "Тайёр",
   "soundListUnavailable": "Телефон овозларини олиб бўлмади",
 
-  "calendarNotMarked": "Белгиланмаган",
+  "calendarNotMarked": "Ўқилмаган",
   "calendarDayPanelKicker": "Намозларни белгиланг",
   "namesNoticeTitle": "Ҳозирча фақат ўзбекча",
   "namesNoticeBody": "Аллоҳ исмлари ва уларнинг шарҳи ҳозирча фақат ўзбек (кирилл) тилида мавжуд. Бошқа тилларга таржималари кейинги янгиланишларда қўшилади.",
@@ -425,5 +428,24 @@
   "tasbihCancel": "Бекор қилиш",
   "tasbihClear": "Тозалаш",
   "onboardingSkip": "Ўтказиб юбориш",
-  "onboardingNowBarBody": "Жорий намоз ва қолган вақтни доимий билдиришномада ёки Now Bar’да кўрсатиш. Дастлаб ўчирилган. Ҳозир ёки кейин созламаларда ёқиш мумкин."
+  "onboardingNowBarBody": "Жорий намоз ва қолган вақтни доимий билдиришномада ёки Now Bar’да кўрсатиш. Дастлаб ўчирилган. Ҳозир ёки кейин созламаларда ёқиш мумкин.",
+  "mosquePreviewTitle": "Яқин масжид",
+  "mosquePreviewEnable": "Рухсат бериш",
+  "mosquePreviewLocationHint": "Энг яқин масжидни топиш учун жойлашувингизга рухсат беринг.",
+  "mosquePreviewDistance": "Тўғри чизиқ бўйлаб тахминан {distance}",
+  "mosquePreviewApproximate": "Жойлашув тахминий аниқланган",
+  "mosquePreviewEmpty": "Бу ҳудудда масжидлар топилмади",
+  "@mosquePreviewDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "mosquePreviewTileLoading": "Харита юкланмоқда…",
+  "mosquePreviewTileError": "Харита очилмади. Очиш учун босинг",
+  "mosquePreviewLoadingHint": "Жойлашувингиз ва энг яқин масжид аниқланмоқда.",
+  "mosquePreviewSearching": "Яқин атрофдан қидирилмоқда…",
+  "mosquePreviewPermissionSettings": "Энг яқин масжидни топиш учун илова созламаларида жойлашувга рухсат беринг.",
+  "homeCurrentPrayer": "Ҳозир"
 }

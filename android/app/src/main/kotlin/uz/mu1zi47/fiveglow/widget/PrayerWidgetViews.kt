@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.widget
+package uz.mu1zi47.fiveglow.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetProvider
@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.SystemClock
 import android.view.View
 import android.widget.RemoteViews
-import uz.mu1zi47.prayertime.R
+import uz.mu1zi47.fiveglow.R
 
 /**
  * The two shapes a prayer widget can take, and how each one is drawn.
@@ -187,7 +187,7 @@ object PrayerWidgetViews {
             // not part of the "same intent" comparison), so the day/prayer
             // goes in the data URI too — otherwise yesterday's Isha button
             // could be reused for today's Fajr.
-            data = Uri.parse("prayertime://mark/${provider.simpleName}/$dateKey/$prayerKey")
+            data = Uri.parse("fiveglow://mark/${provider.simpleName}/$dateKey/$prayerKey")
         }
         return PendingIntent.getBroadcast(
             context,

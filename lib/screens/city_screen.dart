@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_search_field.dart';
 import '../widgets/settings_widgets.dart';
@@ -13,8 +14,6 @@ import '../services/geocoding_service.dart';
 import '../services/location_service.dart';
 import '../state/app_state.dart';
 import '../widgets/icon_badge.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/edge_gesture_guard.dart';
 import '../widgets/screen_back_button.dart';
@@ -186,20 +185,27 @@ class _CityScreenState extends State<CityScreen> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, 0),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.screen,
+              padding.top + AppSpacing.md,
+              AppSpacing.screen,
+              AppSpacing.none,
+            ),
             child: Column(
               children: [
                 Row(
                   children: [
                     ScreenBackButton(onTap: () => Navigator.of(context).pop()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.citySelectTitle,
-                      style: AppTextStyles.heading(fontSize: 22),
+                      style: AppTextStyles.heading(
+                        fontSize: AppFontSize.heading,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 ActionGroup(
                   children: [
                     OptRow(
@@ -215,7 +221,7 @@ class _CityScreenState extends State<CityScreen> {
                                 color: AppColors.accent,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppSpacing.sm),
                           ],
                           Expanded(
                             child: Text(
@@ -223,7 +229,7 @@ class _CityScreenState extends State<CityScreen> {
                                   ? t.cityAutoDetecting
                                   : t.cityAutoDetect,
                               style: AppTextStyles.body(
-                                fontSize: 15,
+                                fontSize: AppFontSize.body,
                                 color: AppColors.accent,
                               ),
                             ),
@@ -234,7 +240,7 @@ class _CityScreenState extends State<CityScreen> {
                   ],
                 ),
                 if (_locationError != null) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Row(
                     children: [
                       Expanded(
@@ -242,7 +248,7 @@ class _CityScreenState extends State<CityScreen> {
                           _locationError!,
                           style:
                               AppTextStyles.body(
-                                fontSize: 12,
+                                fontSize: AppFontSize.small,
                                 color: AppColors.text,
                               ).copyWith(
                                 color: AppColors.text.withValues(alpha: 0.6),
@@ -254,7 +260,7 @@ class _CityScreenState extends State<CityScreen> {
                         child: Text(
                           t.cityOpenSettingsButton,
                           style: AppTextStyles.body(
-                            fontSize: 12,
+                            fontSize: AppFontSize.small,
                             color: AppColors.accent,
                           ),
                         ),
@@ -265,10 +271,12 @@ class _CityScreenState extends State<CityScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screen,
+              ),
               child: GlassPanel(
                 child: EdgeGestureGuard(
                   bottom: true,
@@ -288,21 +296,23 @@ class _CityScreenState extends State<CityScreen> {
                         ],
                       ),
                       if (_onlineResults.isNotEmpty) ...[
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.xxs,
+                          ),
                           child: Text(
                             t.cityOnlineResultsTitle,
                             style:
                                 AppTextStyles.body(
-                                  fontSize: 12,
+                                  fontSize: AppFontSize.small,
                                   color: AppColors.text,
                                 ).copyWith(
                                   color: AppColors.text.withValues(alpha: 0.55),
                                 ),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         for (final r in _onlineResults)
                           _CityRow(
                             showDivider: r != _onlineResults.last,
@@ -315,13 +325,13 @@ class _CityScreenState extends State<CityScreen> {
                           ),
                       ] else if (hasQuery && cities.isEmpty && !_searching)
                         Padding(
-                          padding: const EdgeInsets.only(top: 24),
+                          padding: const EdgeInsets.only(top: AppSpacing.lg),
                           child: Text(
                             t.nothingFound,
                             textAlign: TextAlign.center,
                             style:
                                 AppTextStyles.body(
-                                  fontSize: 14,
+                                  fontSize: AppFontSize.body,
                                   color: AppColors.text,
                                 ).copyWith(
                                   color: AppColors.text.withValues(alpha: 0.55),
@@ -334,10 +344,10 @@ class _CityScreenState extends State<CityScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           SafeArea(
             top: false,
-            minimum: const EdgeInsets.only(bottom: 16),
+            minimum: const EdgeInsets.only(bottom: AppSpacing.md),
             child: AppSearchField(
               controller: _searchController,
               hint: AppLocalizations.of(context)!.citySearchHint,
@@ -380,8 +390,12 @@ class _CityRow extends StatelessWidget {
             children: [
               // The chosen city's badge is filled the other way round, so it
               // stands out from the rest of the list.
-              IconBadge(Icons.location_on_rounded, size: 32, iconSize: 16),
-              const SizedBox(width: 12),
+              IconBadge(
+                Icons.location_on_rounded,
+                size: AppIconSize.display,
+                iconSize: AppIconSize.small,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,14 +403,14 @@ class _CityRow extends StatelessWidget {
                     Text(
                       name,
                       style: AppTextStyles.heading(
-                        fontSize: 14,
+                        fontSize: AppFontSize.body,
                         color: selected ? AppColors.accent : AppColors.text,
                       ),
                     ),
                     Text(
                       country,
                       style: AppTextStyles.body(
-                        fontSize: 11,
+                        fontSize: AppFontSize.caption,
                         color: AppColors.text,
                       ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
                     ),
@@ -404,7 +418,11 @@ class _CityRow extends StatelessWidget {
                 ),
               ),
               if (selected)
-                Icon(Icons.check_rounded, size: 16, color: AppColors.accent),
+                Icon(
+                  Icons.check_rounded,
+                  size: AppIconSize.small,
+                  color: AppColors.accent,
+                ),
             ],
           ),
         ),

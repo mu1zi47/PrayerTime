@@ -1,19 +1,20 @@
+import 'package:fiveglow/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prayertime/widgets/app_switch.dart';
+import 'package:fiveglow/widgets/app_switch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:prayertime/main.dart';
-import 'package:prayertime/models/notif_mode.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/widgets/notif_mode_selector.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
-import 'package:prayertime/widgets/settings_widgets.dart';
+import 'package:fiveglow/main.dart';
+import 'package:fiveglow/models/notif_mode.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/widgets/notif_mode_selector.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
+import 'package:fiveglow/widgets/settings_widgets.dart';
 
 class _InstantFakeApi extends PrayerTimesApi {
   @override
@@ -68,7 +69,7 @@ AppState _appState({
 );
 
 Widget _app({InstallTimes? installTimes}) =>
-    PrayerTimeApp(appState: _appState(installTimes: installTimes));
+    FiveGlowApp(appState: _appState(installTimes: installTimes));
 
 final _installed = DateTime.utc(2026, 9, 15, 21, 59, 29);
 
@@ -85,7 +86,7 @@ void main() {
     // around a list that names each language in itself.
     expect(find.text('Русский'), findsOneWidget);
     expect(find.text('Next'), findsOneWidget);
-    expect(find.text('Prayer'), findsNothing);
+    expect(find.byType(HomeScreen), findsNothing);
   });
 
   testWidgets('walking the steps through to the end opens the app', (
@@ -104,7 +105,7 @@ void main() {
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Prayer'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('refused notifications leave the modes off and locked, '
@@ -112,7 +113,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final appState = _appState(notifications: _RefusedNotifications());
 
-    await tester.pumpWidget(PrayerTimeApp(appState: appState));
+    await tester.pumpWidget(FiveGlowApp(appState: appState));
     await tester.pumpAndSettle();
     for (var i = 0; i < 5; i++) {
       await tester.tap(find.text('Next'));
@@ -261,7 +262,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     var enabled = false;
     final writes = <bool>[];
-    const channel = MethodChannel('uz.mu1zi47.prayertime/now_bar');
+    const channel = MethodChannel('uz.mu1zi47.fiveglow/now_bar');
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
       call,
     ) async {
@@ -303,7 +304,7 @@ void main() {
     expect(find.text('Done'), findsOneWidget);
     await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
-    expect(find.text('Prayer'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('an install that predates setup is left alone', (tester) async {
@@ -314,7 +315,7 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    expect(find.text('Намаз'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('settings restored from a backup onto a new install go '
@@ -332,7 +333,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Русский'), findsOneWidget);
-    expect(find.text('Намаз'), findsNothing);
+    expect(find.byType(HomeScreen), findsNothing);
   });
 
   testWidgets('setup recorded on a different install runs again', (
@@ -352,7 +353,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Намаз'), findsNothing);
+    expect(find.byType(HomeScreen), findsNothing);
   });
 
   testWidgets('setup done on this very install stays done', (tester) async {
@@ -367,7 +368,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Намаз'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('an in-place update from an older version keeps its setup', (
@@ -390,6 +391,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Намаз'), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 }

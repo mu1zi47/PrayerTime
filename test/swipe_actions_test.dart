@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:prayertime/widgets/swipe_actions.dart';
+import 'package:fiveglow/widgets/swipe_actions.dart';
 
 void main() {
   var deleted = 0;

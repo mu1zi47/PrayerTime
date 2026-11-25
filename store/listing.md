@@ -9,7 +9,7 @@
 
 **Название (30):**
 ```
-Время намаза
+FiveGlow
 ```
 
 **Краткое описание (80):**
@@ -19,7 +19,7 @@
 
 **Полное описание:**
 ```
-Время намаза — простое приложение с расписанием намазов, напоминаниями и
+FiveGlow — простое приложение с расписанием намазов, напоминаниями и
 журналом прочитанных намазов. Без рекламы, без регистрации, без сбора данных.
 
 ВРЕМЯ НАМАЗОВ
@@ -62,7 +62,7 @@
 
 **Название (30):**
 ```
-Prayer times
+FiveGlow
 ```
 
 **Краткое описание (80):**
@@ -72,7 +72,7 @@ Prayer schedule, reminders and a log of the prayers you've prayed. No ads.
 
 **Полное описание:**
 ```
-Prayer times is a simple prayer schedule with reminders and a prayer log. No
+FiveGlow is a simple prayer schedule with reminders and a prayer log. No
 ads, no sign-up, no data collection.
 
 PRAYER SCHEDULE
@@ -115,7 +115,7 @@ prayer log stays on your device.
 
 **Название (30):**
 ```
-Namoz vaqti
+FiveGlow
 ```
 
 **Краткое описание (80):**
@@ -125,7 +125,7 @@ Namoz vaqtlari, eslatmalar va o'qilgan namozlar hisobi. Reklamasiz.
 
 **Полное описание:**
 ```
-Namoz vaqti — namoz jadvali, eslatmalar va o'qilgan namozlar hisobi uchun oddiy
+FiveGlow — namoz jadvali, eslatmalar va o'qilgan namozlar hisobi uchun oddiy
 ilova. Reklamasiz, ro'yxatdan o'tishsiz, ma'lumot yig'ilmaydi.
 
 NAMOZ VAQTLARI

@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'ambient_surface.dart';
 import 'dart:async';
@@ -13,8 +14,6 @@ import 'package:flutter_map/flutter_map.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/system_gestures_bridge.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
 /// What a finger on the zoom strip is doing.
 enum _StripMode {
@@ -470,21 +469,24 @@ class _MapZoomStripState extends State<MapZoomStrip>
           onTap: _moveToOtherSide,
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             child: AppPressContent(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     onLeft ? Icons.east_rounded : Icons.west_rounded,
-                    size: 18,
+                    size: AppIconSize.medium,
                     color: AppColors.accent700,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
                     onLeft ? t.zoomBarMoveRight : t.zoomBarMoveLeft,
                     style: AppTextStyles.body(
-                      fontSize: 14,
+                      fontSize: AppFontSize.body,
                       fontWeight: FontWeight.w800,
                       color: AppColors.accent700,
                     ),
@@ -668,7 +670,7 @@ class _StripPainter extends CustomPainter {
     }
 
     // Lifted off the edge, it casts a deeper shadow.
-    canvas.drawShadow(shape, Colors.black, 2 + 5 * (1 - dock), false);
+    canvas.drawShadow(shape, AppColors.black, 2 + 5 * (1 - dock), false);
     canvas.drawPath(shape, Paint()..color = track);
     if (fraction > 0) {
       final bounds = shape.getBounds();

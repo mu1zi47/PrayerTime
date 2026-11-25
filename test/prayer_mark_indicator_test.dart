@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/models/prayer_log_status.dart';
-import 'package:prayertime/theme/app_colors.dart';
-import 'package:prayertime/widgets/prayer_mark_indicator.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/models/prayer_log_status.dart';
+import 'package:fiveglow/theme/app_colors.dart';
+import 'package:fiveglow/widgets/prayer_mark_indicator.dart';
 
 void main() {
   for (final dark in [false, true]) {
-    for (final status in [null, PrayerLogStatus.onTime, PrayerLogStatus.qada]) {
+    for (final status in [null, PrayerLogStatus.onTime]) {
       testWidgets(
         'swipe check matches widget dimensions and palette: dark=$dark, status=$status',
         (tester) async {
@@ -18,7 +18,9 @@ void main() {
               supportedLocales: AppLocalizations.supportedLocales,
               home: AnimatedAppPalette(
                 dark: dark,
-                child: Center(child: PrayerMarkIndicator(status: status)),
+                child: Center(
+                  child: PrayerMarkIndicator(status: status, onTap: () {}),
+                ),
               ),
             ),
           );
@@ -37,7 +39,15 @@ void main() {
           expect(decoration.borderRadius, BorderRadius.circular(12));
           expect((decoration.border! as Border).top.width, 1);
           expect(tester.widget<Icon>(find.byType(Icon)).icon, Icons.check);
-          expect(tester.widget<Icon>(find.byType(Icon)).size, 24);
+          expect(tester.widget<Icon>(find.byType(Icon)).size, 16);
+          expect(
+            tester.getSize(
+              find.byKey(
+                ValueKey('prayer-swipe-preview-${status?.name ?? 'unread'}'),
+              ),
+            ),
+            const Size(32, 32),
+          );
           expect(tester.widget<Icon>(find.byType(Icon)).color, ink);
           if (status == null) {
             expect(decoration.gradient, isNull);
@@ -57,8 +67,20 @@ void main() {
                 .toUpperCase();
             expect(xml, contains('android:radius="12dp"'));
             expect(xml, contains('android:width="1dp"'));
-            expect(xml, contains('android:startColor="#33$hex"'));
-            expect(xml, contains('android:endColor="#0D$hex"'));
+            final resources = File(
+              'android/app/src/main/res/values/app_design_tokens.xml',
+            ).readAsStringSync();
+            final token = 'app_ds_${theme}_accent';
+            expect(xml, contains('android:startColor="@color/${token}_33"'));
+            expect(xml, contains('android:endColor="@color/${token}_0d"'));
+            expect(
+              resources,
+              contains('<color name="${token}_33">#33$hex</color>'),
+            );
+            expect(
+              resources,
+              contains('<color name="${token}_0d">#0D$hex</color>'),
+            );
             expect((decoration.gradient! as LinearGradient).colors, [
               ink.withAlpha(0x33),
               ink.withAlpha(0x0d),

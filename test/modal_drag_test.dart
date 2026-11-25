@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/widgets/app_modal_sheet.dart';
+import 'package:fiveglow/widgets/app_modal_sheet.dart';
 
 const bodyKey = ValueKey('drag-modal-body');
 

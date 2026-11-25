@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.sounds
+package uz.mu1zi47.fiveglow.sounds
 
 import android.content.Context
 import android.media.AudioAttributes

@@ -1,3 +1,3 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-<corners android:radius="12dp" /><gradient android:angle="0" android:startColor="#33E0B152" android:endColor="#0DE0B152" />
-<stroke android:width="1dp" android:color="#66E0B152" /></shape>
+<corners android:radius="12dp" /><gradient android:angle="0" android:startColor="@color/app_ds_dark_accent_33" android:endColor="@color/app_ds_dark_accent_0d" />
+<stroke android:width="1dp" android:color="@color/app_ds_dark_accent_66" /></shape>

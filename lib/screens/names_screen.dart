@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/app_tap.dart';
@@ -12,8 +13,6 @@ import '../l10n/app_localizations.dart';
 import '../models/allah_name.dart';
 import '../models/app_locale.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/edge_gesture_guard.dart';
 import '../widgets/screen_back_button.dart';
 import '../widgets/segmented_control.dart';
@@ -52,7 +51,7 @@ class _NamesScreenState extends State<NamesScreen> {
     final readsUzbek = widget.appState.locale == AppLocale.uzCyrillic;
     return showAppModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (sheetContext) => SingleChildScrollView(
@@ -125,7 +124,12 @@ class _NamesScreenState extends State<NamesScreen> {
           return Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(18, padding.top + 16, 18, 0),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.screen,
+                  padding.top + AppSpacing.md,
+                  AppSpacing.screen,
+                  AppSpacing.none,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -133,23 +137,25 @@ class _NamesScreenState extends State<NamesScreen> {
                         ScreenBackButton(
                           onTap: () => Navigator.of(context).pop(),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Text(
                           t.allahNamesTitle,
-                          style: AppTextStyles.heading(fontSize: 22),
+                          style: AppTextStyles.heading(
+                            fontSize: AppFontSize.heading,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.compact),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 2),
+                        padding: const EdgeInsets.only(left: AppSpacing.micro),
                         child: Text(
                           t.allahNamesSubtitle,
                           style:
                               AppTextStyles.body(
-                                fontSize: 13,
+                                fontSize: AppFontSize.small,
                                 color: AppColors.text,
                               ).copyWith(
                                 color: AppColors.text.withValues(alpha: 0.55),
@@ -157,7 +163,7 @@ class _NamesScreenState extends State<NamesScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: SegmentedControl(
@@ -174,10 +180,12 @@ class _NamesScreenState extends State<NamesScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.screen,
+                  ),
                   child: GlassPanel(
                     child: EdgeGestureGuard(
                       left: true,
@@ -224,10 +232,10 @@ class _NamesScreenState extends State<NamesScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               SafeArea(
                 top: false,
-                minimum: const EdgeInsets.only(bottom: 16),
+                minimum: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: AppSearchField(
                   controller: _searchController,
                   hint: AppLocalizations.of(context)!.namesSearchHint,
@@ -271,68 +279,83 @@ class _NoticeSheet extends StatelessWidget {
     AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Padding(
-      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.xs,
+        AppSpacing.screen,
+        bottomInset + AppSpacing.md,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: AppSize.sheetHandleWidth,
+              height: AppSize.sheetHandleHeight,
               decoration: BoxDecoration(
                 color: AppColors.divider,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.screen),
           Center(
             child: Container(
               width: 46,
               height: 46,
               alignment: Alignment.center,
               decoration: iconBadgeDecoration(),
-              child: Icon(icon, size: 22, color: AppColors.accent700),
+              child: Icon(
+                icon,
+                size: AppIconSize.action,
+                color: AppColors.accent700,
+              ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.md),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: AppTextStyles.heading(fontSize: 19),
+            style: AppTextStyles.heading(fontSize: AppFontSize.title),
           ),
           if (body != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               body!,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body(fontSize: 13.5, color: AppColors.text)
-                  .copyWith(
+              style:
+                  AppTextStyles.body(
+                    fontSize: AppFontSize.body,
+                    color: AppColors.text,
+                  ).copyWith(
                     color: AppColors.text.withValues(alpha: 0.62),
                     height: 1.45,
                   ),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             decoration: glassDecoration(radius: AppRadius.md),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   Icons.info_outline_rounded,
-                  size: 17,
+                  size: AppIconSize.small,
                   color: AppColors.accent700,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     disclaimer,
                     style:
                         AppTextStyles.body(
-                          fontSize: 12.5,
+                          fontSize: AppFontSize.small,
                           color: AppColors.text,
                         ).copyWith(
                           color: AppColors.text.withValues(alpha: 0.62),
@@ -343,7 +366,7 @@ class _NoticeSheet extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.screen),
           ActionGroup(
             children: [
               OptRow(
@@ -351,7 +374,7 @@ class _NoticeSheet extends StatelessWidget {
                 child: Text(
                   button,
                   style: AppTextStyles.body(
-                    fontSize: 15,
+                    fontSize: AppFontSize.body,
                     color: AppColors.accent,
                   ),
                 ),
@@ -386,13 +409,18 @@ class _NamesList extends StatelessWidget {
     AppColors.watch(context);
     if (names.isEmpty && emptyMessage != null) {
       return ListView(
-        padding: EdgeInsets.fromLTRB(18, 24, 18, bottomPadding),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          AppSpacing.lg,
+          AppSpacing.screen,
+          bottomPadding,
+        ),
         children: [
           Text(
             emptyMessage!,
             textAlign: TextAlign.center,
             style: AppTextStyles.body(
-              fontSize: 14,
+              fontSize: AppFontSize.body,
               color: AppColors.text,
             ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
           ),
@@ -459,48 +487,52 @@ class _NameRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              NumberBadge(name.number, size: 32, fontSize: 12),
-              const SizedBox(width: 12),
+              NumberBadge(
+                name.number,
+                size: AppIconSize.display,
+                fontSize: AppFontSize.small,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       name.transliteration,
-                      style: AppTextStyles.heading(fontSize: 14),
+                      style: AppTextStyles.heading(fontSize: AppFontSize.body),
                     ),
                     Text(
                       name.meaning,
                       style: AppTextStyles.body(
-                        fontSize: 12,
+                        fontSize: AppFontSize.small,
                         color: AppColors.text,
                       ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 name.arabic,
                 textDirection: TextDirection.rtl,
                 style: AppTextStyles.heading(
-                  fontSize: 18,
+                  fontSize: AppFontSize.title,
                   color: AppColors.accent,
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xxs),
               AppTap(
                 feedbackOnChild: false,
                 onTap: onToggleFavorite,
                 behavior: HitTestBehavior.opaque,
                 child: Padding(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(AppSpacing.compact),
                   child: AppPressContent(
                     child: Icon(
                       isFavorite
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
-                      size: 22,
+                      size: AppIconSize.action,
                       color: isFavorite
                           ? AppColors.accent
                           : AppColors.text.withValues(alpha: 0.35),

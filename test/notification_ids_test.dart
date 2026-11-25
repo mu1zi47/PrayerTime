@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/data/day_completion.dart';
-import 'package:prayertime/services/notification_service.dart';
+import 'package:fiveglow/data/day_completion.dart';
+import 'package:fiveglow/services/notification_service.dart';
 
 void main() {
   // Marking a prayer cancels its pending "window is closing" reminders by

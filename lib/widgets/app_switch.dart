@@ -1,7 +1,6 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
 
 class AppSwitch extends StatelessWidget {
   final bool value;
@@ -13,7 +12,7 @@ class AppSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     // Semantic colors interpolate across the reversed light/dark ramps.
-    final soft = AppColors.onControlFill;
+    final soft = AppColors.accent;
     return AppTap(
       feedbackOnChild: false,
       onTap: () => onChanged(!value),
@@ -21,12 +20,14 @@ class AppSwitch extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         width: 44,
         height: 26,
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(AppSpacing.micro),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          border: Border.all(
+            color: AppColors.text.withValues(alpha: AppOpacity.border),
+          ),
           color: value ? null : AppColors.neutral400,
           gradient: value ? AppColors.selectionGradient : null,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 150),
@@ -38,7 +39,7 @@ class AppSwitch extends StatelessWidget {
               width: 22,
               height: 22,
               decoration: BoxDecoration(
-                color: value ? soft : Colors.white,
+                color: value ? soft : AppColors.white,
                 shape: BoxShape.circle,
               ),
             ),

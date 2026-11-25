@@ -1,6 +1,6 @@
+import '../theme/app_design_system.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 /// The displayed position, shared by routes and driven by their actual motion.
 final ambientPosition = ValueNotifier<Alignment>(const Alignment(-.65, -.6));
@@ -222,7 +222,7 @@ class AmbientScaffold extends StatelessWidget {
       children: [
         const Positioned.fill(child: AmbientBackground()),
         Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.transparent,
           appBar: appBar,
           body: body,
         ),
@@ -242,7 +242,7 @@ class AmbientBackground extends StatelessWidget {
         child: CustomPaint(
           painter: _AmbientPainter(
             background: AppColors.bg,
-            accent: AppColors.accent,
+            accent: AppColors.glow,
             dark: dark,
           ),
           child: const SizedBox.expand(),
@@ -277,7 +277,7 @@ class _AmbientPainter extends CustomPainter {
           colors: [
             accent.withValues(alpha: dark ? .24 : .18),
             accent.withValues(alpha: dark ? .08 : .06),
-            Colors.transparent,
+            AppColors.transparent,
           ],
           stops: const [0, .45, 1],
         ).createShader(rect),
@@ -290,7 +290,7 @@ class _AmbientPainter extends CustomPainter {
           radius: .85,
           colors: [
             accent.withValues(alpha: dark ? .14 : .12),
-            Colors.transparent,
+            AppColors.transparent,
           ],
         ).createShader(rect),
     );
@@ -309,14 +309,16 @@ BoxDecoration glassDecoration({double radius = AppRadius.lg}) => BoxDecoration(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      AppColors.surface.withValues(alpha: .78),
+      AppColors.surface.withValues(alpha: AppOpacity.strong),
       AppColors.surface.withValues(alpha: .48),
     ],
   ),
-  border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+  border: Border.all(
+    color: AppColors.text.withValues(alpha: AppOpacity.border),
+  ),
   boxShadow: [
     BoxShadow(
-      color: Colors.black.withValues(alpha: .045),
+      color: AppColors.black.withValues(alpha: .045),
       blurRadius: 24,
       offset: const Offset(0, 10),
     ),
@@ -357,7 +359,9 @@ class GlassPanel extends StatelessWidget {
       ),
       foregroundDecoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+        border: Border.all(
+          color: AppColors.text.withValues(alpha: AppOpacity.border),
+        ),
       ),
       padding: padding,
       // Modal content already sits on filtered glass. Nested panels need
@@ -399,7 +403,7 @@ class PanelRow extends StatelessWidget {
     super.key,
     required this.child,
     this.showDivider = false,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(AppSpacing.md),
     this.color,
     this.selected = false,
   });

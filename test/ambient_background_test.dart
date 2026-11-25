@@ -2,9 +2,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/theme/app_colors.dart';
-import 'package:prayertime/theme/app_theme.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/theme/app_colors.dart';
+import 'package:fiveglow/theme/app_theme.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 void main() {
   for (final dark in [false, true]) {

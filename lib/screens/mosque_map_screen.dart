@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_modal_sheet.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/settings_widgets.dart';
@@ -24,11 +25,10 @@ import '../services/location_service.dart';
 import '../services/mosque_cache.dart';
 import '../services/mosque_service.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/map_zoom_strip.dart';
+import '../widgets/mosque_tiles.dart';
 
 // OpenStreetMap's own tile servers: keyless, and their usage policy allows
 // native apps that identify themselves (userAgentPackageName below), keep
@@ -36,17 +36,7 @@ import '../widgets/map_zoom_strip.dart';
 // built-in tile cache does. No prefetching or "download for offline" on top
 // of these: the policy forbids it. (CARTO's basemaps, the obvious
 // alternative with a ready dark style, need an API key since Sept 2026.)
-const _tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const _copyrightUrl = 'https://www.openstreetmap.org/copyright';
-
-/// Inverts the tiles and turns the hues back round — the same matrix as
-/// flutter_map's darkModeTileBuilder.
-const _darkTileFilter = ColorFilter.matrix(<double>[
-  0.574, -1.43, -0.144, 0, 255, //
-  -0.426, -0.43, -0.144, 0, 255, //
-  -0.426, -1.43, 0.856, 0, 255, //
-  0, 0, 0, 1, 0, //
-]);
 
 const _minZoom = 3.0;
 const _maxZoom = 19.0;
@@ -75,7 +65,15 @@ MosqueCell _cellOf(double latitude, double longitude) =>
 class MosqueMapScreen extends StatefulWidget {
   final AppState appState;
 
-  const MosqueMapScreen({super.key, required this.appState});
+  const MosqueMapScreen({
+    super.key,
+    required this.appState,
+    this.initialPosition,
+    this.initialMosque,
+  });
+
+  final LatLng? initialPosition;
+  final Mosque? initialMosque;
 
   @override
   State<MosqueMapScreen> createState() => _MosqueMapScreenState();
@@ -117,10 +115,16 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
   /// Built once: a new MapOptions on every rebuild would have FlutterMap
   /// re-apply them each time.
   late final MapOptions _mapOptions = MapOptions(
-    initialCenter: LatLng(
-      widget.appState.selectedCity.latitude,
-      widget.appState.selectedCity.longitude,
-    ),
+    initialCenter: widget.initialMosque == null
+        ? widget.initialPosition ??
+              LatLng(
+                widget.appState.selectedCity.latitude,
+                widget.appState.selectedCity.longitude,
+              )
+        : LatLng(
+            widget.initialMosque!.latitude,
+            widget.initialMosque!.longitude,
+          ),
     initialZoom: 13,
     minZoom: _minZoom,
     maxZoom: _maxZoom,
@@ -178,6 +182,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
   @override
   void initState() {
     super.initState();
+    _userPosition = widget.initialPosition;
     _loadBundled();
     _locateSilently();
     _loadZoomSide();
@@ -264,6 +269,12 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
       _mapController.move(user, 15);
     }
     _onCameraSettled();
+    final mosque = widget.initialMosque;
+    if (mosque != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showMosque(mosque);
+      });
+    }
   }
 
   // A tap is a single finger going down and up again within a short time
@@ -505,7 +516,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
     }
     final fitted = CameraFit.bounds(
       bounds: LatLngBounds(LatLng(b.south, b.west), LatLng(b.north, b.east)),
-      padding: const EdgeInsets.all(72),
+      padding: const EdgeInsets.all(AppSpacing.huge),
       maxZoom: MosqueClusters.unclusteredFromZoom.toDouble(),
     ).fit(camera);
     // At least one level in, so a tap always visibly opens the bubble up.
@@ -515,7 +526,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
   void _showMosque(Mosque mosque) {
     showAppModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (_) => _MosqueSheet(
         mosque: mosque,
         locale: widget.appState.locale,
@@ -533,7 +544,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
           permission != LocationPermission.always) {
         return;
       }
-      _centerOnNextFix = true;
+      _centerOnNextFix = widget.initialMosque == null;
       _startTracking();
     } catch (_) {
       // Location unavailable — the map just stays on the city.
@@ -642,25 +653,11 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
     }
   }
 
-  Widget _tiles(bool isDark) {
-    final tiles = TileLayer(
-      urlTemplate: _tileUrl,
-      maxNativeZoom: 19,
-      userAgentPackageName: 'uz.mu1zi47.prayertime',
-    );
-    if (!isDark) return tiles;
-    // OSM has no dark style of its own, so the light one is inverted —
-    // with one filter over the whole layer rather than flutter_map's
-    // darkModeTileBuilder, which wraps every tile in a filter of its own.
-    return ColorFiltered(colorFilter: _darkTileFilter, child: tiles);
-  }
-
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final padding = MediaQuery.paddingOf(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final userPosition = _userPosition;
 
     // The spinner only while part of the view has nothing to show yet — a
@@ -694,7 +691,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                   mapController: _mapController,
                   options: _mapOptions,
                   children: [
-                    _tiles(isDark),
+                    const MosqueTiles(),
                     if (userPosition != null && (_userAccuracy ?? 0) > 0)
                       CircleLayer(
                         circles: [
@@ -702,7 +699,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                             point: userPosition,
                             radius: _userAccuracy!,
                             useRadiusInMeter: true,
-                            color: _userBlue.withValues(alpha: 0.12),
+                            color: _userBlue.withValues(alpha: AppOpacity.tint),
                             borderColor: _userBlue.withValues(alpha: 0.4),
                             borderStrokeWidth: 1,
                           ),
@@ -740,24 +737,26 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                         feedbackOnChild: false,
                         onTap: () => Navigator.of(context).pop(),
                         child: SizedBox.square(
-                          dimension: 38,
+                          dimension: AppSize.largeBadge,
                           child: AppPressContent(
                             child: Icon(
                               Icons.arrow_back_rounded,
-                              size: 18,
+                              size: AppIconSize.medium,
                               color: AppColors.text,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.sm),
                     Flexible(
                       child: _Floating(
                         child: SizedBox(
-                          height: 38,
+                          height: AppSize.largeBadge,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                            ),
                             // Sized to the title rather than stretched
                             // across the bar — the map shows around it.
                             child: Align(
@@ -766,7 +765,9 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                                 t.mosqueMapTitle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: AppTextStyles.heading(fontSize: 16),
+                                style: AppTextStyles.heading(
+                                  fontSize: AppFontSize.bodyLarge,
+                                ),
                               ),
                             ),
                           ),
@@ -781,7 +782,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                       ? const SizedBox.shrink()
                       : Padding(
                           key: ValueKey(status),
-                          padding: const EdgeInsets.only(top: 10),
+                          padding: const EdgeInsets.only(top: AppSpacing.sm),
                           child: _StatusChip(label: status, busy: loadingBlank),
                         ),
                 ),
@@ -825,7 +826,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                 onTap: _locateMe,
                 behavior: HitTestBehavior.opaque,
                 child: SizedBox.square(
-                  dimension: 48,
+                  dimension: AppSize.touchTarget,
                   child: Center(
                     child: _locating
                         ? SizedBox.square(
@@ -838,7 +839,7 @@ class _MosqueMapScreenState extends State<MosqueMapScreen>
                         : AppPressContent(
                             child: Icon(
                               Icons.my_location_rounded,
-                              size: 22,
+                              size: AppIconSize.action,
                               color: AppColors.accent700,
                             ),
                           ),
@@ -1079,7 +1080,7 @@ class _Sprites {
       center + const Offset(0, 2),
       17,
       Paint()
-        ..color = Colors.black.withValues(alpha: 0.25)
+        ..color = AppColors.black.withValues(alpha: 0.25)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
     );
     canvas.drawCircle(center, 17, Paint()..color = edge);
@@ -1090,7 +1091,7 @@ class _Sprites {
         style: TextStyle(
           fontFamily: Icons.mosque_rounded.fontFamily,
           package: Icons.mosque_rounded.fontPackage,
-          fontSize: 17,
+          fontSize: AppFontSize.bodyLarge,
           color: edge,
         ),
       ),
@@ -1113,7 +1114,7 @@ class _Sprites {
           center + const Offset(0, 2),
           radius + 4,
           Paint()
-            ..color = Colors.black.withValues(alpha: 0.25)
+            ..color = AppColors.black.withValues(alpha: 0.25)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
         );
         canvas.drawCircle(center, radius + 4, Paint()..color = ring);
@@ -1220,7 +1221,10 @@ class _StatusChip extends StatelessWidget {
     AppColors.watch(context);
     return _Floating(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1233,13 +1237,17 @@ class _StatusChip extends StatelessWidget {
                 ),
               )
             else
-              Icon(Icons.zoom_in_rounded, size: 16, color: AppColors.accent700),
-            const SizedBox(width: 8),
+              Icon(
+                Icons.zoom_in_rounded,
+                size: AppIconSize.small,
+                color: AppColors.accent700,
+              ),
+            const SizedBox(width: AppSpacing.xs),
             Flexible(
               child: Text(
                 label,
                 style: AppTextStyles.body(
-                  fontSize: 13,
+                  fontSize: AppFontSize.small,
                   fontWeight: FontWeight.w700,
                   color: AppColors.text,
                 ),
@@ -1265,9 +1273,14 @@ class _Attribution extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs,
+          vertical: AppSpacing.xxs,
+        ),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          border: Border.all(
+            color: AppColors.text.withValues(alpha: AppOpacity.border),
+          ),
           color: AppColors.surface.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
@@ -1275,7 +1288,7 @@ class _Attribution extends StatelessWidget {
           child: Text(
             '© OpenStreetMap contributors',
             style: AppTextStyles.body(
-              fontSize: 10,
+              fontSize: AppFontSize.caption,
               color: AppColors.neutral700,
             ),
           ),
@@ -1287,7 +1300,7 @@ class _Attribution extends StatelessWidget {
 
 /// The usual "you are here" blue — rather than gold, so the dot can't be
 /// mistaken for a mosque pin.
-const _userBlue = Color(0xFF2F80ED);
+const _userBlue = AppColors.location;
 
 class _UserDot extends StatelessWidget {
   const _UserDot();
@@ -1299,7 +1312,7 @@ class _UserDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: _userBlue,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
+        border: Border.all(color: AppColors.white, width: 3),
         boxShadow: [
           BoxShadow(
             color: _userBlue.withValues(alpha: 0.35),
@@ -1395,48 +1408,60 @@ class _MosqueSheet extends StatelessWidget {
     final distance = _distanceLabel(t);
 
     return Container(
-      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.xs,
+        AppSpacing.screen,
+        bottomInset + AppSpacing.md,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: AppSize.sheetHandleWidth,
+              height: AppSize.sheetHandleHeight,
               decoration: BoxDecoration(
                 color: AppColors.divider,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.screen),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const IconBadge(Icons.mosque_rounded, size: 44, iconSize: 22),
-              const SizedBox(width: 14),
+              const IconBadge(
+                Icons.mosque_rounded,
+                size: AppIconSize.oversized,
+                iconSize: AppIconSize.action,
+              ),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTextStyles.heading(fontSize: 18)),
+                    Text(
+                      title,
+                      style: AppTextStyles.heading(fontSize: AppFontSize.title),
+                    ),
                     if (address != null) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         address,
                         style: AppTextStyles.body(
-                          fontSize: 14,
+                          fontSize: AppFontSize.body,
                           color: AppColors.neutral700,
                         ),
                       ),
                     ],
                     if (distance != null) ...[
-                      const SizedBox(height: 6),
+                      const SizedBox(height: AppSpacing.compact),
                       Text(
                         distance,
                         style: AppTextStyles.body(
-                          fontSize: 13,
+                          fontSize: AppFontSize.small,
                           fontWeight: FontWeight.w700,
                           color: AppColors.accent700,
                         ),
@@ -1447,7 +1472,7 @@ class _MosqueSheet extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           ActionGroup(
             children: [
               OptRow(
@@ -1455,10 +1480,10 @@ class _MosqueSheet extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(Icons.directions_rounded, color: AppColors.accent),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.mosqueDirections,
-                      style: AppTextStyles.body(fontSize: 15),
+                      style: AppTextStyles.body(fontSize: AppFontSize.body),
                     ),
                   ],
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 void expectPosition(Alignment expected) {
   expect(ambientPosition.value.x, closeTo(expected.x, .000001));

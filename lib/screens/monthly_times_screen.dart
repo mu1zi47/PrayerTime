@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import '../widgets/app_tap.dart';
 import '../widgets/app_chevron.dart';
 import '../widgets/ambient_surface.dart';
@@ -8,8 +9,6 @@ import '../l10n/app_localizations.dart';
 import '../models/prayer_day.dart';
 import '../services/prayer_times_api.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import '../widgets/screen_back_button.dart';
 import '../widgets/edge_gesture_guard.dart';
 
@@ -65,20 +64,20 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return AmbientScaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       // A real app bar rather than a pinned SliverAppBar: it stays put over
       // all three month pages, which each scroll on their own.
       appBar: AppBar(
         forceMaterialTransparency: true,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
+        surfaceTintColor: AppColors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         toolbarHeight: 76,
-        leadingWidth: 56,
+        leadingWidth: AppSize.largeBadge + AppSpacing.screen,
         titleSpacing: 12,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 18),
+          padding: const EdgeInsets.only(left: AppSpacing.screen),
           child: ScreenBackButton(onTap: () => Navigator.of(context).pop()),
         ),
         title: Column(
@@ -87,14 +86,14 @@ class _MonthlyTimesScreenState extends State<MonthlyTimesScreen> {
           children: [
             Text(
               t.monthlyTimesTitle,
-              style: AppTextStyles.heading(fontSize: 22),
+              style: AppTextStyles.heading(fontSize: AppFontSize.heading),
             ),
             Text(
               widget.appState.cityLabel(t),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.body(
-                fontSize: 13,
+                fontSize: AppFontSize.small,
                 color: AppColors.text,
               ).copyWith(color: AppColors.text.withValues(alpha: 0.55)),
             ),
@@ -219,26 +218,33 @@ class _MonthPageState extends State<_MonthPage>
     final styles = _RowStyles.of();
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(18, 8, 18, padding.bottom + 18),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.xs,
+        AppSpacing.screen,
+        padding.bottom + AppSpacing.screen,
+      ),
       child: Column(
         children: [
           GlassPanel(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
                 _MonthNavButton(
                   icon: Icons.chevron_left_rounded,
                   onTap: widget.onPrev,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     DateLabels.monthYearLabel(t, widget.month),
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.heading(fontSize: 17),
+                    style: AppTextStyles.heading(
+                      fontSize: AppFontSize.bodyLarge,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 _MonthNavButton(
                   icon: Icons.chevron_right_rounded,
                   onTap: widget.onNext,
@@ -246,15 +252,15 @@ class _MonthPageState extends State<_MonthPage>
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Expanded(
             child: GlassPanel(
               child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md,
                     ),
                     child: _HeaderRow(showTahajjud: showTahajjud),
                   ),
@@ -319,27 +325,27 @@ class _RowStyles {
 
   factory _RowStyles.of() => _RowStyles(
     time: AppTextStyles.body(
-      fontSize: 12.5,
+      fontSize: AppFontSize.small,
       fontWeight: FontWeight.w600,
       color: AppColors.text.withValues(alpha: 0.85),
     ),
     timeToday: AppTextStyles.body(
-      fontSize: 12.5,
+      fontSize: AppFontSize.small,
       fontWeight: FontWeight.w800,
       color: AppColors.accent700,
     ),
     day: AppTextStyles.body(
-      fontSize: 15,
+      fontSize: AppFontSize.body,
       fontWeight: FontWeight.w800,
       color: AppColors.text,
     ),
     dayToday: AppTextStyles.body(
-      fontSize: 15,
+      fontSize: AppFontSize.body,
       fontWeight: FontWeight.w800,
       color: AppColors.accent,
     ),
     weekday: AppTextStyles.body(
-      fontSize: 11,
+      fontSize: AppFontSize.caption,
       color: AppColors.text.withValues(alpha: 0.45),
     ),
   );
@@ -359,7 +365,7 @@ class _HeaderRow extends StatelessWidget {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     final style = AppTextStyles.body(
-      fontSize: 10.5,
+      fontSize: AppFontSize.caption,
       fontWeight: FontWeight.w700,
       color: AppColors.text,
     ).copyWith(color: AppColors.text.withValues(alpha: 0.5));
@@ -432,7 +438,10 @@ class _DayRow extends StatelessWidget {
 
     return PanelRow(
       showDivider: showDivider,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
       selected: isToday,
       child: Row(
         children: [
@@ -477,12 +486,14 @@ class _MonthNavButton extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 38,
-        height: 38,
+        width: AppSize.largeBadge,
+        height: AppSize.largeBadge,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.text.withValues(alpha: .04),
-          border: Border.all(color: AppColors.text.withValues(alpha: .08)),
+          color: AppColors.text.withValues(alpha: AppOpacity.faint),
+          border: Border.all(
+            color: AppColors.text.withValues(alpha: AppOpacity.border),
+          ),
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: AppPressContent(
@@ -504,15 +515,18 @@ class _ErrorBlock extends StatelessWidget {
     AppColors.watch(context);
     final t = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
       child: Column(
         children: [
           Text(
             message,
             textAlign: TextAlign.center,
-            style: AppTextStyles.body(fontSize: 14, color: AppColors.text),
+            style: AppTextStyles.body(
+              fontSize: AppFontSize.body,
+              color: AppColors.text,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           TextButton(onPressed: onRetry, child: Text(t.retryButton)),
         ],
       ),

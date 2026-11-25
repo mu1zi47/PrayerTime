@@ -3,16 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/models/app_locale.dart';
-import 'package:prayertime/models/end_reminders.dart';
-import 'package:prayertime/models/notif_mode.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/models/prayer_log_status.dart';
-import 'package:prayertime/services/connectivity_service.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/models/app_locale.dart';
+import 'package:fiveglow/models/end_reminders.dart';
+import 'package:fiveglow/models/notif_mode.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/models/prayer_log_status.dart';
+import 'package:fiveglow/services/connectivity_service.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
 
 class _InstantFakeApi extends PrayerTimesApi {
   @override

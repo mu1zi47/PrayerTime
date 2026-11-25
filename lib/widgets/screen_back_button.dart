@@ -1,9 +1,9 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
 import 'ambient_surface.dart';
 
 class ScreenBackButton extends StatelessWidget {
@@ -25,14 +25,14 @@ class ScreenBackButton extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
-              width: 38,
-              height: 38,
+              width: AppSize.largeBadge,
+              height: AppSize.largeBadge,
               alignment: Alignment.center,
-              decoration: glassDecoration(radius: 999),
+              decoration: glassDecoration(radius: AppRadius.pill),
               child: AppPressContent(
                 child: Icon(
                   Icons.arrow_back_rounded,
-                  size: 18,
+                  size: AppIconSize.medium,
                   color: AppColors.text,
                 ),
               ),

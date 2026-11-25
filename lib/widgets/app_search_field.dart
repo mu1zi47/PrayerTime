@@ -1,7 +1,6 @@
+import '../theme/app_design_system.dart';
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import 'ambient_surface.dart';
 
 class AppSearchField extends StatelessWidget {
@@ -22,7 +21,7 @@ class AppSearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     AppColors.watch(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
       child: SizedBox(
         height: 56,
         child: GlassPanel(
@@ -36,7 +35,7 @@ class AppSearchField extends StatelessWidget {
                   child: Center(
                     child: Icon(
                       Icons.search_rounded,
-                      size: 20,
+                      size: AppIconSize.medium,
                       color: AppColors.text.withValues(alpha: .55),
                     ),
                   ),
@@ -47,7 +46,7 @@ class AppSearchField extends StatelessWidget {
                     onChanged: onChanged,
                     textInputAction: TextInputAction.search,
                     cursorColor: AppColors.accent,
-                    style: AppTextStyles.body(fontSize: 15),
+                    style: AppTextStyles.body(fontSize: AppFontSize.body),
                     decoration: InputDecoration(
                       isCollapsed: true,
                       border: InputBorder.none,
@@ -55,7 +54,7 @@ class AppSearchField extends StatelessWidget {
                       focusedBorder: InputBorder.none,
                       hintText: hint,
                       hintStyle: AppTextStyles.body(
-                        fontSize: 15,
+                        fontSize: AppFontSize.body,
                         color: AppColors.text.withValues(alpha: .5),
                       ),
                     ),
@@ -92,7 +91,7 @@ class AppSearchField extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       icon: Icon(
                         Icons.close_rounded,
-                        size: 20,
+                        size: AppIconSize.medium,
                         color: AppColors.text.withValues(alpha: .55),
                       ),
                     ),

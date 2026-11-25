@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/screens/names_screen.dart';
-import 'package:prayertime/screens/city_screen.dart';
-import 'package:prayertime/screens/notification_sound_sheet.dart';
-import 'package:prayertime/models/notif_sound.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/screens/names_screen.dart';
+import 'package:fiveglow/screens/city_screen.dart';
+import 'package:fiveglow/screens/notification_sound_sheet.dart';
+import 'package:fiveglow/models/notif_sound.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 Widget app(Widget home) => MaterialApp(
   scrollBehavior: const StableScrollBehavior(),
@@ -95,7 +95,7 @@ void main() {
   testWidgets('sound categories have separate panels and Done stays fixed', (
     tester,
   ) async {
-    const channel = MethodChannel('uz.mu1zi47.prayertime/sounds');
+    const channel = MethodChannel('uz.mu1zi47.fiveglow/sounds');
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
       call,
     ) async {
@@ -147,7 +147,7 @@ void main() {
   testWidgets(
     'a large sound catalogue stays lazy and reveals a saved late item',
     (tester) async {
-      const channel = MethodChannel('uz.mu1zi47.prayertime/sounds');
+      const channel = MethodChannel('uz.mu1zi47.fiveglow/sounds');
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
         call,
       ) async {

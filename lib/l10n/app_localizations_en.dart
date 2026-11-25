@@ -21,6 +21,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextPrayerLabel => 'Next prayer';
 
   @override
+  String get homeScheduleButton => 'Timetable';
+
+  @override
+  String get homeCalendarButton => 'Calendar';
+
+  @override
+  String get homeNextPrayerTomorrow => 'Next prayer · Tomorrow';
+
+  @override
   String nextPrayerTomorrowLabel(String date) {
     return 'Tomorrow, $date';
   }
@@ -791,7 +800,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get soundListUnavailable => 'Couldn\'t read the phone\'s sounds';
 
   @override
-  String get calendarNotMarked => 'Not marked';
+  String get calendarNotMarked => 'Not prayed';
 
   @override
   String get calendarDayPanelKicker => 'Mark the prayers';
@@ -907,4 +916,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingNowBarBody =>
       'Show the current prayer and remaining time in a persistent notification or Now Bar. Off by default. Enable it now or later in settings.';
+
+  @override
+  String get mosquePreviewTitle => 'Nearby mosque';
+
+  @override
+  String get mosquePreviewEnable => 'Allow location';
+
+  @override
+  String get mosquePreviewLocationHint =>
+      'Allow location access to find the nearest mosque.';
+
+  @override
+  String mosquePreviewDistance(String distance) {
+    return 'About $distance in a straight line';
+  }
+
+  @override
+  String get mosquePreviewApproximate => 'Location is approximate';
+
+  @override
+  String get mosquePreviewEmpty => 'No mosques found in this area';
+
+  @override
+  String get mosquePreviewTileLoading => 'Loading map…';
+
+  @override
+  String get mosquePreviewTileError => 'Map unavailable. Tap to open';
+
+  @override
+  String get mosquePreviewLoadingHint =>
+      'Finding your location and the nearest mosque.';
+
+  @override
+  String get mosquePreviewSearching => 'Searching nearby…';
+
+  @override
+  String get mosquePreviewPermissionSettings =>
+      'Allow location access in the app settings to find the nearest mosque.';
+
+  @override
+  String get homeCurrentPrayer => 'Now';
 }

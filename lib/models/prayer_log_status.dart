@@ -1,11 +1,9 @@
 enum PrayerLogStatus {
-  onTime,
-  qada;
+  onTime;
 
-  static PrayerLogStatus? fromName(String? name) {
-    for (final s in PrayerLogStatus.values) {
-      if (s.name == name) return s;
-    }
-    return null;
-  }
+  // Keep reading existing widget values and legacy late marks without loss.
+  static PrayerLogStatus? fromName(String? name) => switch (name) {
+    'onTime' || 'qada' => onTime,
+    _ => null,
+  };
 }

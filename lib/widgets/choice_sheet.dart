@@ -1,10 +1,9 @@
+import '../theme/app_design_system.dart';
 import 'app_modal_sheet.dart';
 import 'app_tap.dart';
 import 'settings_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 import 'icon_badge.dart';
 
 class ChoiceSheetOption {
@@ -28,7 +27,7 @@ Future<void> showChoiceSheet(
 }) {
   return showAppModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.transparent,
     builder: (sheetContext) => _ChoiceSheet(
       title: title,
       options: options,
@@ -59,28 +58,33 @@ class _ChoiceSheet extends StatelessWidget {
     AppColors.watch(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
-      padding: EdgeInsets.fromLTRB(18, 8, 18, bottomInset + 16),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.screen,
+        AppSpacing.xs,
+        AppSpacing.screen,
+        bottomInset + AppSpacing.md,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: AppSize.sheetHandleWidth,
+              height: AppSize.sheetHandleHeight,
               decoration: BoxDecoration(
                 color: AppColors.divider,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.screen),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: AppTextStyles.heading(fontSize: 18),
+            style: AppTextStyles.heading(fontSize: AppFontSize.title),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.screen),
           ActionGroup(
             children: [
               for (var i = 0; i < options.length; i++)
@@ -122,8 +126,8 @@ class _ChoiceOption extends StatelessWidget {
 
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: option.icon != null ? 10 : 15,
+          horizontal: AppSpacing.md,
+          vertical: option.icon != null ? AppSpacing.sm : AppSpacing.md,
         ),
         decoration: BoxDecoration(
           gradient: selected ? AppColors.selectionGradient : null,
@@ -133,21 +137,29 @@ class _ChoiceOption extends StatelessWidget {
           child: Row(
             children: [
               if (option.icon != null) ...[
-                IconBadge(option.icon!, size: 32, iconSize: 16),
-                const SizedBox(width: 12),
+                IconBadge(
+                  option.icon!,
+                  size: AppIconSize.display,
+                  iconSize: AppIconSize.small,
+                ),
+                const SizedBox(width: AppSpacing.sm),
               ],
               Expanded(
                 child: Text(
                   option.label,
                   style: AppTextStyles.body(
-                    fontSize: 15,
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w700,
                     color: fg,
                   ),
                 ),
               ),
               if (selected)
-                Icon(Icons.check_rounded, size: 19, color: AppColors.accent700),
+                Icon(
+                  Icons.check_rounded,
+                  size: AppIconSize.medium,
+                  color: AppColors.accent700,
+                ),
             ],
           ),
         ),

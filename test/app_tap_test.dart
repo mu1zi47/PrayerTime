@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prayertime/widgets/app_tap.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/widgets/app_tap.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 void main() {
   Widget button(VoidCallback? onTap, {bool reduceMotion = false}) =>

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:prayertime/l10n/app_localizations.dart';
-import 'package:prayertime/widgets/map_zoom_strip.dart';
+import 'package:fiveglow/l10n/app_localizations.dart';
+import 'package:fiveglow/widgets/map_zoom_strip.dart';
 
 /// A bare map (no tiles, so nothing goes to the network) with the zoom strip
 /// on the side [onLeft] says, moving it when the strip asks to.

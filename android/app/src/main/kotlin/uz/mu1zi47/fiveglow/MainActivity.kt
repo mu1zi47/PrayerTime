@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime
+package uz.mu1zi47.fiveglow
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -6,9 +6,9 @@ import android.graphics.Rect
 import android.os.Build
 import android.provider.Settings
 import android.view.ViewConfiguration
-import uz.mu1zi47.prayertime.nowbar.PrayerStatusNotifier
-import uz.mu1zi47.prayertime.sounds.NotificationSounds
-import uz.mu1zi47.prayertime.widget.PrayerWidgets
+import uz.mu1zi47.fiveglow.nowbar.PrayerStatusNotifier
+import uz.mu1zi47.fiveglow.sounds.NotificationSounds
+import uz.mu1zi47.fiveglow.widget.PrayerWidgets
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -174,9 +174,9 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
-        private const val WIDGET_CHANNEL = "uz.mu1zi47.prayertime/widget"
-        private const val NOW_BAR_CHANNEL = "uz.mu1zi47.prayertime/now_bar"
-        private const val SOUNDS_CHANNEL = "uz.mu1zi47.prayertime/sounds"
-        private const val GESTURES_CHANNEL = "uz.mu1zi47.prayertime/gestures"
+        private const val WIDGET_CHANNEL = "uz.mu1zi47.fiveglow/widget"
+        private const val NOW_BAR_CHANNEL = "uz.mu1zi47.fiveglow/now_bar"
+        private const val SOUNDS_CHANNEL = "uz.mu1zi47.fiveglow/sounds"
+        private const val GESTURES_CHANNEL = "uz.mu1zi47.fiveglow/gestures"
     }
 }

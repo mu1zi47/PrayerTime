@@ -4,6 +4,9 @@
   "navMore": "Yana",
   "navSettings": "Sozlamalar",
   "nextPrayerLabel": "Keyingi namoz",
+  "homeScheduleButton": "Jadval",
+  "homeCalendarButton": "Taqvim",
+  "homeNextPrayerTomorrow": "Keyingi namoz · Ertaga",
   "nextPrayerTomorrowLabel": "Ertaga, {date}",
   "@nextPrayerTomorrowLabel": {
     "placeholders": {
@@ -358,7 +361,7 @@
   "soundPickerDone": "Tayyor",
   "soundListUnavailable": "Telefon ovozlarini olib bo'lmadi",
 
-  "calendarNotMarked": "Belgilanmagan",
+  "calendarNotMarked": "O‘qilmagan",
   "calendarDayPanelKicker": "Namozlarni belgilang",
   "namesNoticeTitle": "Hozircha faqat o'zbekcha",
   "namesNoticeBody": "Alloh ismlari va ularning sharhi hozircha faqat o'zbek (kirill) tilida mavjud. Boshqa tillarga tarjimalari keyingi yangilanishlarda qo'shiladi.",
@@ -412,5 +415,24 @@
   "tasbihCancel": "Bekor qilish",
   "tasbihClear": "Tozalash",
   "onboardingSkip": "O‘tkazib yuborish",
-  "onboardingNowBarBody": "Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin."
+  "onboardingNowBarBody": "Joriy namoz va qolgan vaqtni doimiy bildirishnomada yoki Now Bar’da ko‘rsatish. Dastlab o‘chirilgan. Hozir yoki keyin sozlamalarda yoqish mumkin.",
+  "mosquePreviewTitle": "Yaqin masjid",
+  "mosquePreviewEnable": "Ruxsat berish",
+  "mosquePreviewLocationHint": "Eng yaqin masjidni topish uchun joylashuvingizga ruxsat bering.",
+  "mosquePreviewDistance": "To‘g‘ri chiziq bo‘ylab taxminan {distance}",
+  "mosquePreviewApproximate": "Joylashuv taxminiy aniqlangan",
+  "mosquePreviewEmpty": "Bu hududda masjidlar topilmadi",
+  "@mosquePreviewDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "mosquePreviewTileLoading": "Xarita yuklanmoqda…",
+  "mosquePreviewTileError": "Xarita ochilmadi. Ochish uchun bosing",
+  "mosquePreviewLoadingHint": "Joylashuvingiz va eng yaqin masjid aniqlanmoqda.",
+  "mosquePreviewSearching": "Yaqin atrofdan qidirilmoqda…",
+  "mosquePreviewPermissionSettings": "Eng yaqin masjidni topish uchun ilova sozlamalarida joylashuvga ruxsat bering.",
+  "homeCurrentPrayer": "Hozir"
 }

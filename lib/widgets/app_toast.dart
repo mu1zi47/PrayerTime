@@ -1,3 +1,4 @@
+import '../theme/app_design_system.dart';
 import 'icon_badge.dart';
 import 'app_tap.dart';
 import 'ambient_surface.dart';
@@ -5,9 +6,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
 /// A floating, stackable toast notification.
 ///
@@ -90,7 +88,7 @@ class _ToastHostState extends State<_ToastHost> {
       child: IgnorePointer(
         ignoring: _toasts.isEmpty,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
           child: AnimatedSize(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
@@ -101,7 +99,7 @@ class _ToastHostState extends State<_ToastHost> {
                 for (final toast in _toasts)
                   Padding(
                     key: ValueKey(toast.id),
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
                     child: _ToastCard(
                       data: toast,
                       onDismiss: () => _remove(toast.id),
@@ -283,7 +281,10 @@ class _ToastCardVisual extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             decoration: glassDecoration(),
             child: Row(
               children: [
@@ -292,13 +293,17 @@ class _ToastCardVisual extends StatelessWidget {
                   height: 30,
                   alignment: Alignment.center,
                   decoration: iconBadgeDecoration(),
-                  child: Icon(icon, size: 15, color: AppColors.accent700),
+                  child: Icon(
+                    icon,
+                    size: AppIconSize.small,
+                    color: AppColors.accent700,
+                  ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     message,
-                    style: AppTextStyles.body(fontSize: 13.5),
+                    style: AppTextStyles.body(fontSize: AppFontSize.body),
                   ),
                 ),
               ],

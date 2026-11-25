@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime
+package uz.mu1zi47.fiveglow
 
 import android.app.AlarmManager
 import android.app.PendingIntent

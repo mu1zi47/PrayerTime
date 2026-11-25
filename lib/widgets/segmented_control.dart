@@ -1,8 +1,6 @@
+import '../theme/app_design_system.dart';
 import 'app_tap.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
 
 /// A minimal text-tabs control — plain labels with a short accent underline
 /// on the selected one, the same "no fill, no border, just an accent mark"
@@ -27,7 +25,7 @@ class SegmentedControl extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < options.length; i++) ...[
-          if (i > 0) const SizedBox(width: 24),
+          if (i > 0) const SizedBox(width: AppSpacing.lg),
           AppTap(
             feedbackOnChild: false,
             onTap: () => onSelect(i),
@@ -41,7 +39,7 @@ class SegmentedControl extends StatelessWidget {
                     duration: const Duration(milliseconds: 220),
                     curve: Curves.easeOut,
                     style: AppTextStyles.body(
-                      fontSize: 14,
+                      fontSize: AppFontSize.body,
                       fontWeight: i == selectedIndex
                           ? FontWeight.w800
                           : FontWeight.w600,
@@ -52,7 +50,7 @@ class SegmentedControl extends StatelessWidget {
                     child: Text(options[i]),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.compact),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,
@@ -60,7 +58,7 @@ class SegmentedControl extends StatelessWidget {
                   width: i == selectedIndex ? 22 : 0,
                   decoration: BoxDecoration(
                     color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.indicator),
                   ),
                 ),
               ],

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:prayertime/models/prayer_day.dart';
-import 'package:prayertime/services/notification_service.dart';
-import 'package:prayertime/services/prayer_cache_store.dart';
-import 'package:prayertime/services/prayer_times_api.dart';
-import 'package:prayertime/state/app_state.dart';
-import 'package:prayertime/widgets/ambient_surface.dart';
+import 'package:fiveglow/models/prayer_day.dart';
+import 'package:fiveglow/services/notification_service.dart';
+import 'package:fiveglow/services/prayer_cache_store.dart';
+import 'package:fiveglow/services/prayer_times_api.dart';
+import 'package:fiveglow/state/app_state.dart';
+import 'package:fiveglow/widgets/ambient_surface.dart';
 
 PrayerDay day(DateTime date) => PrayerDay(
   date: date,

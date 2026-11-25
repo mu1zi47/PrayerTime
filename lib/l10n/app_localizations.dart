@@ -126,6 +126,24 @@ abstract class AppLocalizations {
   /// **'Следующий намаз'**
   String get nextPrayerLabel;
 
+  /// No description provided for @homeScheduleButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Расписание'**
+  String get homeScheduleButton;
+
+  /// No description provided for @homeCalendarButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Календарь'**
+  String get homeCalendarButton;
+
+  /// No description provided for @homeNextPrayerTomorrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Следующий намаз · Завтра'**
+  String get homeNextPrayerTomorrow;
+
   /// No description provided for @nextPrayerTomorrowLabel.
   ///
   /// In ru, this message translates to:
@@ -1545,7 +1563,7 @@ abstract class AppLocalizations {
   /// No description provided for @calendarNotMarked.
   ///
   /// In ru, this message translates to:
-  /// **'Не отмечен'**
+  /// **'Не прочитано'**
   String get calendarNotMarked;
 
   /// No description provided for @calendarDayPanelKicker.
@@ -1751,6 +1769,78 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках.'**
   String get onboardingNowBarBody;
+
+  /// No description provided for @mosquePreviewTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мечеть рядом'**
+  String get mosquePreviewTitle;
+
+  /// No description provided for @mosquePreviewEnable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешить доступ'**
+  String get mosquePreviewEnable;
+
+  /// No description provided for @mosquePreviewLocationHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешите доступ к геопозиции, чтобы найти ближайшую мечеть.'**
+  String get mosquePreviewLocationHint;
+
+  /// No description provided for @mosquePreviewDistance.
+  ///
+  /// In ru, this message translates to:
+  /// **'Около {distance} по прямой'**
+  String mosquePreviewDistance(String distance);
+
+  /// No description provided for @mosquePreviewApproximate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Местоположение определено приблизительно'**
+  String get mosquePreviewApproximate;
+
+  /// No description provided for @mosquePreviewEmpty.
+  ///
+  /// In ru, this message translates to:
+  /// **'В этой области мечети не найдены'**
+  String get mosquePreviewEmpty;
+
+  /// No description provided for @mosquePreviewTileLoading.
+  ///
+  /// In ru, this message translates to:
+  /// **'Загружаем карту…'**
+  String get mosquePreviewTileLoading;
+
+  /// No description provided for @mosquePreviewTileError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Карта недоступна. Нажмите, чтобы открыть'**
+  String get mosquePreviewTileError;
+
+  /// No description provided for @mosquePreviewLoadingHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Определяем ваше местоположение и ищем ближайшую мечеть.'**
+  String get mosquePreviewLoadingHint;
+
+  /// No description provided for @mosquePreviewSearching.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ищем рядом…'**
+  String get mosquePreviewSearching;
+
+  /// No description provided for @mosquePreviewPermissionSettings.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разрешите геопозицию в настройках приложения — покажем ближайшую мечеть.'**
+  String get mosquePreviewPermissionSettings;
+
+  /// No description provided for @homeCurrentPrayer.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сейчас'**
+  String get homeCurrentPrayer;
 }
 
 class _AppLocalizationsDelegate

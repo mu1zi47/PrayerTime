@@ -6,6 +6,9 @@
   "navSettings": "Настройки",
 
   "nextPrayerLabel": "Следующий намаз",
+  "homeScheduleButton": "Расписание",
+  "homeCalendarButton": "Календарь",
+  "homeNextPrayerTomorrow": "Следующий намаз · Завтра",
   "nextPrayerTomorrowLabel": "Завтра, {date}",
   "@nextPrayerTomorrowLabel": {
     "placeholders": {
@@ -371,7 +374,7 @@
   "soundPickerDone": "Готово",
   "soundListUnavailable": "Не удалось получить звуки телефона",
 
-  "calendarNotMarked": "Не отмечен",
+  "calendarNotMarked": "Не прочитано",
   "calendarDayPanelKicker": "Отметьте намазы",
   "namesNoticeTitle": "Пока только на узбекском",
   "namesNoticeBody": "Имена Аллаха и их толкования сейчас доступны только на узбекском (кириллица). Переводы на другие языки появятся в одном из следующих обновлений.",
@@ -430,5 +433,24 @@
   "tasbihCancel": "Отмена",
   "tasbihClear": "Очистить",
   "onboardingSkip": "Пропустить",
-  "onboardingNowBarBody": "Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках."
+  "onboardingNowBarBody": "Показывать текущий намаз и оставшееся время в постоянном уведомлении или Now Bar. По умолчанию выключено. Можно включить сейчас или позже в настройках.",
+  "mosquePreviewTitle": "Мечеть рядом",
+  "mosquePreviewEnable": "Разрешить доступ",
+  "mosquePreviewLocationHint": "Разрешите доступ к геопозиции, чтобы найти ближайшую мечеть.",
+  "mosquePreviewDistance": "Около {distance} по прямой",
+  "mosquePreviewApproximate": "Местоположение определено приблизительно",
+  "mosquePreviewEmpty": "В этой области мечети не найдены",
+  "@mosquePreviewDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "mosquePreviewTileLoading": "Загружаем карту…",
+  "mosquePreviewTileError": "Карта недоступна. Нажмите, чтобы открыть",
+  "mosquePreviewLoadingHint": "Определяем ваше местоположение и ищем ближайшую мечеть.",
+  "mosquePreviewSearching": "Ищем рядом…",
+  "mosquePreviewPermissionSettings": "Разрешите геопозицию в настройках приложения — покажем ближайшую мечеть.",
+  "homeCurrentPrayer": "Сейчас"
 }

@@ -1,4 +1,4 @@
-package uz.mu1zi47.prayertime.widget
+package uz.mu1zi47.fiveglow.widget
 
 import android.content.Context
 import android.content.res.Configuration

@@ -17,6 +17,11 @@ for theme in ['light', 'dark']:
     values = palette(theme)
     for role, field in {
         'accent': 'accent700',
+        'brand': 'accent',
+        'control': 'controlFill',
+        'on_control': 'onControlFill',
+        'secondary': 'accent2',
+        'background': 'bg',
         'glow': 'accent',
         'text': 'text',
         'surface': 'surface',
@@ -33,6 +38,19 @@ for name, rgb in colors.items():
     lines.append(f'    <color name="{name}">#{rgb}</color>')
     for alpha in ['00', '05', '0D', '14', '1A', '1F', '29', '33', '40', '4D', '66', '8F', 'CC']:
         lines.append(f'    <color name="{name}_{alpha.lower()}">#{alpha}{rgb}</color>')
+# Native Now Bar uses the same panel radius and text hierarchy as Flutter.
+tokens = (ROOT / 'lib/theme/app_tokens.dart').read_text()
+font_sizes = tokens.split('abstract final class AppFontSize {', 1)[1].split('}', 1)[0]
+radii = SOURCE.split('class AppRadius {', 1)[1].split('}', 1)[0]
+for name, block, field, unit in [
+    ('app_ds_panel_radius', radii, 'lg', 'dp'),
+    ('app_ds_text_title', font_sizes, 'title', 'dp'),
+    ('app_ds_text_heading', font_sizes, 'heading', 'dp'),
+    ('app_ds_text_display', font_sizes, 'display', 'dp'),
+    ('app_ds_text_body', font_sizes, 'body', 'dp'),
+]:
+    value = re.search(r'static const ' + field + r' = ([0-9.]+);', block).group(1)
+    lines.append(f'    <dimen name="{name}">{value}{unit}</dimen>')
 lines.append('</resources>')
 (RESOURCES / 'values/app_design_tokens.xml').write_text('\n'.join(lines) + '\n')
 

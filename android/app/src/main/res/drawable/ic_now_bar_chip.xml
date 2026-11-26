@@ -8,6 +8,6 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="#FFFAFAFF"
+        android:fillColor="@color/now_bar_chip_glyph"
         android:pathData="M11.05,3.05A9,9 0,1 0,20.95 12.95A7,7 0,0 1,11.05 3.05Z" />
 </vector>

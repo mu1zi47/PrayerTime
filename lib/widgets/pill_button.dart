@@ -49,7 +49,7 @@ class PillButton extends StatelessWidget {
                           dimension: AppIconSize.small,
                           child: CircularProgressIndicator(
                             strokeWidth: AppSpacing.micro,
-                            color: AppColors.accent,
+                            color: AppColors.text,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.xs),
@@ -67,8 +67,8 @@ class PillButton extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: AppTextStyles.body(
                             fontSize: AppFontSize.body,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.accent,
+                            fontWeight: AppFontWeight.medium,
+                            color: AppColors.text,
                           ),
                         ),
                       ),

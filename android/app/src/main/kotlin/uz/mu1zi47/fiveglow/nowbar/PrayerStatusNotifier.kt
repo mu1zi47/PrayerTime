@@ -27,6 +27,7 @@ import androidx.core.graphics.drawable.IconCompat
 import org.json.JSONObject
 import uz.mu1zi47.fiveglow.R
 import uz.mu1zi47.fiveglow.widget.PrayerWidgetState
+import uz.mu1zi47.fiveglow.widget.PrayerWidgets
 import uz.mu1zi47.fiveglow.widget.PrayerWidgetStore
 
 /**
@@ -325,7 +326,7 @@ object PrayerStatusNotifier {
             putCharSequence("$SAMSUNG_KEY.chipExpandedText", state.currentName)
             putParcelable(
                 "$SAMSUNG_KEY.chipIcon",
-                Icon.createWithResource(context, R.drawable.ic_now_bar_chip),
+                Icon.createWithResource(context, R.drawable.ic_now_bar_chip).setTint(android.graphics.Color.WHITE),
             )
             putInt("$SAMSUNG_KEY.chipBgColor", context.getColor(look.chip))
             putInt("$SAMSUNG_KEY.actionType", SAMSUNG_ACTION_ICON_BUTTON)
@@ -334,12 +335,11 @@ object PrayerStatusNotifier {
             putParcelable("$SAMSUNG_KEY.chronometerRemoteView", countdown)
             // The expanded card: the whole day, when the user wants it. Left
             // out, One UI builds its own card from the extras above.
-            if (showsSchedule(context)) {
-                putParcelable(
-                    "$SAMSUNG_KEY.expandedRemoteView",
-                    expandedView(context, state, labels, countdownBase),
-                )
-            }
+            // Both modes use the app's card; the switch only controls the list.
+            putParcelable(
+                "$SAMSUNG_KEY.expandedRemoteView",
+                expandedView(context, state, labels, countdownBase, showsSchedule(context)),
+            )
             putCharSequence("$SAMSUNG_KEY.chronometerRemoteViewTag", CHRONOMETER_TAG)
             putInt("$SAMSUNG_KEY.chronometerRemoteViewPosition", SAMSUNG_POSITION_PRIMARY)
             putInt("$SAMSUNG_KEY.nowbarChronometerPosition", SAMSUNG_POSITION_PRIMARY)
@@ -361,39 +361,34 @@ object PrayerStatusNotifier {
         state: PrayerWidgetState.Ready,
         labels: JSONObject?,
         countdownBase: Long,
+        includeSchedule: Boolean,
     ): RemoteViews {
-        val prayerOpen = state.currentPrayerKey != null
-
+        val palette = PrayerWidgets.Palette(context, state.dark)
+        val background = if (state.dark) R.drawable.now_bar_expanded_bg_dark else R.drawable.now_bar_expanded_bg_light
+        val button = if (state.dark) R.drawable.now_bar_expanded_circle_dark else R.drawable.now_bar_expanded_circle_light
+        val selectedButton = if (state.dark) R.drawable.now_bar_expanded_button_selected_dark else R.drawable.now_bar_expanded_button_selected_light
+        val currentRow = if (state.dark) R.drawable.now_bar_expanded_row_current_dark else R.drawable.now_bar_expanded_row_current_light
         return RemoteViews(context.packageName, R.layout.now_bar_expanded).apply {
+            // Resolve every surface and glyph together, exactly as the widget does.
+            setInt(R.id.now_bar_exp_root, "setBackgroundResource", background)
+            setTextColor(R.id.now_bar_exp_title, palette.text)
+            setTextColor(R.id.now_bar_exp_next, palette.muted)
+            setTextColor(R.id.now_bar_exp_countdown, palette.countdown)
+            setInt(R.id.now_bar_exp_button_icon, "setBackgroundResource", button)
+            setImageViewIcon(R.id.now_bar_exp_button_icon,
+                Icon.createWithResource(context, R.drawable.ic_now_bar_check).setTint(palette.text))
             openAppIntent(context)?.let { setOnClickPendingIntent(R.id.now_bar_exp_root, it) }
 
-            setTextViewText(R.id.now_bar_exp_title, headline(state))
-            setTextViewText(
-                R.id.now_bar_exp_countdown_label,
-                if (prayerOpen) labels.label("endsIn", "") else labels.label("startsIn", ""),
-            )
+            setTextViewText(R.id.now_bar_exp_title, state.currentName)
+            setTextViewText(R.id.now_bar_exp_next, state.nextLabel)
             setChronometerCountDown(R.id.now_bar_exp_countdown, true)
             setChronometer(R.id.now_bar_exp_countdown, countdownBase, null, true)
 
             val dateKey = state.currentDateKey
             val prayerKey = state.currentPrayerKey
             if (dateKey != null && prayerKey != null) {
-                // A toggle: the same check either way, filled gold once the
-                // prayer is logged.
                 if (state.currentMarked) {
-                    setInt(
-                        R.id.now_bar_exp_button,
-                        "setBackgroundResource",
-                        R.drawable.now_bar_expanded_button_selected,
-                    )
-                    // A drawable rather than a color filter: SystemUI draws
-                    // this card in the *phone's* theme, and a color resolved
-                    // here would follow this process's — see the row colors
-                    // below for the same reason.
-                    setImageViewResource(
-                        R.id.now_bar_exp_button,
-                        R.drawable.ic_now_bar_check_selected,
-                    )
+                    setInt(R.id.now_bar_exp_button_icon, "setBackgroundResource", selectedButton)
                 }
                 setContentDescription(
                     R.id.now_bar_exp_button,
@@ -409,19 +404,20 @@ object PrayerStatusNotifier {
             }
 
             removeAllViews(R.id.now_bar_exp_list)
-            for (entry in state.today) {
+            setViewVisibility(R.id.now_bar_exp_list, if (includeSchedule) View.VISIBLE else View.GONE)
+            for (entry in if (includeSchedule) state.today else emptyList()) {
                 val row = RemoteViews(context.packageName, R.layout.now_bar_expanded_row)
                 row.setTextViewText(R.id.now_bar_row_name, entry.name.bold(entry.current))
                 row.setTextViewText(R.id.now_bar_row_time, entry.time.bold(entry.current))
-                // Colors stay in the layout: resolved there, by SystemUI,
-                // they follow the phone's light or dark theme. Picked here
-                // they'd follow this process's, which isn't always the same —
-                // dark text on the dark card. Past slots are dimmed instead.
+                row.setTextColor(R.id.now_bar_row_name, palette.text)
+                row.setTextColor(R.id.now_bar_row_time, palette.text)
+                row.setImageViewIcon(R.id.now_bar_row_check,
+                    Icon.createWithResource(context, R.drawable.ic_now_bar_check).setTint(palette.text))
                 if (entry.current) {
                     row.setInt(
                         R.id.now_bar_row,
                         "setBackgroundResource",
-                        R.drawable.now_bar_expanded_row_current,
+                        currentRow,
                     )
                 } else if (entry.passed) {
                     row.setFloat(R.id.now_bar_row, "setAlpha", PAST_ALPHA)
@@ -467,7 +463,7 @@ object PrayerStatusNotifier {
     private data class Look(val icon: Int, val chip: Int)
 
     /**
-     * The app's bright gold, in the theme chosen *in the app*
+     * The app's control fill, in the theme chosen *in the app*
      * ([PrayerWidgetState.dark]), not the phone's. It fills the icon's
      * circle, on which One UI always draws the crescent in white. Logging
      * the prayer changes none of it; only the button's icon does.

@@ -10,6 +10,7 @@ import 'package:fiveglow/state/app_state.dart';
 import 'package:fiveglow/theme/app_theme.dart';
 import 'package:fiveglow/widgets/ambient_surface.dart';
 import 'package:fiveglow/widgets/app_tap.dart';
+import 'package:fiveglow/widgets/pill_button.dart';
 
 class _EveningState extends AppState {
   _EveningState() : super(notifications: NoopNotificationService());
@@ -102,7 +103,10 @@ void main() {
       lessThan(tester.getTopLeft(today).dy),
     );
     expect(find.text('8 ноября'), findsNothing);
-    expect(find.byKey(const ValueKey('prayer-divider-maghrib')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('prayer-divider-maghrib')),
+      findsOneWidget,
+    );
     expect(find.byKey(const ValueKey('prayer-divider-isha')), findsNothing);
     expect(find.byKey(const ValueKey('prayer-divider-asr')), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -139,9 +143,9 @@ void main() {
         await tester.pumpWidget(_app(state, textScale: scale));
         await tester.pumpAndSettle();
         expect(tester.getSize(find.byType(ListView)).height, 844);
-        await tester.drag(find.byType(ListView), const Offset(0, -1400));
-        await tester.pumpAndSettle();
         final isha = find.text('18:32');
+        await tester.ensureVisible(isha);
+        await tester.pumpAndSettle();
         expect(isha.hitTestable(), findsOneWidget);
         expect(tester.getBottomLeft(isha).dy, lessThan(820));
         expect(tester.takeException(), isNull);
@@ -149,193 +153,83 @@ void main() {
     }
   }
 
-  testWidgets('schedule and calendar are separate squares above prayers', (
-    tester,
-  ) async {
-    final state = _EveningState();
-    addTearDown(state.dispose);
-    await tester.pumpWidget(_app(state));
-    await tester.pumpAndSettle();
-    final actions = find.byKey(const ValueKey('home-schedule-actions'));
-    await tester.ensureVisible(actions);
-    await tester.pumpAndSettle();
-    expect(
-      find.descendant(of: actions, matching: find.byType(GlassPanel)),
-      findsNWidgets(5),
-    );
-    final monthly = find.byKey(const ValueKey('home-monthly-times'));
-    final calendar = find.byKey(const ValueKey('home-prayer-calendar'));
-    expect(tester.getSize(monthly), const Size(140, 140));
-    expect(tester.getTopLeft(monthly).dx, 18);
-    expect(tester.getSize(calendar), tester.getSize(monthly));
-    expect(tester.getTopLeft(calendar).dx - tester.getTopRight(monthly).dx, 6);
-    expect(tester.getTopLeft(monthly).dy, tester.getTopLeft(calendar).dy);
-    expect(
-      tester.getBottomLeft(actions).dy,
-      lessThan(
-        tester.getTopLeft(find.byKey(const ValueKey('today-prayers-panel'))).dy,
-      ),
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('today-prayers-panel')),
-        matching: find.byType(GlassPanel),
-      ),
-      findsNothing,
-    );
-  });
-
   testWidgets(
-    'action content has edge padding while viewport clips at screen edge',
+    'two primary actions precede prayers and other actions follow map',
     (tester) async {
       tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 844);
-      addTearDown(tester.view.reset);
-      final state = _EveningState();
-      addTearDown(state.dispose);
-      await tester.pumpWidget(_app(state, textScale: 1.8));
-      await tester.pumpAndSettle();
-      final actions = find.byKey(const ValueKey('home-schedule-actions'));
-      await tester.ensureVisible(actions);
-      await tester.pumpAndSettle();
-      final first = find.byKey(const ValueKey('home-monthly-times'));
-      final last = find.byKey(const ValueKey('home-settings'));
-      expect(tester.getTopLeft(actions).dx, 0);
-      expect(tester.getSize(actions).width, 390);
-      expect(tester.getTopLeft(first).dx, 18);
-
-      await tester.drag(actions, const Offset(-50, 0));
-      await tester.pumpAndSettle();
-      expect(tester.getTopLeft(first).dx, lessThan(0));
-
-      await tester.drag(actions, const Offset(-2000, 0));
-      await tester.pumpAndSettle();
-      expect(tester.getTopRight(last).dx, closeTo(372, .1));
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets('tools collapse on a short page and return at the top', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(390, 1600);
-    addTearDown(tester.view.reset);
-    final state = _EveningState();
-    addTearDown(state.dispose);
-    await tester.pumpWidget(_app(state));
-    await tester.pumpAndSettle();
-    final scroll = find.byKey(const ValueKey('home-scroll'));
-    final reveal = find.byKey(const ValueKey('home-actions-reveal'));
-    final position = tester
-        .state<ScrollableState>(
-          find.descendant(of: scroll, matching: find.byType(Scrollable)).first,
-        )
-        .position;
-    expect(position.maxScrollExtent, 0);
-    expect(tester.getSize(reveal).height, greaterThan(0));
-    final prayers = find.byKey(const ValueKey('today-prayers-panel'));
-    final map = find.byKey(const ValueKey('home-nearby-mosque'));
-    expect(
-      tester.getTopLeft(map).dy,
-      greaterThan(tester.getBottomLeft(prayers).dy),
-    );
-
-    final fullHeight = tester.getSize(reveal).height;
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
-    );
-    // Establish the vertical gesture, then verify individual pixel deltas.
-    await gesture.moveBy(const Offset(0, -24));
-    await tester.pump();
-    final firstHeight = tester.getSize(reveal).height;
-    final firstButtonTop = tester
-        .getTopLeft(find.byKey(const ValueKey('home-monthly-times')))
-        .dy;
-    await gesture.moveBy(const Offset(0, -30));
-    await tester.pump();
-    final partialHeight = tester.getSize(reveal).height;
-    expect(partialHeight, closeTo(firstHeight - 30, .1));
-    expect(
-      tester.getTopLeft(find.byKey(const ValueKey('home-monthly-times'))).dy,
-      closeTo(firstButtonTop - 30, .1),
-    );
-    expect(partialHeight, inExclusiveRange(0, fullHeight));
-    // The row moves above its layout boundary instead of clipping there.
-    expect(
-      tester.getTopLeft(find.byKey(const ValueKey('home-monthly-times'))).dy,
-      lessThan(tester.getTopLeft(reveal).dy),
-    );
-    expect(
-      find.descendant(of: reveal, matching: find.byType(SizeTransition)),
-      findsNothing,
-    );
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(tester.getSize(reveal).height, partialHeight);
-    await gesture.up();
-    await tester.pumpAndSettle();
-    expect(tester.getSize(reveal).height, fullHeight);
-    expect(position.pixels, 0);
-    // Collapse past halfway and check that release completes the collapse.
-    final close = await tester.startGesture(
-      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
-    );
-    await close.moveBy(Offset(0, -fullHeight * .8));
-    await tester.pump();
-    await close.up();
-    await tester.pumpAndSettle();
-    expect(tester.getSize(reveal).height, 0);
-
-    // A reverse drag follows the finger too, without reopening in one jump.
-    final reverse = await tester.startGesture(
-      tester.getCenter(find.byKey(const ValueKey('next-prayer-summary'))),
-    );
-    await reverse.moveBy(const Offset(0, 24));
-    await tester.pump();
-    final beforeReveal = tester.getSize(reveal).height;
-    await reverse.moveBy(const Offset(0, 12));
-    await tester.pump();
-    expect(tester.getSize(reveal).height, closeTo(beforeReveal + 12, .1));
-    await reverse.up();
-    await tester.pumpAndSettle();
-
-    await tester.drag(scroll, const Offset(0, -300));
-    await tester.pumpAndSettle();
-    expect(tester.getSize(reveal).height, 0);
-    expect(find.text('Расписание').hitTestable(), findsNothing);
-    expect(position.pixels, 0);
-
-    await tester.drag(scroll, const Offset(0, 300));
-    await tester.pumpAndSettle();
-    expect(tester.getSize(reveal).height, greaterThan(0));
-    expect(find.text('Расписание').hitTestable(), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets(
-    'tools stay hidden until the vertical scroll returns to the top',
-    (tester) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 500);
+      tester.view.physicalSize = const Size(390, 1600);
       addTearDown(tester.view.reset);
       final state = _EveningState();
       addTearDown(state.dispose);
       await tester.pumpWidget(_app(state));
       await tester.pumpAndSettle();
-      final scroll = find.byKey(const ValueKey('home-scroll'));
-      final reveal = find.byKey(const ValueKey('home-actions-reveal'));
-      await tester.drag(scroll, const Offset(0, -240));
-      await tester.pumpAndSettle();
-      expect(find.text('Расписание').hitTestable(), findsNothing);
-      await tester.drag(scroll, const Offset(0, 40));
-      await tester.pumpAndSettle();
-      expect(find.text('Расписание').hitTestable(), findsNothing);
-      await tester.drag(scroll, const Offset(0, 1600));
-      await tester.pumpAndSettle();
-      expect(tester.getSize(reveal).height, greaterThan(0));
+      final top = find.byKey(const ValueKey('home-schedule-actions'));
+      final bottom = find.byKey(const ValueKey('home-secondary-actions'));
+      final prayers = find.byKey(const ValueKey('today-prayers-panel'));
+      final map = find.byKey(const ValueKey('home-nearby-mosque'));
+      expect(
+        find.descendant(of: top, matching: find.byType(PillButton)),
+        findsNWidgets(2),
+      );
+      expect(
+        find.descendant(of: bottom, matching: find.byType(PillButton)),
+        findsNWidgets(3),
+      );
+      expect(
+        tester.getBottomLeft(top).dy,
+        lessThan(tester.getTopLeft(prayers).dy),
+      );
+      expect(
+        tester.getTopLeft(bottom).dy,
+        greaterThan(tester.getBottomLeft(map).dy),
+      );
+      final first = find.byKey(const ValueKey('home-monthly-times'));
+      final second = find.byKey(const ValueKey('home-prayer-calendar'));
+      expect(tester.getTopLeft(first).dy, tester.getTopLeft(second).dy);
+      expect(tester.getSize(first).height, greaterThanOrEqualTo(48));
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final width in [320.0, 390.0]) {
+    testWidgets('all actions remain reachable with 200% text at $width', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 844);
+      addTearDown(tester.view.reset);
+      final state = _EveningState();
+      addTearDown(state.dispose);
+      await tester.pumpWidget(_app(state, textScale: 2));
+      await tester.pumpAndSettle();
+      for (final key in [
+        'home-monthly-times',
+        'home-prayer-calendar',
+        'home-allah-names',
+        'home-tasbih',
+        'home-settings',
+      ]) {
+        final action = find.byKey(ValueKey(key));
+        if (action.evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            action,
+            150,
+            scrollable: find
+                .descendant(
+                  of: find.byKey(const ValueKey('home-scroll')),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          );
+        }
+        await tester.ensureVisible(action);
+        await tester.pumpAndSettle();
+        expect(action.hitTestable(), findsOneWidget);
+        expect(tester.getTopLeft(action).dx, greaterThanOrEqualTo(0));
+        expect(tester.getTopRight(action).dx, lessThanOrEqualTo(width));
+      }
+    });
+  }
 
   testWidgets('only the prayer button toggles a mark without a sheet', (
     tester,

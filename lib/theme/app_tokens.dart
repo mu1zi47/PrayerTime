@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show FontWeight;
+
 /// Shared layout scale. Screen gutters stay independent of component padding.
 abstract final class AppSpacing {
   static const none = 0.0;
@@ -43,6 +45,7 @@ abstract final class AppSize {
   static const badge = 32.0;
   static const largeBadge = 40.0;
   static const touchTarget = 48.0;
+  static const largeTextRowWidth = 360.0;
   static const prayerRow = touchTarget + AppSpacing.xxs * 2;
   static const shortcut = 140.0;
   static const mapPreview = 128.0;
@@ -62,4 +65,11 @@ abstract final class AppOpacity {
 
 abstract final class AppMotion {
   static const fast = Duration(milliseconds: 220);
+}
+
+/// Semantic hierarchy: supporting copy < actions < headings and key time.
+abstract final class AppFontWeight {
+  static const regular = FontWeight.w400;
+  static const medium = FontWeight.w600;
+  static const heading = FontWeight.w700;
 }

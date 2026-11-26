@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="now_bar_icon_light">@color/app_ds_dark_chip</color>
-    <color name="now_bar_icon_dark">@color/app_ds_dark_chip</color>
-    <color name="now_bar_chip_light">@color/app_ds_dark_chip</color>
-    <color name="now_bar_chip_dark">@color/app_ds_dark_chip</color>
-
-    <color name="now_bar_expanded_card">#FCFCFF</color>
-    <color name="now_bar_expanded_text">#252528</color>
-    <color name="now_bar_expanded_text_muted">#8C252528</color>
-    <color name="now_bar_expanded_button_bg">#12252528</color>
-    <color name="now_bar_expanded_glow">@color/app_ds_dark_glow_4d</color>
-    <color name="now_bar_expanded_highlight">@color/app_ds_dark_glow_33</color>
-
-    <color name="now_bar_expanded_icon_bg">@color/now_bar_icon_light</color>
-    <color name="now_bar_expanded_button_selected_bg">@color/now_bar_icon_light</color>
-    <color name="now_bar_expanded_button_selected_glyph">#FFFFFF</color>
-
-    <color name="now_bar_button_glyph">#252528</color>
-    <color name="prayer_schedule_text">#1F1F23</color>
+    <color name="now_bar_icon_light">@color/app_ds_light_control</color>
+    <color name="now_bar_icon_dark">@color/app_ds_dark_control</color>
+    <color name="now_bar_chip_light">@color/app_ds_light_control</color>
+    <color name="now_bar_chip_dark">@color/app_ds_dark_surface</color>
+    <color name="now_bar_expanded_card">@color/app_ds_light_surface</color>
+    <color name="now_bar_expanded_text">@color/widget_text_light</color>
+    <color name="now_bar_expanded_text_muted">@color/widget_text_muted_light</color>
+    <color name="now_bar_expanded_button_bg">@color/app_ds_light_text_14</color>
+    <color name="now_bar_expanded_glow">@color/app_ds_light_brand_0d</color>
+    <color name="now_bar_expanded_highlight">@color/app_ds_light_brand_0d</color>
+    <color name="now_bar_expanded_icon_bg">@color/app_ds_light_control</color>
+    <color name="now_bar_expanded_button_selected_bg">@color/app_ds_light_control</color>
+    <color name="now_bar_expanded_button_selected_glyph">@color/app_ds_light_text</color>
+    <color name="now_bar_button_glyph">@color/app_ds_light_text</color>
+    <color name="now_bar_chip_glyph">@color/app_ds_light_on_control</color>
+    <color name="now_bar_card_icon_glyph">@color/app_ds_light_on_control</color>
+    <color name="prayer_schedule_text">@color/app_ds_light_text</color>
+    <color name="now_bar_widget_countdown">@color/widget_accent2_light</color>
 </resources>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/now_bar_system_card_radius" />
+            <solid android:color="@color/widget_screen_bg_light" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/now_bar_system_card_radius" />
+            <gradient android:angle="315" android:startColor="@color/widget_panel_top_light" android:endColor="@color/widget_bg_light" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/now_bar_system_card_radius" />
+            <gradient android:type="radial" android:centerX="0.05" android:centerY="0.05" android:gradientRadius="180dp" android:startColor="@color/app_ds_dark_glow_14" android:endColor="@color/app_ds_dark_glow_00" />
+        </shape>
+    </item>
+</layer-list>

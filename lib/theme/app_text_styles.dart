@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// The app's two faces, both bundled as variable fonts (see pubspec's
-/// `fonts:` section) rather than pulled at runtime by google_fonts — that
-/// package fetched them over the network on first launch, so the first
-/// frames rendered in a fallback face.
+/// One bundled Exo 2 family with semantic weights for all text roles.
 ///
 /// A variable font needs the weight on *two* channels: [FontWeight] is what
 /// Flutter lays out and matches against, while [FontVariation] on the `wght`
@@ -16,7 +13,7 @@ class AppTextStyles {
   AppTextStyles._();
 
   static const _headingFamily = 'Exo2';
-  static const _bodyFamily = 'Nunito';
+  static const _bodyFamily = 'Exo2';
 
   // Pre-built per weight: body() runs for essentially every Text in the
   // app, and each call would otherwise allocate a fresh list and variation.
@@ -33,19 +30,25 @@ class AppTextStyles {
   static TextStyle heading({
     double fontSize = AppFontSize.heading,
     Color? color,
+    FontWeight fontWeight = AppFontWeight.heading,
   }) {
     return TextStyle(
       fontFamily: _headingFamily,
       fontSize: fontSize,
       color: color ?? AppColors.text,
-      fontWeight: FontWeight.w800,
-      fontVariations: const [FontVariation('wght', 800)],
-      height: 1.12,
+      fontWeight: fontWeight,
+      fontVariations:
+          _weightAxis[fontWeight.value] ??
+          [FontVariation('wght', fontWeight.value.toDouble())],
+      height: 1.25,
     );
   }
 
-  static TextStyle prayerName({Color? color}) =>
-      heading(fontSize: AppFontSize.body, color: color);
+  static TextStyle prayerName({Color? color}) => heading(
+    fontSize: AppFontSize.body,
+    color: color,
+    fontWeight: AppFontWeight.medium,
+  );
 
   // Inline labels use the name's font metrics so their visual centers match.
   static TextStyle prayerInlineLabel({Color? color}) =>
@@ -57,7 +60,7 @@ class AppTextStyles {
   static TextStyle body({
     double fontSize = AppFontSize.body,
     Color? color,
-    FontWeight fontWeight = FontWeight.w600,
+    FontWeight fontWeight = AppFontWeight.regular,
   }) {
     return TextStyle(
       fontFamily: _bodyFamily,
@@ -67,6 +70,7 @@ class AppTextStyles {
       fontVariations:
           _weightAxis[fontWeight.value] ??
           [FontVariation('wght', fontWeight.value.toDouble())],
+      height: 1.4,
     );
   }
 }

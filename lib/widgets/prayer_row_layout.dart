@@ -29,29 +29,62 @@ class PrayerRowLayout extends StatelessWidget {
     final textHeight =
         (scaler.scale(title.fontSize!) * title.height!).ceilToDouble() +
         (scaler.scale(subtitle.fontSize!) * subtitle.height!).ceilToDouble();
-    return SizedBox(
-      height: math.max(AppSize.prayerRow, textHeight + AppSpacing.xxs * 2),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: variant == PrayerRowVariant.contained
-              ? AppSpacing.sm
-              : AppSpacing.none,
-          vertical: AppSpacing.xxs,
-        ),
-        child: Row(
-          children: [
-            SizedBox.square(
-              dimension: AppSize.touchTarget,
-              child: Center(child: leading),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stacked =
+            constraints.maxWidth < AppSize.largeTextRowWidth &&
+            scaler.scale(AppFontSize.body) > AppFontSize.body * 1.4;
+        final timeHeight = stacked
+            ? scaler.scale(AppFontSize.bodyLarge) * 1.25 + AppSpacing.xxs
+            : 0.0;
+        return SizedBox(
+          height: math.max(
+            AppSize.prayerRow,
+            textHeight + timeHeight + AppSpacing.xxs * 2,
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: variant == PrayerRowVariant.contained
+                  ? AppSpacing.sm
+                  : AppSpacing.none,
+              vertical: AppSpacing.xxs,
             ),
-            const SizedBox(width: AppSpacing.xs),
-            Expanded(child: label),
-            if (time != null) ...[const SizedBox(width: AppSpacing.xs), time!],
-            const SizedBox(width: AppSpacing.xs),
-            SizedBox.square(dimension: AppSize.touchTarget, child: mark),
-          ],
-        ),
-      ),
+            child: Row(
+              children: [
+                SizedBox.square(
+                  dimension: AppSize.touchTarget,
+                  child: Center(child: leading),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: stacked
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            label,
+                            if (time != null) ...[
+                              const SizedBox(height: AppSpacing.xxs),
+                              Align(
+                                alignment: AlignmentDirectional.centerEnd,
+                                child: time,
+                              ),
+                            ],
+                          ],
+                        )
+                      : label,
+                ),
+                if (!stacked && time != null) ...[
+                  const SizedBox(width: AppSpacing.xs),
+                  time!,
+                ],
+                const SizedBox(width: AppSpacing.xs),
+                SizedBox.square(dimension: AppSize.touchTarget, child: mark),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

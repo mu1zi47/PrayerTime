@@ -15,6 +15,7 @@ import '../widgets/prayer_row_layout.dart';
 import '../widgets/icon_badge.dart';
 import '../widgets/prayer_icon.dart';
 import '../widgets/nearby_mosque_card.dart';
+import '../widgets/pill_button.dart';
 import 'city_screen.dart';
 import 'monthly_times_screen.dart';
 import 'prayer_calendar_screen.dart';
@@ -37,41 +38,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   Timer? _ticker;
   AppLifecycleListener? _lifecycle;
-
-  double _toolsHeight = AppSize.shortcut + AppSpacing.md;
-  late final _toolsController = AnimationController(
-    vsync: this,
-    duration: AppMotion.fast,
-    value: 1,
-  );
-  // Consume the drag in pixels before scrolling the page. The reveal value is
-  // assigned directly while dragging, then settles to the nearest endpoint.
-  double _consumeToolsDrag(ScrollMetrics metrics, double offset) {
-    _toolsController.stop();
-    final height = _toolsController.value * _toolsHeight;
-    final available = offset < 0
-        ? offset
-        : (offset -
-              (metrics.pixels - metrics.minScrollExtent).clamp(0.0, offset));
-    final nextHeight = (height + available).clamp(0.0, _toolsHeight);
-    if (nextHeight != height) {
-      _toolsController.value = nextHeight / _toolsHeight;
-    }
-    return offset - (nextHeight - height);
-  }
-
-  void _settleTools() {
-    if (_toolsController.isAnimating) return;
-    _toolsController.animateTo(
-      _toolsController.value >= .5 ? 1 : 0,
-      duration: AppMotion.fast,
-      curve: Curves.easeOutCubic,
-    );
-  }
 
   @override
   void initState() {
@@ -110,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _lifecycle?.dispose();
-    _toolsController.dispose();
     _stopTicker();
     widget.appState.removeListener(_onAppStateChanged);
     super.dispose();
@@ -119,11 +87,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     AppColors.watch(context);
-    _toolsHeight =
-        AppSize.shortcut *
-            MediaQuery.textScalerOf(context).scale(AppFontSize.body) /
-            AppFontSize.body +
-        AppSpacing.md;
     final t = AppLocalizations.of(context)!;
     final appState = widget.appState;
     final days = appState.days;
@@ -223,214 +186,155 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ];
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification.depth == 0 &&
-            notification.metrics.axis == Axis.vertical &&
-            notification is ScrollEndNotification) {
-          _settleTools();
-        }
-        return false;
-      },
-      child: ScreenContentInset(
-        child: ListView(
-          key: const ValueKey('home-scroll'),
-          physics: _HomeScrollPhysics(
-            onDrag: _consumeToolsDrag,
-            isPartlyRevealed: () =>
-                _toolsController.value > 0 && _toolsController.value < 1,
-            parent: const AlwaysScrollableScrollPhysics(
-              parent: ClampingScrollPhysics(),
-            ),
-          ),
-          padding: EdgeInsets.only(
-            top: MediaQuery.paddingOf(context).top + AppSpacing.md,
-            bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
-            left: MediaQuery.paddingOf(context).left,
-            right: MediaQuery.paddingOf(context).right,
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screen,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: AppTap(
-                      feedbackOnChild: false,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => CityScreen(appState: appState),
-                        ),
+    return ScreenContentInset(
+      child: ListView(
+        key: const ValueKey('home-scroll'),
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.only(
+          top: MediaQuery.paddingOf(context).top + AppSpacing.md,
+          bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
+          left: MediaQuery.paddingOf(context).left,
+          right: MediaQuery.paddingOf(context).right,
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AppTap(
+                    feedbackOnChild: false,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CityScreen(appState: appState),
                       ),
-                      behavior: HitTestBehavior.opaque,
-                      child: AppPressContent(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                appState.cityLabel(t),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTextStyles.body(
-                                  fontSize: AppFontSize.small,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.text,
-                                ),
+                    ),
+                    behavior: HitTestBehavior.opaque,
+                    child: AppPressContent(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              appState.cityLabel(t),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.body(
+                                fontSize: AppFontSize.small,
+                                fontWeight: AppFontWeight.medium,
+                                color: AppColors.text,
                               ),
                             ),
-                            const SizedBox(width: AppSpacing.compact),
-                            Icon(
-                              Icons.expand_more_rounded,
-                              size: AppIconSize.small,
-                              color: _textFaint,
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: AppSpacing.compact),
+                          Icon(
+                            Icons.expand_more_rounded,
+                            size: AppIconSize.small,
+                            color: _textFaint,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            if (next != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.screen,
-                ),
-                child: _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
-              ),
-            const SizedBox(height: AppSpacing.md),
-            AnimatedBuilder(
-              key: const ValueKey('home-actions-reveal'),
-              animation: _toolsController,
-              builder: (context, child) => SizedBox(
-                height: _toolsHeight * _toolsController.value,
-                child: OverflowBox(
-                  alignment: Alignment.bottomCenter,
-                  minHeight: _toolsHeight,
-                  maxHeight: _toolsHeight,
-                  child: child,
-                ),
-              ),
-              child: AnimatedBuilder(
-                animation: _toolsController,
-                builder: (context, child) => IgnorePointer(
-                  ignoring: _toolsController.value == 0,
-                  child: ExcludeSemantics(
-                    excluding: _toolsController.value == 0,
-                    child: FadeTransition(
-                      opacity: _toolsController.drive(
-                        CurveTween(curve: Curves.easeIn),
-                      ),
-                      child: child!,
-                    ),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _HomeActions(
-                      actions: [
-                        (
-                          key: const ValueKey('home-monthly-times'),
-                          label: t.homeScheduleButton,
-                          icon: Icons.calendar_month_rounded,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  MonthlyTimesScreen(appState: appState),
-                            ),
-                          ),
-                        ),
-                        (
-                          key: const ValueKey('home-prayer-calendar'),
-                          label: t.homeCalendarButton,
-                          icon: Icons.event_available_rounded,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  PrayerCalendarScreen(appState: appState),
-                            ),
-                          ),
-                        ),
-                        (
-                          key: const ValueKey('home-allah-names'),
-                          label: t.allahNamesTitle,
-                          icon: Icons.auto_awesome_rounded,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => NamesScreen(appState: appState),
-                            ),
-                          ),
-                        ),
-                        (
-                          key: const ValueKey('home-tasbih'),
-                          label: t.tasbihTitle,
-                          icon: Icons.touch_app_rounded,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const TasbihScreen(),
-                            ),
-                          ),
-                        ),
-                        (
-                          key: const ValueKey('home-settings'),
-                          label: t.settingsScreenTitle,
-                          icon: Icons.settings_outlined,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  SettingsScreen(appState: appState),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                  ],
-                ),
-              ),
-            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (next != null)
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.screen,
               ),
-              child: Column(
-                key: const ValueKey('today-prayers-panel'),
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var i = 0; i < rows.length; i++)
-                    _ScheduleRow(
-                      spec: rows[i],
-                      showDivider: i < rows.length - 1,
-                    ),
-                ],
-              ),
+              child: _NextPrayerPanel(info: next, isTomorrow: nextIsTomorrow),
             ),
-            if (rows.isEmpty && appState.isLoadingDays)
-              const _LoadingView()
-            else if (rows.isEmpty && appState.daysError != null)
-              _ErrorView(
-                message: appState.daysError!,
-                onRetry: appState.loadPrayerTimes,
+          const SizedBox(height: AppSpacing.md),
+          _HomeActions(
+            actions: [
+              (
+                key: const ValueKey('home-monthly-times'),
+                label: t.homeScheduleButton,
+                icon: Icons.calendar_month_rounded,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => MonthlyTimesScreen(appState: appState),
+                  ),
+                ),
               ),
-            const SizedBox(height: AppSpacing.md),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screen,
+              (
+                key: const ValueKey('home-prayer-calendar'),
+                label: t.homeCalendarButton,
+                icon: Icons.event_available_rounded,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => PrayerCalendarScreen(appState: appState),
+                  ),
+                ),
               ),
-              child: NearbyMosqueCard(
-                key: const ValueKey('home-nearby-mosque'),
-                appState: appState,
-              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+            child: Column(
+              key: const ValueKey('today-prayers-panel'),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < rows.length; i++)
+                  _ScheduleRow(spec: rows[i], showDivider: i < rows.length - 1),
+              ],
             ),
-          ],
-        ),
+          ),
+          if (rows.isEmpty && appState.isLoadingDays)
+            const _LoadingView()
+          else if (rows.isEmpty && appState.daysError != null)
+            _ErrorView(
+              message: appState.daysError!,
+              onRetry: appState.loadPrayerTimes,
+            ),
+          const SizedBox(height: AppSpacing.md),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+            child: NearbyMosqueCard(
+              key: const ValueKey('home-nearby-mosque'),
+              appState: appState,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _HomeActions(
+            secondary: true,
+            actions: [
+              (
+                key: const ValueKey('home-allah-names'),
+                label: t.allahNamesTitle,
+                icon: Icons.auto_awesome_rounded,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => NamesScreen(appState: appState),
+                  ),
+                ),
+              ),
+              (
+                key: const ValueKey('home-tasbih'),
+                label: t.tasbihTitle,
+                icon: Icons.touch_app_rounded,
+                onTap: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const TasbihScreen())),
+              ),
+              (
+                key: const ValueKey('home-settings'),
+                label: t.settingsScreenTitle,
+                icon: Icons.settings_outlined,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SettingsScreen(appState: appState),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -452,41 +356,6 @@ class _HomeScreenState extends State<HomeScreen>
     }
     return () =>
         appState.setPrayerStatus(day.date, key, PrayerLogStatus.onTime);
-  }
-}
-
-/// Only direct vertical drags change the tools; ballistic motion cannot move
-/// the row while it settles to its nearest endpoint.
-class _HomeScrollPhysics extends ScrollPhysics {
-  const _HomeScrollPhysics({
-    required this.onDrag,
-    required this.isPartlyRevealed,
-    super.parent,
-  });
-
-  final double Function(ScrollMetrics, double) onDrag;
-  final bool Function() isPartlyRevealed;
-
-  @override
-  _HomeScrollPhysics applyTo(ScrollPhysics? ancestor) => _HomeScrollPhysics(
-    onDrag: onDrag,
-    isPartlyRevealed: isPartlyRevealed,
-    parent: buildParent(ancestor),
-  );
-
-  @override
-  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) =>
-      super.applyPhysicsToUserOffset(position, onDrag(position, offset));
-
-  @override
-  Simulation? createBallisticSimulation(
-    ScrollMetrics position,
-    double velocity,
-  ) {
-    if (isPartlyRevealed()) {
-      return null;
-    }
-    return super.createBallisticSimulation(position, velocity);
   }
 }
 
@@ -524,14 +393,14 @@ class _NextPrayerPanel extends StatelessWidget {
               fit: BoxFit.scaleDown,
               alignment: AlignmentDirectional.centerStart,
               child: Text(
-                kicker.toUpperCase(),
+                kicker,
                 maxLines: 1,
                 softWrap: false,
                 style: AppTextStyles.body(
                   fontSize: AppFontSize.caption,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: AppFontWeight.medium,
                   color: AppColors.accent,
-                ).copyWith(letterSpacing: 1.0),
+                ),
               ),
             ),
           ),
@@ -732,80 +601,44 @@ typedef _HomeAction = ({
   VoidCallback onTap,
 });
 
-/// Actions share a full-width viewport with padding inside the scroll content.
-class _HomeActions extends StatefulWidget {
-  const _HomeActions({required this.actions});
-
+/// Shared two-column actions; large text stacks without horizontal scrolling.
+class _HomeActions extends StatelessWidget {
+  const _HomeActions({required this.actions, this.secondary = false});
   final List<_HomeAction> actions;
+  final bool secondary;
 
   @override
-  State<_HomeActions> createState() => _HomeActionsState();
-}
-
-class _HomeActionsState extends State<_HomeActions>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final size =
-        AppSize.shortcut *
-        MediaQuery.textScalerOf(context).scale(AppFontSize.body) /
-        AppFontSize.body;
-    return SingleChildScrollView(
-      key: const ValueKey('home-schedule-actions'),
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var index = 0; index < widget.actions.length; index++) ...[
-            if (index > 0) const SizedBox(width: AppSpacing.compact),
-            SizedBox.square(
-              key: widget.actions[index].key,
-              dimension: size,
-              child: GlassPanel(
-                child: AppTap(
-                  feedbackOnChild: false,
-                  onTap: widget.actions[index].onTap,
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: AppPressContent(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            widget.actions[index].icon,
-                            size: AppIconSize.action,
-                            color: AppColors.accent,
-                          ),
-                          Flexible(
-                            child: Text(
-                              widget.actions[index].label,
-                              textAlign: TextAlign.start,
-                              style: AppTextStyles.body(
-                                fontSize: AppFontSize.body,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.accent,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+  Widget build(BuildContext context) => Padding(
+    key: ValueKey(
+      secondary ? 'home-secondary-actions' : 'home-schedule-actions',
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final stacked =
+            MediaQuery.textScalerOf(context).scale(AppFontSize.body) >
+            AppFontSize.body * 1.4;
+        return Wrap(
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: [
+            for (final action in actions)
+              SizedBox(
+                key: action.key,
+                width: stacked
+                    ? constraints.maxWidth
+                    : (constraints.maxWidth - AppSpacing.xs) / 2,
+                child: PillButton(
+                  label: action.label,
+                  icon: action.icon,
+                  onTap: action.onTap,
                 ),
               ),
-            ),
           ],
-        ],
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
 }
 
 class _LoadingView extends StatelessWidget {
@@ -877,7 +710,7 @@ class _ErrorView extends StatelessWidget {
                       style: AppTextStyles.body(
                         fontSize: AppFontSize.body,
                         color: AppColors.accent,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: AppFontWeight.medium,
                       ),
                     ),
                   ),
